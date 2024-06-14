@@ -1,69 +1,69 @@
-package com.example.helloword;
+package com.example.feedhope;
 
-import android.app.Notification;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 public class signup extends AppCompatActivity {
-    EditText firstname,lastname,email,password,phone;
-    Button signupbtn,btngotologin;
-    dbhelper dbhelper;
+    private signupDB db;
+    private EditText name, phone, email, pass;
+    private TextView login;
+    private Button register;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_signup);
-        btngotologin = findViewById(R.id.signupbtn);
-        btngotologin.setOnClickListener(new View.OnClickListener() {
+        setContentView(R.layout.signup);
+        name = findViewById(R.id.name);
+        phone = findViewById(R.id.phone);
+        email = findViewById(R.id.email);
+        pass = findViewById(R.id.pass);
+        login = findViewById(R.id.login);
+        register = findViewById(R.id.register);
+        register.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent=new Intent(signup.this,Home.class);
+                db = new signupDB(signup.this);
+                SQLiteDatabase db1 = db.getWritableDatabase();
+                String name1, phone1,email1,pass1;
+
+                name1 = name.getText().toString().trim();
+                phone1 = phone.getText().toString().trim();
+                email1 = email.getText().toString().trim();
+                pass1 = pass.getText().toString().trim();
+
+                if (name1.isEmpty() || phone1.isEmpty() || email1.isEmpty() || pass1.isEmpty()) {
+                    Toast.makeText(signup.this, "All fields are required", Toast.LENGTH_LONG).show();
+                    return;
+                }
+
+                if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email1).matches()) {
+                    Toast.makeText(signup.this, "Please enter a valid email address", Toast.LENGTH_LONG).show();
+                    return;
+                }
+                if (db.insert(name1,phone1,email1, pass1)) {
+                    Toast.makeText(signup.this, "Data Inserted", Toast.LENGTH_LONG).show();
+                    Intent intent = new Intent(signup.this, homePage.class);
+                    startActivity(intent);
+                } else {
+                    Toast.makeText(signup.this, "Data not Inserted", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+        login.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(signup.this, login.class);
                 startActivity(intent);
             }
         });
-        firstname=findViewById(R.id.fname);
-        lastname=findViewById(R.id.lname);
-        email=findViewById(R.id.email);
-        password=findViewById(R.id.password);
-        phone=findViewById(R.id.phone);
-        signupbtn=findViewById(R.id.signupbtn);
-        dbhelper=new dbhelper(this);
-        signupbtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String fnam,lnam,mail,pass,phon;
-                fnam=firstname.getText().toString();
-                lnam=lastname.getText().toString();
-                mail=email.getText().toString();
-                pass=password.getText().toString();
-                phon=phone.getText().toString();
-                if(fnam.equals("") || lnam.equals("") || mail.equals("") || pass.equals("") || phon.equals("")){
-                    Toast.makeText(signup.this, "Please fill all the required field!",Toast.LENGTH_SHORT).show();
-                }
-                else{
-                    boolean signupsuccessfully=dbhelper.insertData(fnam,lnam,mail,pass,phon);
-                    if(signupsuccessfully){
-                        Toast.makeText(signup.this, "User signup successfully!",Toast.LENGTH_SHORT).show();
-
-                    }
-                    else{
-                        Toast.makeText(signup.this, "User signup fail!",Toast.LENGTH_SHORT).show();
-                    }
-                }
-            }
-        });
-
     }
 }
