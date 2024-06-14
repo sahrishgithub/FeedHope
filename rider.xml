@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg"
+    tools:context=".Provider">
+
+    <ImageView
+        android:id="@+id/logo"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="60dp"
+        android:background="@drawable/logo1"
+        />
+    <EditText
+        android:id="@+id/type"
+        android:layout_width="320dp"
+        android:layout_height="50dp"
+        android:background="@drawable/round_text"
+        android:drawableLeft="@drawable/id_type"
+        android:paddingLeft="12dp"
+        android:drawablePadding="10dp"
+        android:layout_marginTop="220dp"
+        android:layout_centerHorizontal="true"
+        android:maxLength="30"
+        android:hint="ID type (driver licence etc)"
+        android:inputType="text"
+        />
+
+    <EditText
+        android:id="@+id/number"
+        android:layout_width="320dp"
+        android:layout_height="50dp"
+        android:background="@drawable/round_text"
+        android:drawableLeft="@drawable/id_number"
+        android:paddingLeft="12dp"
+        android:drawablePadding="10dp"
+        android:layout_marginTop="280dp"
+        android:layout_centerHorizontal="true"
+        android:hint="ID Card Number"
+        android:inputType="number"
+        android:maxLength="12"
+        />
+
+    <EditText
+        android:id="@+id/hours"
+        android:layout_width="320dp"
+        android:layout_height="50dp"
+        android:background="@drawable/round_text"
+        android:drawableLeft="@drawable/hours"
+        android:paddingLeft="12dp"
+        android:drawablePadding="10dp"
+        android:layout_marginTop="340dp"
+        android:layout_centerHorizontal="true"
+        android:hint="Working hours"
+        android:maxLength="2"
+        android:inputType="numberDecimal"
+        />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="35dp"
+        android:layout_marginTop="400dp"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+        >
+
+        <AutoCompleteTextView
+            android:id="@+id/days"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:drawableLeft="@drawable/days"
+            android:paddingLeft="12dp"
+            android:drawablePadding="10dp"
+            android:hint="@string/Availability_Days"
+            android:inputType="none"
+            />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <EditText
+        android:id="@+id/card"
+        android:layout_width="320dp"
+        android:layout_height="50dp"
+        android:background="@drawable/round_text"
+        android:drawableLeft="@drawable/card"
+        android:paddingLeft="12dp"
+        android:drawablePadding="10dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="480dp"
+        android:maxLength="16"
+        android:hint="Add Credit or Debit Card Detail"
+        android:inputType="numberDecimal"
+        />
+
+    <Button
+        android:id="@+id/register"
+        android:layout_width="300dp"
+        android:layout_height="50dp"
+        android:background="@drawable/round_button"
+        android:textColor="@color/white"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="560dp"
+        android:text="Register"
+        android:textSize="19dp"
+        />
+</RelativeLayout>

@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg"
+    tools:context=".Provider">
+
+    <ImageView
+        android:id="@+id/logo"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="60dp"
+        android:background="@drawable/logo1"
+        />
+
+    <EditText
+        android:id="@+id/food"
+        android:layout_width="300dp"
+        android:layout_height="45dp"
+        android:background="@drawable/round_text"
+        android:drawableLeft="@drawable/food1"
+        android:paddingLeft="12dp"
+        android:drawablePadding="10dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="220dp"
+        android:maxLength="30"
+        android:hint="Type of food"
+        android:inputType="text"
+        />
+
+    <EditText
+        android:id="@+id/quantity"
+        android:layout_width="300dp"
+        android:layout_height="45dp"
+        android:background="@drawable/round_text"
+        android:drawableLeft="@drawable/quantity"
+        android:paddingLeft="12dp"
+        android:drawablePadding="10dp"
+        android:layout_marginTop="280dp"
+        android:layout_centerHorizontal="true"
+        android:maxLength="30"
+        android:hint="Quantity"
+        android:inputType="numberDecimal"
+        />
+
+    <EditText
+        android:id="@+id/storage"
+        android:layout_width="300dp"
+        android:layout_height="45dp"
+        android:background="@drawable/round_text"
+        android:drawableLeft="@drawable/storage"
+        android:paddingLeft="12dp"
+        android:drawablePadding="10dp"
+        android:layout_marginTop="340dp"
+        android:layout_centerHorizontal="true"
+        android:maxLength="500"
+        android:hint="Storage Requirement"
+        android:inputType="text"
+        />
+
+    <EditText
+        android:id="@+id/available"
+        android:layout_width="300dp"
+        android:layout_height="45dp"
+        android:background="@drawable/round_text"
+        android:drawableLeft="@drawable/available1"
+        android:paddingLeft="12dp"
+        android:drawablePadding="10dp"
+        android:layout_marginTop="400dp"
+        android:layout_centerHorizontal="true"
+        android:hint="Availability Date"
+        android:inputType="datetime"
+        />
+
+    <EditText
+        android:id="@+id/expire"
+        android:layout_width="300dp"
+        android:layout_height="45dp"
+        android:background="@drawable/round_text"
+        android:drawableLeft="@drawable/expiry"
+        android:paddingLeft="12dp"
+        android:drawablePadding="10dp"
+        android:layout_marginTop="460dp"
+        android:layout_centerHorizontal="true"
+        android:hint="Expiration Date"
+        android:inputType="datetime"
+        />
+    <EditText
+        android:id="@+id/things"
+        android:layout_width="300dp"
+        android:layout_height="45dp"
+        android:background="@drawable/round_text"
+        android:drawableLeft="@drawable/clothes"
+        android:paddingLeft="12dp"
+        android:drawablePadding="10dp"
+        android:layout_marginTop="520dp"
+        android:layout_centerHorizontal="true"
+        android:hint="Other things"
+        android:inputType="text"
+        />
+
+    <Button
+        android:id="@+id/register"
+        android:layout_width="300dp"
+        android:layout_height="50dp"
+        android:background="@drawable/round_button"
+        android:textColor="@color/white"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="580dp"
+        android:text="Register"
+        android:textSize="19dp"
+        />
+</RelativeLayout>
