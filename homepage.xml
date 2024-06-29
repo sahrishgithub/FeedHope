@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="1500dp"
+        tools:context=".MainActivity"
+        android:orientation="vertical"
+        android:layout_marginEnd="6dp"
+        android:layout_marginStart="5dp">
+
+        <com.google.android.material.appbar.AppBarLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:menu="@menu/option_menu"
+                android:background="#A5E8F1" >
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="FeedHope"
+                    android:textColor="@color/black"
+                    android:textSize="20dp"
+                    android:textStyle="bold"
+                    />
+            </androidx.appcompat.widget.Toolbar>
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:gravity="center"
+            android:layout_marginTop="50dp"
+            android:paddingLeft="20dp"
+            android:paddingTop="10dp"
+            android:text="Small changes, big impact. Together, we can reduce food waste."
+            android:textSize="22dp"
+            android:textStyle="italic"
+            />
+
+        <ImageView
+            android:id="@+id/img1"
+            android:layout_width="800dp"
+            android:layout_height="280dp"
+            android:layout_marginTop="140dp"
+            android:src="@drawable/zakat2" />
+
+        <TextView
+            android:layout_width="150dp"
+            android:layout_height="80dp"
+            android:layout_marginTop= "210dp"
+            android:textSize="25dp"
+            android:layout_marginLeft="20dp"
+            android:text="Your money brings hope"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            />
+
+        <Button
+            android:id="@+id/button1"
+            android:layout_width="150dp"
+            android:layout_height="60dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="300dp"
+            android:background="@drawable/round_homepage_button"
+            android:text="Donate Now!"
+            android:textSize="15dp"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"
+            android:padding="5dp"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:layout_marginTop="430dp"
+            android:textSize="25dp"
+            android:gravity="right"
+            android:text="Send the gift of other things"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:layout_marginTop="470dp"
+            android:gravity="right"
+            android:text="on behalf of loved ones"
+            android:textColor="#040303"
+            android:textSize="18dp" />
+
+        <Button
+            android:id="@+id/button2"
+            android:layout_width="200dp"
+            android:layout_height="70dp"
+            android:layout_marginLeft="180dp"
+            android:layout_marginTop="520dp"
+            android:background="@drawable/transparent_button"
+            android:text="Send Gift"
+            android:textSize="20dp"
+            android:textStyle="bold"
+            android:textColor="@color/black"/>
+
+        <ImageView
+            android:layout_width="800dp"
+            android:layout_height="500dp"
+            android:layout_marginTop="520dp"
+            android:src="@drawable/cooked" />
+
+        <TextView
+            android:layout_width="150dp"
+            android:layout_height="100dp"
+            android:layout_marginTop= "700dp"
+            android:textSize="25dp"
+            android:layout_marginLeft="20dp"
+            android:text="Feed those who need it most"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            />
+
+        <Button
+            android:id="@+id/button3"
+            android:layout_width="140dp"
+            android:layout_height="60dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="820dp"
+            android:background="@drawable/round_homepage_button"
+            android:text="Donate Now!"
+            android:textSize="14dp"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"
+            android:padding="5dp"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:layout_marginTop="940dp"
+            android:textSize="27dp"
+            android:gravity="right"
+            android:text="Invite your friends"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:layout_marginTop="980dp"
+            android:gravity="right"
+            android:text="and fight hunger together"
+            android:textColor="#040303"
+            android:textSize="18dp" />
+
+        <Button
+            android:id="@+id/button4"
+            android:layout_width="200dp"
+            android:layout_height="70dp"
+            android:layout_marginLeft="180dp"
+            android:layout_marginTop="1020dp"
+            android:background="@drawable/transparent_button"
+            android:text="Invite Friends"
+            android:textSize="16dp"
+            android:textStyle="bold"
+            android:textColor="@color/black"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:layout_marginTop="1100dp"
+            android:textSize="25dp"
+            android:gravity="left"
+            android:text="Get to know us"
+            android:textColor="@color/black"
+            android:textStyle="bold" />
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="500dp"
+            android:layout_marginTop="1080dp"
+            android:src="@drawable/get_to_know" />
+
+        <TextView
+            android:layout_width="190dp"
+            android:layout_height="200dp"
+            android:layout_marginTop= "1210dp"
+            android:textSize="25dp"
+            android:layout_marginLeft="20dp"
+            android:text="Follow how we delivers your donation"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            />
+
+        <Button
+            android:id="@+id/button5"
+            android:layout_width="130dp"
+            android:layout_height="50dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="1320dp"
+            android:background="@drawable/round_homepage_button"
+            android:text="Read more"
+            android:textSize="15dp"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"
+            android:padding="5dp"/>
+
+        <FrameLayout
+            android:id="@+id/framlayout"
+            android:layout_width="wrap_content"
+            android:layout_height="75dp"
+            android:layout_marginTop="1530dp"
+            >
+            <com.google.android.material.bottomnavigation.BottomNavigationView
+                android:id="@+id/bottomnavigation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#A5E8F1"
+                app:menu="@menu/bottom_menu" />
+        </FrameLayout>
+    </RelativeLayout>
+</ScrollView>

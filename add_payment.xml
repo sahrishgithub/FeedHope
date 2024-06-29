@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:layout_width="4500dp"
+        android:layout_height="200dp"
+        android:src="@drawable/payment4"
+        />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="67dp"
+        android:text="  Add a payment method"
+        android:textStyle="bold"
+        android:textSize="25dp"
+        android:layout_marginTop="200dp"
+        android:textColor="#424141"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Your data will be kept safe and make your next donation even faster."
+        android:layout_marginTop="250dp"
+        android:gravity="center"
+        android:textSize="18dp"
+        />
+
+    <EditText
+        android:id="@+id/card"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:drawableLeft="@drawable/card"
+        android:paddingLeft="14dp"
+        android:drawablePadding="14dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="320dp"
+        android:maxLength="16"
+        android:hint="Credit or Debit Card"
+        android:inputType="numberDecimal"
+        />
+
+</RelativeLayout>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="1000dp">
+
+    <ImageView
+        android:layout_width="4500dp"
+        android:layout_height="200dp"
+        android:src="@drawable/food_give"
+        />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="  The journey of your meal"
+        android:layout_marginTop="220dp"
+        android:textSize="27dp"
+        android:textColor="@color/black"
+        />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="      A food wastage reduction app works by connecting individuals, restaurants, and organizations to facilitate the redistribution of food. Users can register on the app and specify their role, whether they are providers, riders, or needy. Providers, such as restaurants, marriage hall, and households, can list food items they want to give away, including details like type, quantity, and pick-up times. Needy, which may include orphan age, shelters, or individuals in need, can browse available listings and request items. Riders can help by transporting food from providers to needy, ensuring timely and efficient distribution. The app often includes features like real-time notifications, and user reviews to enhance transparency and reliability. By streamlining the process of food redistribution, the app aims to minimize food waste, support those in need, and promote a sustainable food system."
+        android:textSize="20dp"
+        android:layout_marginTop="260dp"
+        android:layout_marginLeft="10dp"
+        android:textColor="#333333"
+        />
+
+</RelativeLayout>
+</ScrollView>
