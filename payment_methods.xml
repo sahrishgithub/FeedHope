@@ -19,29 +19,44 @@
         android:textColor="#424141"
         />
 
-    <EditText
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="255dp"
+        android:background="#5C5858"
+        />
+
+    <TextView
         android:layout_width="match_parent"
         android:layout_height="67dp"
         android:textSize="18dp"
         android:text="    No payment method connected"
-        android:layout_marginTop="250dp"
+        android:layout_marginTop="270dp"
         android:textColor="#686868"
         />
 
-    <EditText
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="309dp"
+        android:background="#5C5858"
+        />
+
+    <TextView
         android:id="@+id/add1"
         android:layout_width="match_parent"
         android:layout_height="67dp"
         android:text="+  Add"
+        android:textSize="18dp"
         android:layout_marginLeft="290dp"
-        android:layout_marginTop="250dp"
+        android:layout_marginTop="270dp"
         android:textColor="#07C7E1"
         />
 
     <Button
         android:id="@+id/button1"
         android:layout_width="330dp"
-        android:layout_height="60dp"
+        android:layout_height="50dp"
         android:layout_marginLeft="14dp"
         android:layout_marginTop="690dp"
         android:background="@drawable/round_homepage_button"

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -28,18 +29,31 @@
         android:textSize="18dp"
         />
 
-    <EditText
+    <View
+        android:layout_width="wrap_content"
+        android:layout_height="1dp"
+        android:layout_marginTop="300dp"
+        android:background="@color/black"
+        />
+
+    <TextView
         android:id="@+id/card"
         android:layout_width="match_parent"
-        android:layout_height="80dp"
-        android:drawableLeft="@drawable/card"
+        android:layout_height="30dp"
+        android:drawableStart="@drawable/card"
         android:paddingLeft="14dp"
         android:drawablePadding="14dp"
+        android:textSize="18dp"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="320dp"
-        android:maxLength="16"
-        android:hint="Credit or Debit Card"
-        android:inputType="numberDecimal"
+        android:text="Credit or Debit Card"
+        />
+
+    <View
+        android:layout_width="wrap_content"
+        android:layout_height="1dp"
+        android:layout_marginTop="360dp"
+        android:background="@color/black"
         />
 
 </RelativeLayout>
