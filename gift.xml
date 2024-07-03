@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="horizontal"
+    android:background="@drawable/background">
+        <TextView
+            android:id="@+id/head1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Making a Difference"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="16dp"
+            />
+
+        <ImageView
+            android:id="@+id/cloth"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginTop="80dp"
+            android:layout_marginStart="-140dp"
+            android:scaleType="fitXY"
+            android:src="@drawable/cloth"
+            android:shape="oval"
+            />
+        <TextView
+            android:id="@+id/clothdes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Your gift has an impact! Decide what goal your gift will support."
+            android:layout_below="@id/head1"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="90dp"
+            android:gravity="center"
+            android:textSize="20sp" />
+        <TextView
+            android:id="@+id/head2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="A Step Towards Compassion"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dp"/>
+        <ImageView
+            android:id="@+id/shoe"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginTop="240dp"
+            android:layout_marginStart="-330dp"
+            android:scaleType="fitXY"
+            android:src="@drawable/shoe"
+            android:shape="oval"
+            />
+        <TextView
+            android:id="@+id/shoedes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=" Proper footwear is crucial for health and mobility. "
+            android:layout_below="@id/head1"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="270dp"
+            android:gravity="center"
+            android:textSize="20sp" />
+        <TextView
+            android:id="@+id/head3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Spreading Joy"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="34dp"/>
+        <ImageView
+            android:id="@+id/toy"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginTop="430dp"
+            android:layout_marginStart="-310dp"
+            android:scaleType="fitXY"
+            android:src="@drawable/toy"
+            android:shape="oval"
+            />
+        <TextView
+            android:id="@+id/toydes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Donating toys to the needy spreads joy,supports child development, and relieves stress."
+            android:layout_below="@id/head1"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="440dp"
+            android:gravity="center"
+            android:textSize="20sp" />
+        <TextView
+            android:id="@+id/head4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Preserving Health"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="34dp"/>
+        <ImageView
+            android:id="@+id/medicin"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginTop="600dp"
+            android:layout_marginStart="-320dp"
+            android:scaleType="fitXY"
+            android:src="@drawable/medicin"
+            android:shape="oval"
+            />
+        <TextView
+            android:id="@+id/medides"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Donating medicine to the needy saves lives, improves health,
+        and eases suffering."
+            android:layout_below="@id/head1"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="600dp"
+            android:gravity="center"
+            android:textSize="18sp" />
+        <Button
+            android:id="@+id/giftbtn"
+            android:layout_width="wrap_content"
+            android:layout_height="60dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="20dp"
+            android:text="Send Gift!"
+            android:textSize="15dp"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF" />
+</LinearLayout>
