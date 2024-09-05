@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/button_color" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="FeedHope"
+                android:textColor="@color/white"
+                android:textSize="20dp"/>
+
+        </androidx.appcompat.widget.Toolbar>
+    </com.google.android.material.appbar.AppBarLayout>
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:src="@drawable/register"
+        android:layout_marginTop="80dp"/>
+
+    <Button
+        android:id="@+id/provider"
+        android:layout_width="300dp"
+        android:layout_height="50dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="50dp"
+        android:layout_marginTop="350dp"
+        android:background="@drawable/admin_load_registration_data_button"
+        android:text="Provider Registration"
+        android:textColor="@color/white" />
+
+    <Button
+        android:id="@+id/rider"
+        android:layout_width="300dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="450dp"
+        android:background="@drawable/admin_load_registration_data_button"
+        android:layout_marginStart="50dp"
+        android:layout_centerHorizontal="true"
+        android:textColor="@color/white"
+        android:text="Rider Registration" />
+
+    <Button
+        android:id="@+id/receiver"
+        android:layout_width="300dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="550dp"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/admin_load_registration_data_button"
+        android:layout_marginStart="50dp"
+        android:textColor="@color/white"
+        android:text="Receiver Registration" />
+</RelativeLayout>

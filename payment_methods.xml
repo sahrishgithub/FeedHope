@@ -6,12 +6,12 @@
     <ImageView
         android:layout_width="4500dp"
         android:layout_height="200dp"
-        android:src="@drawable/payment2"
+        android:src="@drawable/payment_methods"
         />
 
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="67dp"
+        android:layout_height="37dp"
         android:text="  Payment methods"
         android:textStyle="bold"
         android:textSize="25dp"
@@ -28,7 +28,7 @@
 
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="67dp"
+        android:layout_height="37dp"
         android:textSize="18dp"
         android:text="    No payment method connected"
         android:layout_marginTop="270dp"
@@ -45,7 +45,7 @@
     <TextView
         android:id="@+id/add1"
         android:layout_width="match_parent"
-        android:layout_height="67dp"
+        android:layout_height="37dp"
         android:text="+  Add"
         android:textSize="18dp"
         android:layout_marginLeft="290dp"

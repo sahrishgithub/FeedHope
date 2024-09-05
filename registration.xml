@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".AppInterface.MainActivity">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/welcomestyle"
+        android:layout_marginTop="-75dp"/>
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="200dp"
+        android:layout_marginTop="150dp"
+        android:layout_marginLeft="200dp"
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/welcome"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        android:textSize="23dp"
+        />
+
+    <Button
+        android:id="@+id/providerRegister"
+        android:layout_width="300dp"
+        android:layout_height="50dp"
+        android:background="@drawable/button"
+        android:textColor="@color/white"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="370dp"
+        android:text="Provider Register"
+        android:textSize="19dp"
+        />
+
+    <Button
+        android:id="@+id/riderRegister"
+        android:layout_width="300dp"
+        android:layout_height="50dp"
+        android:background="@drawable/button"
+        android:textColor="@color/white"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="450dp"
+        android:text="Rider Register"
+        android:textSize="19dp"
+        />
+
+    <Button
+        android:id="@+id/receiverRegister"
+        android:layout_width="300dp"
+        android:layout_height="50dp"
+        android:background="@drawable/button"
+        android:textColor="@color/white"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="530dp"
+        android:text="Receiver Register"
+        android:textSize="19dp"
+        />
+</RelativeLayout>
