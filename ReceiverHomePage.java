@@ -8,7 +8,14 @@ import android.view.MenuItem;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.unitconverter.AdminInterface.AdminHomePage;
+import com.example.unitconverter.ProviderInterface.FoodDetailsActivity;
 import com.example.unitconverter.R;
+
+import java.util.ArrayList;
 
 public class ReceiverHomePage extends AppCompatActivity {
     private String loggedInEmail;
@@ -17,7 +24,6 @@ public class ReceiverHomePage extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.homepage_receiver);
         loggedInEmail = getIntent().getStringExtra("email");
-
         UserName = findViewById(R.id.receiver);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -30,12 +36,22 @@ public class ReceiverHomePage extends AppCompatActivity {
 
         ReceiverRegisterDB db = new ReceiverRegisterDB(this);
         ReceiverModalClass receiverModalClass = db.read(loggedInEmail);
-
         if (receiverModalClass != null) {
             UserName.setText(receiverModalClass.getReference());
         } else {
             UserName.setText("User not found");
         }
+
+        ArrayList<InformDonationModalClass> modalClasses = new ArrayList<>();
+        db = new ReceiverRegisterDB(ReceiverHomePage.this);
+        modalClasses = db.readInformationData();
+
+        // Setup RecyclerView
+        InformRVAdapter rvAdapter = new InformRVAdapter(modalClasses, ReceiverHomePage.this);
+        RecyclerView recyclerView = findViewById(R.id.recyclerView);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(ReceiverHomePage.this, RecyclerView.VERTICAL, false);
+        recyclerView.setLayoutManager(linearLayoutManager);
+        recyclerView.setAdapter(rvAdapter);
     }
 
     @Override
