@@ -1,9 +1,14 @@
 package com.example.unitconverter.ProviderInterface;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Build;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -14,7 +19,7 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-
+import androidx.core.app.NotificationCompat;
 import com.example.unitconverter.R;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -29,6 +34,11 @@ public class ProviderRegister extends AppCompatActivity {
     private SharedPreferences sharedPreferences;
     private Gson gson;
 
+    // Notification settings
+    private static final String CHANNEL_ID = "ProviderChannel";
+    private static final String CHANNEL_NAME = "Provider Notifications";
+    private NotificationManager notificationManager;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,7 +52,7 @@ public class ProviderRegister extends AppCompatActivity {
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        //for back option
+        // for back option
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setTitle("");
@@ -51,6 +61,10 @@ public class ProviderRegister extends AppCompatActivity {
         sharedPreferences = getSharedPreferences("providerPrefs", Context.MODE_PRIVATE);
         gson = new Gson();
         loadData();
+
+        // Initialize notification manager
+        notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        createNotificationChannel();
 
         register.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -67,7 +81,8 @@ public class ProviderRegister extends AppCompatActivity {
                     phone.setText("");
                     email.setText("");
                     pass.setText("");
-                    Toast.makeText(ProviderRegister.this, "Data saved successfully!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ProviderRegister.this, "Please wait while admin accepts your request.", Toast.LENGTH_SHORT).show();
+                    sendNotification(name1, "Provider Registration Request");
                 } else {
                     Toast.makeText(ProviderRegister.this, "All fields must be filled", Toast.LENGTH_SHORT).show();
                 }
@@ -103,6 +118,42 @@ public class ProviderRegister extends AppCompatActivity {
         // Log data saved
         Log.d("ProviderRegister", "Data saved: " + json);
     }
+
+    private void createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(
+                    CHANNEL_ID,
+                    CHANNEL_NAME,
+                    NotificationManager.IMPORTANCE_HIGH
+            );
+            channel.setDescription("Channel for provider notifications");
+            channel.enableLights(true);
+            channel.setLightColor(Color.RED);
+            channel.enableVibration(true);
+            notificationManager.createNotificationChannel(channel);
+        }
+    }
+
+    private void sendNotification(String name, String title) {
+        Intent intent = new Intent(this, ProviderRegister.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(
+                this,
+                0,
+                intent,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
+        );
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
+                .setSmallIcon(R.drawable.notification)
+                .setContentTitle(title)
+                .setContentText(name + " wants to register.")
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setContentIntent(pendingIntent)
+                .setAutoCancel(true);
+
+        notificationManager.notify((int) System.currentTimeMillis(), builder.build());
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {

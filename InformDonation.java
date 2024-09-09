@@ -19,34 +19,32 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.NotificationCompat;
 
 import com.example.unitconverter.R;
-import com.example.unitconverter.RiderInterface.RiderAssignDutyDB;
+import com.example.unitconverter.ReceiverInterface.ReceiverRegisterDB;
 
-public class AssignDuty extends AppCompatActivity {
-    private EditText username, pick, drop, date;
+public class InformDonation extends AppCompatActivity {
+    private EditText name, quantity, storage, expire;
     private Button submit_btn;
-    private RiderAssignDutyDB db;
+    private ReceiverRegisterDB db;
 
     // Notification settings
-    private static final String CHANNEL_ID = "DutyChannel";
-    private static final String CHANNEL_NAME = "Duty Notifications";
+    private static final String CHANNEL_ID = "DonationChannel";
+    private static final String CHANNEL_NAME = "Donation Notifications";
     private NotificationManager notificationManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.assign_duty);
+        setContentView(R.layout.inform_donation);
 
-        username = findViewById(R.id.name);
-        pick = findViewById(R.id.pick);
-        drop = findViewById(R.id.drop);
-        date = findViewById(R.id.date);
+        name = findViewById(R.id.name);
+        quantity = findViewById(R.id.quantity);
+        storage = findViewById(R.id.storage);
+        expire = findViewById(R.id.expire);
         submit_btn = findViewById(R.id.submit);
 
-        // Setup Toolbar
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        // Display back button and clear default title
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setTitle("");
@@ -59,20 +57,20 @@ public class AssignDuty extends AppCompatActivity {
         submit_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                db = new RiderAssignDutyDB(AssignDuty.this);
+                db = new ReceiverRegisterDB(InformDonation.this);
                 db.getWritableDatabase();
-                String name1 = username.getText().toString().trim();
-                String pick1 = pick.getText().toString().trim();
-                String drop1 = drop.getText().toString().trim();
-                String date1 = date.getText().toString().trim();
+                String name1 = name.getText().toString().trim();
+                String quantity1 = quantity.getText().toString().trim();
+                String storage1 = storage.getText().toString().trim();
+                String expire1 = expire.getText().toString().trim();
 
-                if (name1.isEmpty() || pick1.isEmpty() || drop1.isEmpty() || date1.isEmpty()) {
-                    Toast.makeText(AssignDuty.this, "All fields are required", Toast.LENGTH_LONG).show();
-                } else if (db.assignDuty(name1, pick1, drop1, date1, "Pending")) {
-                    Toast.makeText(AssignDuty.this, "Data Inserted", Toast.LENGTH_LONG).show();
-                    sendNotification(name1, "Duty Assigned");
+                if (name1.isEmpty() || quantity1.isEmpty() || storage1.isEmpty() || expire1.isEmpty()) {
+                    Toast.makeText(InformDonation.this, "All fields are required", Toast.LENGTH_LONG).show();
+                } else if (db.insert(name1, quantity1, storage1, expire1, "Pending")) {
+                    Toast.makeText(InformDonation.this, "Data Inserted", Toast.LENGTH_LONG).show();
+                    sendNotification(name1, "Donation Information");
                 } else {
-                    Toast.makeText(AssignDuty.this, "Data not Inserted", Toast.LENGTH_LONG).show();
+                    Toast.makeText(InformDonation.this, "Data not Inserted", Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -85,7 +83,7 @@ public class AssignDuty extends AppCompatActivity {
                     CHANNEL_NAME,
                     NotificationManager.IMPORTANCE_HIGH
             );
-            channel.setDescription("Channel for duty notifications");
+            channel.setDescription("Channel for donation notifications");
             channel.enableLights(true);
             channel.setLightColor(Color.RED);
             channel.enableVibration(true);
@@ -93,8 +91,8 @@ public class AssignDuty extends AppCompatActivity {
         }
     }
 
-    private void sendNotification(String riderName, String title) {
-        Intent intent = new Intent(this, AssignDuty.class);
+    private void sendNotification(String donationName, String title) {
+        Intent intent = new Intent(this, InformDonation.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(
                 this,
                 0,
@@ -105,7 +103,7 @@ public class AssignDuty extends AppCompatActivity {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setSmallIcon(R.drawable.notification) // Use your own notification icon here
                 .setContentTitle(title)
-                .setContentText("Duty assigned to " + riderName)
+                .setContentText("Donation of " + donationName + " has been recorded.")
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setContentIntent(pendingIntent)
                 .setAutoCancel(true);
