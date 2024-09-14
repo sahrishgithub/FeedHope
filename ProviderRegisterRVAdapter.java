@@ -24,22 +24,12 @@ public class ProviderRegisterRVAdapter extends RecyclerView.Adapter<ProviderRegi
     private Context context;
     private ProviderDB db;
     private NotificationManager notifManager;
-    private final String channelID = "ProviderChannel";
-    private final String description = "Provider Notification Channel";
 
     public ProviderRegisterRVAdapter(ArrayList<ProviderModalClass> userList, Context context, NotificationManager notifManager) {
         this.userList = (userList != null) ? userList : new ArrayList<>();
         this.context = context;
         this.db = new ProviderDB(context);
         this.notifManager = notifManager;
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel notifChannel = new NotificationChannel(channelID, description, NotificationManager.IMPORTANCE_HIGH);
-            notifChannel.enableLights(true);
-            notifChannel.setLightColor(Color.RED);
-            notifChannel.enableVibration(true);
-            notifManager.createNotificationChannel(notifChannel);
-        }
     }
 
     @NonNull
@@ -60,7 +50,7 @@ public class ProviderRegisterRVAdapter extends RecyclerView.Adapter<ProviderRegi
         holder.accept.setOnClickListener(v -> {
             boolean isInserted = db.insert(user.getName(), user.getPhone(), user.getEmail(), user.getPass());
             String message = isInserted ? "Data saved successfully!" : "Error saving data!";
-            String notificationMessage = isInserted ? user.getName() + ": Registered Successfully" : user.getName() + ": Application rejected your request" ;
+            String notificationMessage = isInserted ? user.getName() + " : Registered Successfully" : user.getName() + " : Application rejected your request" ;
             sendNotification("Registration Notification", notificationMessage);
             removeItem(position);
         });
@@ -81,7 +71,7 @@ public class ProviderRegisterRVAdapter extends RecyclerView.Adapter<ProviderRegi
         Intent someIntent = new Intent(context, LauncherActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, someIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
-        NotificationCompat.Builder notifBuilder = new NotificationCompat.Builder(context, channelID)
+        NotificationCompat.Builder notifBuilder = new NotificationCompat.Builder(context, "ProviderChannel")
                 .setContentTitle(title)
                 .setContentText(message)
                 .setSmallIcon(R.drawable.notification)

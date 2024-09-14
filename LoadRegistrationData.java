@@ -55,8 +55,9 @@ public class LoadRegistrationData extends AppCompatActivity {
                 sharedPreferences = getSharedPreferences("providerPrefs", Context.MODE_PRIVATE);
                 loadProviderData();
                 if (!providerModalClasses.isEmpty()) {
-                    Intent intent = new Intent(LoadRegistrationData.this, ProviderRVRegistration.class);
-                    intent.putParcelableArrayListExtra("providerList", providerModalClasses);
+                    Intent intent = new Intent(LoadRegistrationData.this, ProviderRegisterDetail.class);
+                    String providerListJson = gson.toJson(providerModalClasses);
+                    intent.putExtra("providerList", providerListJson);
                     startActivity(intent);
                 } else {
                     Toast.makeText(LoadRegistrationData.this, "No data to display", Toast.LENGTH_SHORT).show();
@@ -70,8 +71,9 @@ public class LoadRegistrationData extends AppCompatActivity {
                 sharedPreferences = getSharedPreferences("riderPrefs", Context.MODE_PRIVATE);
                 loadRiderData();
                 if (!riderModalClasses.isEmpty()) {
-                    Intent intent = new Intent(LoadRegistrationData.this, RiderRVRegistration.class);
-                    intent.putParcelableArrayListExtra("riderList", riderModalClasses);
+                    Intent intent = new Intent(LoadRegistrationData.this, RiderRegisterDetail.class);
+                    String riderListJson = gson.toJson(riderModalClasses);
+                    intent.putExtra("riderList", riderListJson);
                     startActivity(intent);
                 } else {
                     Toast.makeText(LoadRegistrationData.this, "No data to display", Toast.LENGTH_SHORT).show();
@@ -85,8 +87,9 @@ public class LoadRegistrationData extends AppCompatActivity {
                 sharedPreferences = getSharedPreferences("receiverPrefs", Context.MODE_PRIVATE);
                 loadReceiverData();
                 if (!receiverModalClasses.isEmpty()) {
-                    Intent intent = new Intent(LoadRegistrationData.this, ReceiverRVRegistration.class);
-                    intent.putParcelableArrayListExtra("receiverList", receiverModalClasses);
+                    Intent intent = new Intent(LoadRegistrationData.this, ReceiverRegisterDetail.class);
+                    String receiverListJson = gson.toJson(receiverModalClasses);
+                    intent.putExtra("receiverList", receiverListJson);
                     startActivity(intent);
                 } else {
                     Toast.makeText(LoadRegistrationData.this, "No data to display", Toast.LENGTH_SHORT).show();

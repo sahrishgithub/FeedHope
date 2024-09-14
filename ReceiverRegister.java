@@ -1,5 +1,6 @@
 package com.example.unitconverter.ReceiverInterface;
 
+import android.annotation.SuppressLint;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -10,8 +11,10 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Build;
+import android.text.InputType;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -37,16 +40,17 @@ public class ReceiverRegister extends AppCompatActivity {
     private EditText member, reference, time, phone, email, pass;
     private Spinner type, requirement;
     private Button register;
+    private boolean isPasswordVisible = false;
     private TextView login;
     private String selectedTime = "";
     private ArrayList<ReceiverModalClass> receiverList;
     private SharedPreferences sharedPreferences;
     private Gson gson;
-    // Notification settings
     private static final String CHANNEL_ID = "ReceiverChannel";
     private static final String CHANNEL_NAME = "Receiver Notifications";
     private NotificationManager notificationManager;
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -79,6 +83,28 @@ public class ReceiverRegister extends AppCompatActivity {
         notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         createNotificationChannel();
 
+        pass.setOnTouchListener((v, event) -> {
+            final int DRAWABLE_RIGHT = 2;  // Index for the drawableRight
+            if (event.getAction() == MotionEvent.ACTION_UP) {
+                if (event.getRawX() >= (pass.getRight() - pass.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
+                    // Toggle the visibility of the password
+                    if (isPasswordVisible) {
+                        // Hide password
+                        pass.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                        pass.setCompoundDrawablesWithIntrinsicBounds(R.drawable.pass, 0, R.drawable.close_eye, 0);
+                    } else {
+                        // Show password
+                        pass.setInputType(InputType.TYPE_CLASS_TEXT);
+                        pass.setCompoundDrawablesWithIntrinsicBounds(R.drawable.pass, 0, R.drawable.open_eye, 0);
+                    }
+                    isPasswordVisible = !isPasswordVisible;
+                    pass.setSelection(pass.getText().length());
+                    return true;
+                }
+            }
+            return false;
+        });
+
         time.setOnClickListener(v -> {
             Calendar calendar = Calendar.getInstance();
             int hour = calendar.get(Calendar.HOUR_OF_DAY);
@@ -86,6 +112,7 @@ public class ReceiverRegister extends AppCompatActivity {
 
             TimePickerDialog timePickerDialog = new TimePickerDialog(ReceiverRegister.this,
                     new TimePickerDialog.OnTimeSetListener() {
+                        @SuppressLint("DefaultLocale")
                         @Override
                         public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
                             selectedTime = String.format("%02d:%02d", hourOfDay, minute);
@@ -178,7 +205,7 @@ public class ReceiverRegister extends AppCompatActivity {
                 errorMessages.append("Please enter a valid email address.\n");
                 email.setError("Please enter a valid email address");
                 isValid = false;
-            } else if (pass1.isEmpty()) {
+            }if (pass1.isEmpty()) {
                 errorMessages.append("Password field is required.\n");
                 pass.setError("Password field is required");
                 isValid = false;
@@ -220,7 +247,6 @@ public class ReceiverRegister extends AppCompatActivity {
             return false;
         }
     }
-
 
     private boolean isValidEmail(String email) {
         String emailPattern = "^[a-zA-Z0-9._%+-]+@(gmail\\.com|hotmail\\.com|yahoo\\.com|outlook\\.com)$";

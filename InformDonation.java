@@ -1,5 +1,6 @@
 package com.example.unitconverter.AdminInterface;
 
+import android.app.DatePickerDialog;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -12,20 +13,20 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Toast;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.NotificationCompat;
-
 import com.example.unitconverter.R;
 import com.example.unitconverter.ReceiverInterface.ReceiverRegisterDB;
+import java.util.Calendar;
 
 public class InformDonation extends AppCompatActivity {
-    private EditText name, quantity, storage, expire;
+    private EditText name, quantity, expire;
+    private Spinner storage;
     private Button submit_btn;
     private ReceiverRegisterDB db;
-
     // Notification settings
     private static final String CHANNEL_ID = "DonationChannel";
     private static final String CHANNEL_NAME = "Donation Notifications";
@@ -54,23 +55,70 @@ public class InformDonation extends AppCompatActivity {
         notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         createNotificationChannel();
 
+        expire.setOnClickListener(v -> {
+            // Get the current date
+            final Calendar calendar = Calendar.getInstance();
+            int year = calendar.get(Calendar.YEAR);
+            int month = calendar.get(Calendar.MONTH);
+            int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+            // Create DatePickerDialog and set the selected date in EditText
+            DatePickerDialog datePickerDialog = new DatePickerDialog(InformDonation.this,
+                    (view, year1, monthOfYear, dayOfMonth) -> {
+                        // monthOfYear is 0-indexed so add 1
+                        String selectedDate = dayOfMonth + "/" + (monthOfYear + 1) + "/" + year1;
+                        expire.setText(selectedDate);
+                    }, year, month, day);
+            datePickerDialog.show();
+        });
+
         submit_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 db = new ReceiverRegisterDB(InformDonation.this);
                 db.getWritableDatabase();
+
+                boolean isValid = true;
+                StringBuilder errorMessages = new StringBuilder();
+
                 String name1 = name.getText().toString().trim();
                 String quantity1 = quantity.getText().toString().trim();
-                String storage1 = storage.getText().toString().trim();
+                String selectedStorage = storage.getSelectedItem().toString();
                 String expire1 = expire.getText().toString().trim();
 
-                if (name1.isEmpty() || quantity1.isEmpty() || storage1.isEmpty() || expire1.isEmpty()) {
-                    Toast.makeText(InformDonation.this, "All fields are required", Toast.LENGTH_LONG).show();
-                } else if (db.insert(name1, quantity1, storage1, expire1, "Pending")) {
-                    Toast.makeText(InformDonation.this, "Data Inserted", Toast.LENGTH_LONG).show();
-                    sendNotification(name1, "Donation Information");
+                name.setError(null);
+                quantity.setError(null);
+                expire.setError(null);
+
+                if (name1.isEmpty()) {
+                    errorMessages.append("Organization Name field is required.\n");
+                    name.setError("Organization Name field is required");
+                    isValid = false;
+                }
+                if (quantity1.isEmpty()) {
+                    errorMessages.append("Quantity field is required.\n");
+                    quantity.setError("Quantity field is required");
+                    isValid = false;
+                }
+                if (selectedStorage.equals("Select Storage Requirement")) {
+                    errorMessages.append("Please select a valid Storage Requirement.\n");
+                    isValid = false;
+                }
+                if (expire1.isEmpty()) {
+                    errorMessages.append("EXpiry Date field is required.\n");
+                    expire.setError("Expiry Date field is required");
+                    isValid = false;
+                }
+
+                if (isValid) {
+                    if (db.insert(name1, quantity1, selectedStorage, expire1, "Pending")) {
+                        Toast.makeText(InformDonation.this, "Data Inserted", Toast.LENGTH_LONG).show();
+                        sendNotification(name1, "Donation Information");
+                    } else {
+                        Toast.makeText(InformDonation.this, "Data not Inserted", Toast.LENGTH_LONG).show();
+                    }
                 } else {
-                    Toast.makeText(InformDonation.this, "Data not Inserted", Toast.LENGTH_LONG).show();
+                    Toast.makeText(InformDonation.this, errorMessages.toString(), Toast.LENGTH_LONG).show();
                 }
             }
         });

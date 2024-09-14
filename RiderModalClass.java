@@ -1,13 +1,19 @@
 package com.example.unitconverter.RiderInterface;
 
-import android.os.Parcel;
-import android.os.Parcelable;
+public class RiderModalClass {
 
-public class RiderModalClass implements Parcelable {
+    private String name;
+    private String phone;
+    private String type;
+    private String idcard;
+    private String hours;
+    private String days;
+    private String card;
+    private String email;
+    private String pass;
 
-    private String name,phone,type,idcard,hours,days,card,email,pass;
-
-    public RiderModalClass(String name, String phone,String type,String idcard,String hours,String days,String card,String email,String pass) {
+    // Constructor with all fields
+    public RiderModalClass(String name, String phone, String type, String idcard, String hours, String days, String card, String email, String pass) {
         this.name = name;
         this.phone = phone;
         this.type = type;
@@ -19,30 +25,7 @@ public class RiderModalClass implements Parcelable {
         this.pass = pass;
     }
 
-    protected RiderModalClass(Parcel in) {
-        name = in.readString();
-        phone = in.readString();
-        type = in.readString();
-        idcard = in.readString();
-        hours = in.readString();
-        days = in.readString();
-        card = in.readString();
-        email = in.readString();
-        pass = in.readString();
-    }
-
-    public static final Creator<RiderModalClass> CREATOR = new Creator<RiderModalClass>() {
-        @Override
-        public RiderModalClass createFromParcel(Parcel in) {
-            return new RiderModalClass(in);
-        }
-
-        @Override
-        public RiderModalClass[] newArray(int size) {
-            return new RiderModalClass[size];
-        }
-    };
-
+    // Constructor with essential fields
     public RiderModalClass(String name, String phone, String email, String pass) {
         this.name = name;
         this.phone = phone;
@@ -50,64 +33,76 @@ public class RiderModalClass implements Parcelable {
         this.pass = pass;
     }
 
+    // Getters and Setters
+    public String getName() {
+        return name;
+    }
+
     public void setName(String name) {
         this.name = name;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public String getPhone() {
+        return phone;
     }
 
     public void setPhone(String phone) {
         this.phone = phone;
     }
 
-    public void setPass(String pass) {
-        this.pass = pass;
-    }
-
-    public String getName() {
-        return name;
-    }
-    public String getPhone() {
-        return phone;
-    }
     public String getType() {
         return type;
     }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
     public String getIdcard() {
         return idcard;
     }
+
+    public void setIdcard(String idcard) {
+        this.idcard = idcard;
+    }
+
     public String getHours() {
         return hours;
     }
+
+    public void setHours(String hours) {
+        this.hours = hours;
+    }
+
     public String getDays() {
         return days;
     }
+
+    public void setDays(String days) {
+        this.days = days;
+    }
+
     public String getCard() {
         return card;
     }
+
+    public void setCard(String card) {
+        this.card = card;
+    }
+
     public String getEmail() {
         return email;
     }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
     public String getPass() {
         return pass;
     }
-    @Override
-    public int describeContents() {
-        return 0;
-    }
 
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(name);
-        dest.writeString(phone);
-        dest.writeString(type);
-        dest.writeString(idcard);
-        dest.writeString(hours);
-        dest.writeString(days);
-        dest.writeString(card);
-        dest.writeString(email);
-        dest.writeString(pass);
+    public void setPass(String pass) {
+        this.pass = pass;
     }
 }

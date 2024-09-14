@@ -1,5 +1,6 @@
 package com.example.unitconverter.RiderInterface;
 
+import android.annotation.SuppressLint;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -9,8 +10,10 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.InputType;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -41,15 +44,16 @@ public class RiderRegister extends AppCompatActivity {
     private Spinner IDtype, hours,days;
     private Button register;
     private TextView login;
+    private boolean isPasswordVisible = false;
     private ArrayList<RiderModalClass> riderList;
     private SharedPreferences sharedPreferences;
     private Gson gson;
 
-    // Notification settings
     private static final String CHANNEL_ID = "RiderChannel";
     private static final String CHANNEL_NAME = "Rider Notifications";
     private NotificationManager notificationManager;
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,6 +87,28 @@ public class RiderRegister extends AppCompatActivity {
         // Initialize notification manager
         notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         createNotificationChannel();
+
+        pass.setOnTouchListener((v, event) -> {
+            final int DRAWABLE_RIGHT = 2;  // Index for the drawableRight
+            if (event.getAction() == MotionEvent.ACTION_UP) {
+                if (event.getRawX() >= (pass.getRight() - pass.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
+                    // Toggle the visibility of the password
+                    if (isPasswordVisible) {
+                        // Hide password
+                        pass.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                        pass.setCompoundDrawablesWithIntrinsicBounds(R.drawable.pass, 0, R.drawable.close_eye, 0);
+                    } else {
+                        // Show password
+                        pass.setInputType(InputType.TYPE_CLASS_TEXT);
+                        pass.setCompoundDrawablesWithIntrinsicBounds(R.drawable.pass, 0, R.drawable.open_eye, 0);
+                    }
+                    isPasswordVisible = !isPasswordVisible;
+                    pass.setSelection(pass.getText().length());
+                    return true;
+                }
+            }
+            return false;
+        });
 
         register.setOnClickListener(new View.OnClickListener() {
             @Override
