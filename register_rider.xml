@@ -3,7 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ProviderInterface.Provider"
     android:background="@color/background_color"
     >
 
@@ -44,27 +43,21 @@
         android:id="@+id/phone"
         android:layout_width="320dp"
         android:layout_height="50dp"
-        android:drawableLeft="@drawable/phone"
-        android:paddingLeft="12dp"
-        android:drawablePadding="10dp"
-        android:layout_marginTop="120dp"
         android:layout_centerHorizontal="true"
-        android:maxLength="11"
+        android:layout_marginTop="120dp"
+        android:drawableLeft="@drawable/phone"
+        android:drawablePadding="10dp"
         android:hint="Phone"
         android:inputType="phone"
-        />
-    <EditText
+        android:paddingLeft="12dp" />
+
+    <Spinner
         android:id="@+id/type"
         android:layout_width="320dp"
         android:layout_height="50dp"
-        android:drawableLeft="@drawable/id_type"
-        android:paddingLeft="12dp"
-        android:drawablePadding="10dp"
+        android:entries="@array/ID_Type"
         android:layout_marginTop="180dp"
         android:layout_centerHorizontal="true"
-        android:maxLength="30"
-        android:hint="ID type (driver licence etc)"
-        android:inputType="text"
         />
 
     <EditText
@@ -81,37 +74,23 @@
         android:maxLength="12"
         />
 
-    <EditText
+    <Spinner
         android:id="@+id/hours"
         android:layout_width="320dp"
         android:layout_height="50dp"
-        android:drawableLeft="@drawable/hours"
-        android:paddingLeft="12dp"
-        android:drawablePadding="10dp"
+        android:entries="@array/Working_Hours"
         android:layout_marginTop="300dp"
         android:layout_centerHorizontal="true"
-        android:hint="Working hours"
-        android:maxLength="2"
-        android:inputType="numberDecimal"
         />
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:layout_width="300dp"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="35dp"
-        android:layout_marginTop="360dp" >
-
-        <AutoCompleteTextView
-            android:id="@+id/days"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:drawableLeft="@drawable/days"
-            android:paddingLeft="12dp"
-            android:drawablePadding="10dp"
-            android:hint="@string/Availability_Days"
-            android:inputType="none"
-            />
-    </com.google.android.material.textfield.TextInputLayout>
+    <Spinner
+        android:id="@+id/days"
+        android:layout_width="320dp"
+        android:layout_height="50dp"
+        android:entries="@array/days"
+        android:layout_marginTop="360dp"
+        android:layout_centerHorizontal="true"
+        />
 
     <EditText
         android:id="@+id/card"

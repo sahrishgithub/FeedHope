@@ -56,7 +56,6 @@
         android:drawablePadding="10dp"
         android:hint="Phone"
         android:inputType="phone"
-        android:maxLength="11"
         android:paddingLeft="12dp" />
 
     <EditText

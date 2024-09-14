@@ -21,8 +21,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.NotificationCompat;
 import com.example.unitconverter.R;
+import com.example.unitconverter.RiderInterface.RiderModalClass;
+import com.example.unitconverter.RiderInterface.RiderRegister;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.google.i18n.phonenumbers.PhoneNumberUtil;
+import com.google.i18n.phonenumbers.Phonenumber;
+
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 
@@ -69,12 +74,51 @@ public class ProviderRegister extends AppCompatActivity {
         register.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                boolean isValid = true;
+                StringBuilder errorMessages = new StringBuilder();
+
                 String name1 = name.getText().toString().trim();
                 String phone1 = phone.getText().toString().trim();
                 String email1 = email.getText().toString().trim();
                 String pass1 = pass.getText().toString().trim();
 
-                if (!name1.isEmpty() && !phone1.isEmpty() && !email1.isEmpty() && !pass1.isEmpty()) {
+                name.setError(null);
+                phone.setError(null);
+                email.setError(null);
+                pass.setError(null);
+
+                if (name1.isEmpty()) {
+                    errorMessages.append("Reference field is required.\n");
+                    name.setError("Reference field is required");
+                    isValid = false;
+                }
+                if (phone1.isEmpty()) {
+                    errorMessages.append("Phone field is required.\n");
+                    phone.setError("Phone field is required.");
+                    isValid = false;
+                } else if (!isValidPhoneNumber(phone1)) {
+                    errorMessages.append("Please enter a valid phone number.\n");
+                    phone.setError("Please enter a valid phone number.");
+                    isValid = false;
+                }
+                if (email1.isEmpty()) {
+                    errorMessages.append("Email field is required.\n");
+                    email.setError("Email field is required");
+                    isValid = false;
+                } else if (!isValidEmail(email1)) {
+                    errorMessages.append("Please enter a valid email address.\n");
+                    email.setError("Please enter a valid email address");
+                    isValid = false;
+                }if (pass1.isEmpty()) {
+                    errorMessages.append("Password field is required.\n");
+                    pass.setError("Password field is required");
+                    isValid = false;
+                }else if (pass1.length() != 8) {
+                    errorMessages.append("Password must be at least 8 characters long.\n");
+                    pass.setError("Password must be at least 8 characters long");
+                    isValid = false;
+                }
+                if (isValid) {
                     providerList.add(new ProviderModalClass(name1, phone1, email1, pass1));
                     saveData();
                     name.setText("");
@@ -84,7 +128,7 @@ public class ProviderRegister extends AppCompatActivity {
                     Toast.makeText(ProviderRegister.this, "Please wait while admin accepts your request.", Toast.LENGTH_SHORT).show();
                     sendNotification(name1, "Provider Registration Request");
                 } else {
-                    Toast.makeText(ProviderRegister.this, "All fields must be filled", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ProviderRegister.this, errorMessages.toString(), Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -98,6 +142,20 @@ public class ProviderRegister extends AppCompatActivity {
         });
     }
 
+    private boolean isValidPhoneNumber(String phoneNumber) {
+        PhoneNumberUtil phoneNumberUtil = PhoneNumberUtil.getInstance();
+        try {
+            Phonenumber.PhoneNumber number = phoneNumberUtil.parse(phoneNumber, "Pakistan");
+            return phoneNumberUtil.isValidNumber(number);
+        } catch (Exception e) {
+            Log.e("PhoneValidation", "Invalid phone number: " + phoneNumber, e);
+            return false;
+        }
+    }
+    private boolean isValidEmail(String email) {
+        String emailPattern = "^[a-zA-Z0-9._%+-]+@(gmail\\.com|hotmail\\.com|yahoo\\.com|outlook\\.com)$";
+        return email.matches(emailPattern);
+    }
     private void loadData() {
         String json = sharedPreferences.getString("providerList", null);
         Type type = new TypeToken<ArrayList<ProviderModalClass>>() {}.getType();

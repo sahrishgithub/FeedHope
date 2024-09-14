@@ -9,12 +9,14 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,17 +26,21 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.NotificationCompat;
 
 import com.example.unitconverter.R;
+import com.example.unitconverter.ReceiverInterface.ReceiverModalClass;
+import com.example.unitconverter.ReceiverInterface.ReceiverRegister;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.google.i18n.phonenumbers.PhoneNumberUtil;
+import com.google.i18n.phonenumbers.Phonenumber;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 
 public class RiderRegister extends AppCompatActivity {
-    private EditText name, IDtype, IDNumber, hours, banking, phone, email, pass;
+    private EditText name,IDNumber,banking, phone, email, pass;
+    private Spinner IDtype, hours,days;
     private Button register;
     private TextView login;
-    private AutoCompleteTextView autoCompleteTextView;
     private ArrayList<RiderModalClass> riderList;
     private SharedPreferences sharedPreferences;
     private Gson gson;
@@ -49,12 +55,8 @@ public class RiderRegister extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.register_rider);
 
-        autoCompleteTextView = findViewById(R.id.days);
-        String[] suggestions = getResources().getStringArray(R.array.suggestions_array);
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, suggestions);
-        autoCompleteTextView.setAdapter(arrayAdapter);
-
         name = findViewById(R.id.name);
+        days = findViewById(R.id.days);
         IDtype = findViewById(R.id.type);
         IDNumber = findViewById(R.id.number);
         hours = findViewById(R.id.hours);
@@ -85,34 +87,93 @@ public class RiderRegister extends AppCompatActivity {
         register.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String name1, phone1, IDtype1, IDNumber1, hours1, banking1, autoText, email1, pass1;
+                String name1, phone1, IDNumber1,banking1,email1,pass1;
+                boolean isValid = true;
+                StringBuilder errorMessages = new StringBuilder();
 
                 name1 = name.getText().toString().trim();
                 phone1 = phone.getText().toString().trim();
-                IDtype1 = IDtype.getText().toString().trim();
+                String selectedType = IDtype.getSelectedItem().toString();
                 IDNumber1 = IDNumber.getText().toString().trim();
-                hours1 = hours.getText().toString().trim();
-                autoText = autoCompleteTextView.getText().toString().trim();
+                String selectedHours = hours.getSelectedItem().toString();
+                String selectedDays = days.getSelectedItem().toString();
                 banking1 = banking.getText().toString().trim();
                 email1 = email.getText().toString().trim();
                 pass1 = pass.getText().toString().trim();
 
-                if (!name1.isEmpty() && !phone1.isEmpty() && !IDtype1.isEmpty() && !IDNumber1.isEmpty() && !hours1.isEmpty() && !autoText.isEmpty() && !banking1.isEmpty() && !email1.isEmpty() && !pass1.isEmpty()) {
-                    riderList.add(new RiderModalClass(name1, phone1, IDtype1, IDNumber1, hours1, autoText, banking1, email1, pass1));
+                name.setError(null);
+                IDNumber.setError(null);
+                banking.setError(null);
+                phone.setError(null);
+                email.setError(null);
+                pass.setError(null);
+
+                if (name1.isEmpty()) {
+                    errorMessages.append("Reference field is required.\n");
+                    name.setError("Reference field is required");
+                    isValid = false;
+                }
+                if (phone1.isEmpty()) {
+                    errorMessages.append("Phone field is required.\n");
+                    phone.setError("Phone field is required.");
+                    isValid = false;
+                } else if (!isValidPhoneNumber(phone1)) {
+                    errorMessages.append("Please enter a valid phone number.\n");
+                    phone.setError("Please enter a valid phone number.");
+                    isValid = false;
+                }
+                if (selectedType.equals("Select ID Type")) {
+                    errorMessages.append("Please select a valid ID Type.\n");
+                    isValid = false;
+                }
+                if (IDNumber1.isEmpty()) {
+                    errorMessages.append("IDNumber field is required.\n");
+                    IDNumber.setError("IDNumber field is required");
+                    isValid = false;
+                }
+                if (selectedHours.equals("Select Working Hours")) {
+                    errorMessages.append("Please select a valid Working Hours.\n");
+                    isValid = false;
+                }
+                if (selectedDays.equals("Select Working Days")) {
+                    errorMessages.append("Please select a valid Working Days.\n");
+                    isValid = false;
+                }
+                if (banking1.isEmpty()) {
+                    errorMessages.append("Banking field is required.\n");
+                    banking.setError("Banking field is required");
+                    isValid = false;
+                }
+                if (email1.isEmpty()) {
+                    errorMessages.append("Email field is required.\n");
+                    email.setError("Email field is required");
+                    isValid = false;
+                } else if (!isValidEmail(email1)) {
+                    errorMessages.append("Please enter a valid email address.\n");
+                    email.setError("Please enter a valid email address");
+                    isValid = false;
+                }if (pass1.isEmpty()) {
+                    errorMessages.append("Password field is required.\n");
+                    pass.setError("Password field is required");
+                    isValid = false;
+                }else if (pass1.length() != 8) {
+                    errorMessages.append("Password must be at least 8 characters long.\n");
+                    pass.setError("Password must be at least 8 characters long");
+                    isValid = false;
+                }
+                if (isValid) {
+                   riderList.add(new RiderModalClass(name1, phone1, selectedType, IDNumber1, selectedHours, selectedDays, banking1, email1, pass1));
                     saveData();
                     name.setText("");
                     phone.setText("");
-                    IDtype.setText("");
                     IDNumber.setText("");
-                    hours.setText("");
-                    autoCompleteTextView.setText("");
                     banking.setText("");
                     email.setText("");
                     pass.setText("");
                     Toast.makeText(RiderRegister.this, "Please wait while admin accepts your request.", Toast.LENGTH_SHORT).show();
                     sendNotification(name1, "Rider Registration Request");
                 } else {
-                    Toast.makeText(RiderRegister.this, "All fields must be filled", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(RiderRegister.this, errorMessages.toString(), Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -125,7 +186,20 @@ public class RiderRegister extends AppCompatActivity {
             }
         });
     }
-
+    private boolean isValidPhoneNumber(String phoneNumber) {
+        PhoneNumberUtil phoneNumberUtil = PhoneNumberUtil.getInstance();
+        try {
+            Phonenumber.PhoneNumber number = phoneNumberUtil.parse(phoneNumber, "Pakistan");
+            return phoneNumberUtil.isValidNumber(number);
+        } catch (Exception e) {
+            Log.e("PhoneValidation", "Invalid phone number: " + phoneNumber, e);
+            return false;
+        }
+    }
+    private boolean isValidEmail(String email) {
+        String emailPattern = "^[a-zA-Z0-9._%+-]+@(gmail\\.com|hotmail\\.com|yahoo\\.com|outlook\\.com)$";
+        return email.matches(emailPattern);
+    }
     private void loadData() {
         String json = sharedPreferences.getString("riderList", null);
         Type type = new TypeToken<ArrayList<RiderModalClass>>() {}.getType();
