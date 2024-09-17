@@ -28,9 +28,9 @@ public class DonateActivity extends AppCompatActivity {
         buttonDonate = findViewById(R.id.buttonDonate);
 
         // Set up button click listeners
-        buttonAmount1.setOnClickListener(v -> setAmount("10"));
-        buttonAmount2.setOnClickListener(v -> setAmount("25"));
-        buttonAmount3.setOnClickListener(v -> setAmount("50"));
+        buttonAmount1.setOnClickListener(v -> setAmount("300"));
+        buttonAmount2.setOnClickListener(v -> setAmount("500"));
+        buttonAmount3.setOnClickListener(v -> setAmount("1000"));
         buttonDonate.setOnClickListener(v -> processDonation());
     }
 
@@ -43,10 +43,14 @@ public class DonateActivity extends AppCompatActivity {
         if (!amountString.isEmpty()) {
             try {
                 double amount = Double.parseDouble(amountString);
-                // Process the donation with the amount
-                Toast.makeText(this, "Donating $" + String.format("%.2f", amount), Toast.LENGTH_SHORT).show();
-                Intent intent=new Intent(DonateActivity.this,Payment_Method.class);
-                startActivity(intent);
+                if (amount >= 300) {
+                    Toast.makeText(this, "Donating" + String.format("%.2f", amount), Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(DonateActivity.this, Payment_Method.class);
+                    intent.putExtra("AMOUNT", amount);
+                    startActivity(intent);
+                } else {
+                    Toast.makeText(this, "The amount must be at least 300", Toast.LENGTH_SHORT).show();
+                }
             } catch (NumberFormatException e) {
                 Toast.makeText(this, "Invalid amount", Toast.LENGTH_SHORT).show();
             }
