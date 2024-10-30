@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+        <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+            <item name="colorPrimary">#8443EC</item>
+            <item name="colorPrimaryDark">#5106BC</item>
+            <item name="colorAccent">#84DFD5</item>
+
+        </style>
+        <style name="AppThemeNoActionBar" parent="Theme.AppCompat.Light.NoActionBar">
+            <item name="colorPrimary">#8443EC</item>
+            <item name="colorPrimaryDark">#5106BC</item>
+            <item name="colorAccent">#84DFD5</item>
+        </style>
+    <style name="CustomDialog" parent="@style/Theme.AppCompat.Light.Dialog">
+        <item name="android:windowNoTitle">false</item>
+    </style>
+
+    // Started screen
+
+    <style name="OneSidedRoundCorner">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeTopLeft">0dp</item>
+        <item name="cornerSizeTopRight">0dp</item>
+        <item name="cornerSizeBottomLeft">0dp</item>
+        <item name="cornerSizeBottomRight">300dp</item>
+    </style>
+
+</resources>
