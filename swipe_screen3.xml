@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/btn_next"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="30dp"
+        android:layout_marginTop="30dp"
+        android:text="Next"
+        android:textColor="@color/button_color"
+        android:textSize="30px" />
+
+    <ImageView
+        android:layout_width="420px"
+        android:layout_height="420px"
+        android:src="@drawable/swipe3"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="90dp"
+        />
+
+    <View
+        android:layout_width="300px"
+        android:layout_height="1dp"
+        android:layout_marginTop="750px"
+        android:background="#AAA6A6"
+        android:layout_centerHorizontal="true"
+        />
+
+    <View
+        android:layout_width="300px"
+        android:layout_height="1dp"
+        android:layout_marginTop="770px"
+        android:background="#AAA6A6"
+        android:layout_centerHorizontal="true"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="420dp"
+        android:text="Aid Recipient"
+        android:textSize="37dp"
+        android:textColor="#2B2A2A"
+        android:layout_centerHorizontal="true"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="490dp"
+        android:textSize="18dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:text="Receives food, clothing, and other necessities to address immediate needs. This support empowers individuals and families to enhance their well-being and dignity."
+        android:textColor="#4C4545"
+        android:gravity="center"
+        />
+
+</RelativeLayout>

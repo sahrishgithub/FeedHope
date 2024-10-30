@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/btn_skip"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="30dp"
+        android:layout_marginTop="30dp"
+        android:text="Skip"
+        android:textColor="@color/button_color"
+        android:textSize="30px" />
+
+    <TextView
+        android:id="@+id/btn_next"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="30dp"
+        android:layout_marginTop="30dp"
+        android:text="Next"
+        android:textColor="@color/button_color"
+        android:textSize="30px" />
+
+    <ImageView
+        android:layout_width="900px"
+        android:layout_height="900px"
+        android:src="@drawable/swpie1"
+        android:layout_marginTop="-30dp"
+        android:layout_centerHorizontal="true"
+        />
+
+    <View
+        android:layout_width="300px"
+        android:layout_height="1dp"
+        android:layout_marginTop="750px"
+        android:background="#AAA6A6"
+        android:layout_centerHorizontal="true"
+        />
+
+    <View
+        android:layout_width="300px"
+        android:layout_height="1dp"
+        android:layout_marginTop="770px"
+        android:background="#AAA6A6"
+        android:layout_centerHorizontal="true"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="420dp"
+        android:text="Goods Giver"
+        android:textSize="38dp"
+        android:textColor="#2B2A2A"
+        android:layout_centerHorizontal="true"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="480dp"
+        android:textSize="18dp"
+        android:layout_marginStart="25dp"
+        android:layout_marginEnd="20dp"
+        android:text="Donates essential items like food, clothing, and medical supplies to support families in need. Their generosity significantly improves the quality of life for those facing hardships."
+        android:textColor="#4C4545"
+        android:gravity="center"
+        />
+
+</RelativeLayout>
