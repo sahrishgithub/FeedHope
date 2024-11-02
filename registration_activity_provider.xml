@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/provider_registration" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Sign Up to Support the Food Donation Initiative"
+        android:textStyle="bold"
+        android:layout_marginTop="450dp"
+        android:layout_marginStart="20dp"
+        android:textSize="25sp"
+        android:gravity="center"
+        android:textColor="#3F70B6"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Your donations make sure that this food goes to people who need it in the community."
+        android:textSize="20sp"
+        android:layout_marginTop="530dp"
+        android:textColor="@color/black"
+        android:gravity="center"
+        android:layout_marginStart="10dp"
+        />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="650dp">
+
+        <Button
+            android:layout_width="150dp"
+            android:layout_height="50dp"
+            android:text="Register"
+            android:textColor="@color/white"
+            android:background="#3F70B6"
+            android:layout_marginEnd="20dp"
+            />
+
+        <Button
+            android:layout_width="150dp"
+            android:layout_height="50dp"
+            android:text="Login"
+            android:textColor="@color/black"
+            android:background="#E0F1F4"
+            />
+    </LinearLayout>
+
+</RelativeLayout>
