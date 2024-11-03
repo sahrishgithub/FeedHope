@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:layout_width="250dp"
+        android:layout_height="300dp"
+        android:src="@drawable/rider_registration"
+        android:layout_marginTop="50dp"
+        android:layout_centerHorizontal="true"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Sign up to join"
+        android:textStyle="bold"
+        android:layout_marginTop="400dp"
+        android:layout_marginStart="20dp"
+        android:textSize="30sp"
+        android:layout_centerHorizontal="true"
+        android:textColor="#1E88E5"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Collect donations from providers and ensure they reach those in need. Join us to help others!"
+        android:textSize="20dp"
+        android:layout_marginTop="460dp"
+        android:textColor="@color/black"
+        android:layout_marginStart="30dp"
+        android:layout_centerHorizontal="true"
+        android:gravity="center"
+        android:layout_marginEnd="30dp"
+        />
+
+    <Button
+        android:id="@+id/signup"
+        android:layout_width="300dp"
+        android:layout_height="50dp"
+        android:text="Sign Up"
+        android:textSize="18dp"
+        android:textColor="@color/white"
+        android:background="@drawable/button_blue"
+        android:layout_marginEnd="20dp"
+        android:layout_marginTop="560dp"
+        android:layout_centerHorizontal="true"
+        />
+
+    <Button
+        android:id="@+id/login"
+        android:layout_width="300dp"
+        android:layout_height="50dp"
+        android:text="Login"
+        android:textSize="18dp"
+        android:textColor="@color/white"
+        android:background="@drawable/button_white"
+        android:layout_marginEnd="20dp"
+        android:layout_marginTop="630dp"
+        android:layout_centerHorizontal="true"
+        />
+
+</RelativeLayout>
