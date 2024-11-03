@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Donation Network Manager"
+        android:textStyle="bold"
+        android:layout_marginTop="50dp"
+        android:layout_marginStart="20dp"
+        android:textSize="25sp"
+        android:textColor="#1E88E5"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Involves managing tasks, organizing activities, maintaining records, and supporting team members effectively."
+        android:textSize="20sp"
+        android:layout_marginTop="100dp"
+        android:textColor="@color/black"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="30dp"
+        />
+
+    <Button
+        android:id="@+id/login"
+        android:layout_width="150dp"
+        android:layout_height="50dp"
+        android:text="Login"
+        android:textColor="@color/white"
+        android:background="@drawable/button_blue"
+        android:layout_marginTop="210dp"
+        android:layout_marginStart="20dp"
+        />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/admin_registration"
+        android:layout_marginTop="300dp"/>
+
+</RelativeLayout>
