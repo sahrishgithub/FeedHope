@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.InputType;
@@ -15,8 +16,6 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -28,16 +27,23 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.NotificationCompat;
 
+import com.example.unitconverter.ProviderInterface.OTPVerificationProvider;
 import com.example.unitconverter.R;
-import com.example.unitconverter.ReceiverInterface.ReceiverModalClass;
-import com.example.unitconverter.ReceiverInterface.ReceiverRegister;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber;
+import com.mailjet.client.MailjetClient;
+import com.mailjet.client.MailjetRequest;
+import com.mailjet.client.MailjetResponse;
+import com.mailjet.client.resource.Emailv31;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class RiderRegister extends AppCompatActivity {
     private EditText name,IDNumber,banking, phone, email, pass;
@@ -48,10 +54,7 @@ public class RiderRegister extends AppCompatActivity {
     private ArrayList<RiderModalClass> riderList;
     private SharedPreferences sharedPreferences;
     private Gson gson;
-
-    private static final String CHANNEL_ID = "RiderChannel";
-    private static final String CHANNEL_NAME = "Rider Notifications";
-    private NotificationManager notificationManager;
+    int otp;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -84,21 +87,15 @@ public class RiderRegister extends AppCompatActivity {
         // Load previously saved data
         loadData();
 
-        // Initialize notification manager
-        notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        createNotificationChannel();
 
         pass.setOnTouchListener((v, event) -> {
             final int DRAWABLE_RIGHT = 2;  // Index for the drawableRight
             if (event.getAction() == MotionEvent.ACTION_UP) {
                 if (event.getRawX() >= (pass.getRight() - pass.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
-                    // Toggle the visibility of the password
                     if (isPasswordVisible) {
-                        // Hide password
                         pass.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
                         pass.setCompoundDrawablesWithIntrinsicBounds(R.drawable.pass, 0, R.drawable.close_eye, 0);
                     } else {
-                        // Show password
                         pass.setInputType(InputType.TYPE_CLASS_TEXT);
                         pass.setCompoundDrawablesWithIntrinsicBounds(R.drawable.pass, 0, R.drawable.open_eye, 0);
                     }
@@ -188,16 +185,35 @@ public class RiderRegister extends AppCompatActivity {
                     isValid = false;
                 }
                 if (isValid) {
-                   riderList.add(new RiderModalClass(name1, phone1, selectedType, IDNumber1, selectedHours, selectedDays, banking1, email1, pass1));
-                    saveData();
+                   saveData();
                     name.setText("");
                     phone.setText("");
                     IDNumber.setText("");
                     banking.setText("");
                     email.setText("");
                     pass.setText("");
-                    Toast.makeText(RiderRegister.this, "Please wait while admin accepts your request.", Toast.LENGTH_SHORT).show();
-                    sendNotification(name1, "Rider Registration Request");
+                    Toast.makeText(RiderRegister.this, "Your OTP was sent successfully! Check your email to continue.", Toast.LENGTH_SHORT).show();
+
+                    if (!email1.isEmpty()) {
+                        otp = generateRandomOTP();
+                        sendOTPEmail(name1,email1, otp);
+
+                        Intent intent = new Intent(RiderRegister.this, OTPVerificationRider.class);
+                        intent.putExtra("name", name1);
+                        intent.putExtra("phone", phone1);
+                        intent.putExtra("IDtype", selectedType);
+                        intent.putExtra("IDNumber", IDNumber1);
+                        intent.putExtra("hours", selectedHours);
+                        intent.putExtra("days", selectedDays);
+                        intent.putExtra("banking", banking1);
+                        intent.putExtra("email", email1);
+                        intent.putExtra("pass", pass1);
+                        intent.putExtra("generated_otp", otp);
+                        startActivity(intent);
+                    } else {
+                        Toast.makeText(RiderRegister.this, "Please enter your email", Toast.LENGTH_SHORT).show();
+                    }
+
                 } else {
                     Toast.makeText(RiderRegister.this, errorMessages.toString(), Toast.LENGTH_SHORT).show();
                 }
@@ -211,6 +227,49 @@ public class RiderRegister extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+    }
+    private int generateRandomOTP() {
+        Random random = new Random();
+        return 10000 + random.nextInt(90000); // Generates a random 5-digit number
+    }
+
+    @SuppressLint("StaticFieldLeak")
+    private void sendOTPEmail(final String name, final String email, final int otp) {
+        new AsyncTask<Void, Void, Boolean>() {
+            @Override
+            protected Boolean doInBackground(Void... voids) {
+                try {
+                    MailjetClient client = new MailjetClient("39e58097b0b1794f1c673706c2670bbd", "602023b0c0d0e53caebe724f142be291");
+                    MailjetRequest request = new MailjetRequest(Emailv31.resource)
+                            .property(Emailv31.MESSAGES, new JSONArray()
+                                    .put(new JSONObject()
+                                            .put(Emailv31.Message.FROM, new JSONObject()
+                                                    .put("Email", "rohaashraf7@gmail.com")
+                                                    .put("Name", "Roha Ashraf"))
+                                            .put(Emailv31.Message.TO, new JSONArray()
+                                                    .put(new JSONObject()
+                                                            .put("Email", email)
+                                                            .put("Name", name)))
+                                            .put(Emailv31.Message.SUBJECT, "Your OTP Code")
+                                            .put(Emailv31.Message.TEXTPART, "Your OTP code is: " + otp)
+                                            .put(Emailv31.Message.CUSTOMID, "AppOTPVerification")));
+
+                    MailjetResponse response = client.post(request);
+                    return response.getStatus() == 200;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return false;
+                }
+            }
+
+            protected void onPostExecute(Boolean success) {
+                if (success) {
+                    Toast.makeText(RiderRegister.this, "OTP sent successfully!", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(RiderRegister.this, "Failed to send OTP. Please check your email.", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }.execute();
     }
     private boolean isValidPhoneNumber(String phoneNumber) {
         PhoneNumberUtil phoneNumberUtil = PhoneNumberUtil.getInstance();
@@ -235,47 +294,11 @@ public class RiderRegister extends AppCompatActivity {
             riderList = new ArrayList<>();
         }
     }
-
     private void saveData() {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         String json = gson.toJson(riderList);
         editor.putString("riderList", json);
         editor.apply();
-    }
-
-    private void createNotificationChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel(
-                    CHANNEL_ID,
-                    CHANNEL_NAME,
-                    NotificationManager.IMPORTANCE_HIGH
-            );
-            channel.setDescription("Channel for rider notifications");
-            channel.enableLights(true);
-            channel.setLightColor(Color.RED);
-            channel.enableVibration(true);
-            notificationManager.createNotificationChannel(channel);
-        }
-    }
-
-    private void sendNotification(String riderName, String title) {
-        Intent intent = new Intent(this, RiderRegister.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(
-                this,
-                0,
-                intent,
-                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
-        );
-
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
-                .setSmallIcon(R.drawable.notification) // Use your own notification icon here
-                .setContentTitle(title)
-                .setContentText(riderName + " wants to register.")
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setContentIntent(pendingIntent)
-                .setAutoCancel(true);
-
-        notificationManager.notify((int) System.currentTimeMillis(), builder.build());
     }
 
     @Override
