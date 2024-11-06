@@ -28,7 +28,7 @@ import java.util.Calendar;
 
 public class FoodProvide extends AppCompatActivity {
 
-    private static final String PREFS_NAME = "LocationPrefs";  // Define the same preferences name
+    private static final String PREFS_NAME = "LocationPrefs";
     private static final String KEY_LATITUDE = "currentLatitude";
     private static final String KEY_LONGITUDE = "currentLongitude";
     private static final String KEY_LOCATION_NAME = "currentLocationName";
@@ -57,7 +57,7 @@ public class FoodProvide extends AppCompatActivity {
         available = findViewById(R.id.available);
         expire = findViewById(R.id.expire);
 
-        db = new ProviderDB(this); // Initialize ProviderDB
+        db = new ProviderDB(this);
 
         // Retrieve the location data from SharedPreferences
         retrieveCurrentLocation();

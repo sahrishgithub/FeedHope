@@ -7,21 +7,23 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.unitconverter.AdminInterface.AdminHomePage;
-import com.example.unitconverter.AdminInterface.AssignDuty;
+import com.example.unitconverter.AdminInterface.DutyAssign;
+import com.example.unitconverter.AdminInterface.InformDonation;
 import com.example.unitconverter.R;
+
 import java.util.ArrayList;
 
 public class FoodRVAdapter extends RecyclerView.Adapter<FoodRVAdapter.ViewHolder> {
 
-    private ArrayList<ProvideFoodModalClass> foodModalClasses;
+    private ArrayList<FoodProvideModalClass> foodModalClasses;
     private Context context;
 
-    public FoodRVAdapter(ArrayList<ProvideFoodModalClass> courseModalArrayList, Context context) {
-        this.foodModalClasses = courseModalArrayList;
+    public FoodRVAdapter(ArrayList<FoodProvideModalClass> foodModalArrayList, Context context) {
+        this.foodModalClasses = foodModalArrayList;
         this.context = context;
     }
 
@@ -34,19 +36,30 @@ public class FoodRVAdapter extends RecyclerView.Adapter<FoodRVAdapter.ViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-//        final int itemPosition = position;
-        ProvideFoodModalClass modal = foodModalClasses.get(position);
+
+        FoodProvideModalClass modal = foodModalClasses.get(position);
+
+        // Displaying updated details including the location
+        holder.nameName.setText(modal.getName());
         holder.foodName.setText(modal.getFood());
         holder.quantityName.setText(modal.getQuantity());
         holder.storageName.setText(modal.getStorage());
         holder.availableName.setText(modal.getAvailable());
         holder.expireName.setText(modal.getExpire());
-        holder.assign.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(context, AssignDuty.class);
-                context.startActivity(intent);
-            }
+
+        // New field: location (latitude, longitude)
+        String location = "Lat: " + modal.getLatitude() + ", Lon: " + modal.getLongitude();
+        holder.locationName.setText(location);
+
+        // Handling button clicks for "Assign" and "Inform" functionalities
+        holder.assign.setOnClickListener(v -> {
+            Intent intent = new Intent(context, DutyAssign.class);
+            context.startActivity(intent);
+        });
+
+        holder.inform.setOnClickListener(v -> {
+            Intent intent = new Intent(context, InformDonation.class);
+            context.startActivity(intent);
         });
     }
 
@@ -56,17 +69,21 @@ public class FoodRVAdapter extends RecyclerView.Adapter<FoodRVAdapter.ViewHolder
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        private TextView foodName, quantityName, storageName, availableName, expireName;
-        Button assign;
+        private TextView nameName, foodName, quantityName, storageName, availableName, expireName, locationName;
+        Button assign, inform;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
+            nameName = itemView.findViewById(R.id.name);
             foodName = itemView.findViewById(R.id.food);
             quantityName = itemView.findViewById(R.id.quantity);
             storageName = itemView.findViewById(R.id.storage);
             availableName = itemView.findViewById(R.id.available);
             expireName = itemView.findViewById(R.id.expire);
+
+            locationName = itemView.findViewById(R.id.location);  // New TextView for location
             assign = itemView.findViewById(R.id.assign);
+            inform = itemView.findViewById(R.id.inform);
         }
     }
 }

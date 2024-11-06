@@ -1,10 +1,14 @@
 package com.example.unitconverter.ProviderInterface;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
-import android.widget.TextView;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -14,7 +18,8 @@ import java.util.ArrayList;
 
 public class FoodDetailsActivity extends AppCompatActivity {
 
-    private ArrayList<ProvideFoodModalClass> modalClasses;
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
+    private ArrayList<FoodProvideModalClass> modalClasses;
     private ProviderDB dbHandler;
     private FoodRVAdapter rvAdapter;
     private RecyclerView recyclerView;
@@ -29,26 +34,41 @@ public class FoodDetailsActivity extends AppCompatActivity {
 
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setTitle("");
+            getSupportActionBar().setTitle("Food Details");
         }
 
-        modalClasses = new ArrayList<>();
+        // Initialize database handler and RecyclerView
         dbHandler = new ProviderDB(FoodDetailsActivity.this);
-        modalClasses = dbHandler.readFoodData();
-        rvAdapter = new FoodRVAdapter(modalClasses, FoodDetailsActivity.this);
         recyclerView = findViewById(R.id.recyclerView);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(FoodDetailsActivity.this, RecyclerView.VERTICAL, false);
-        recyclerView.setLayoutManager(linearLayoutManager);
-        recyclerView.setAdapter(rvAdapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
+
+        // Load and display data from the database
+        loadDataAndDisplay();
     }
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                // Handle the back button click here
-                onBackPressed(); // Go back to the previous activity
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+
+    private void loadDataAndDisplay() {
+        // Fetch data from ProviderDB
+        modalClasses = dbHandler.readFoodData();
+
+        if (modalClasses == null || modalClasses.isEmpty()) {
+            Log.e("FoodDetailsActivity", "No data found in ProviderDB.");
+            return;
         }
+
+        Log.d("FoodDetailsActivity", "Data loaded from ProviderDB, total items: " + modalClasses.size());
+
+        // Set up the RecyclerView adapter and attach it
+        rvAdapter = new FoodRVAdapter(modalClasses, this);
+        recyclerView.setAdapter(rvAdapter);
+        rvAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            onBackPressed();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }
