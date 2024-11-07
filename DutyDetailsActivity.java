@@ -2,7 +2,7 @@ package com.example.unitconverter.RiderInterface;
 
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.widget.TextView;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -15,7 +15,7 @@ import java.util.ArrayList;
 public class DutyDetailsActivity extends AppCompatActivity {
 
     private ArrayList<DutyModalClass> modalClasses;
-    private RiderAssignDutyDB dbHandler;
+    private DutyDB dbHandler;
     private DutyRVAdapter rvAdapter;
     private RecyclerView recyclerView;
 
@@ -33,7 +33,7 @@ public class DutyDetailsActivity extends AppCompatActivity {
         }
 
         modalClasses = new ArrayList<>();
-        dbHandler = new RiderAssignDutyDB(DutyDetailsActivity.this);
+        dbHandler = new DutyDB(DutyDetailsActivity.this);
         modalClasses = dbHandler.readDutyData();
         rvAdapter = new DutyRVAdapter(modalClasses, DutyDetailsActivity.this);
         recyclerView = findViewById(R.id.recyclerView);

@@ -12,7 +12,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
@@ -27,21 +26,17 @@ public class RiderRVAdapter extends RecyclerView.Adapter<RiderRVAdapter.UserView
     private Context context;
     private RiderRegisterDB db;
     private NotificationManager notifManager;
-    private final String channelID = "RiderChannel";
-    private final String description = "Rider Notification Channel";
 
     public RiderRVAdapter(ArrayList<RiderModalClass> userList, Context context, NotificationManager notifManager) {
-        this.userList = (userList != null) ? userList : new ArrayList<>();
+        this.userList = userList != null ? userList : new ArrayList<>();
         this.context = context;
         this.db = new RiderRegisterDB(context);
-        this.notifManager = notifManager;
+        this.notifManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
+        // Check for the existence of notification channels in Android 8.0+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel notifChannel = new NotificationChannel(channelID, description, NotificationManager.IMPORTANCE_HIGH);
-            notifChannel.enableLights(true);
-            notifChannel.setLightColor(Color.BLUE);
-            notifChannel.enableVibration(true);
-            notifManager.createNotificationChannel(notifChannel);
+            NotificationChannel channel = new NotificationChannel("RiderChannel", "Rider Notifications", NotificationManager.IMPORTANCE_DEFAULT);
+            this.notifManager.createNotificationChannel(channel);
         }
     }
 
@@ -66,16 +61,19 @@ public class RiderRVAdapter extends RecyclerView.Adapter<RiderRVAdapter.UserView
         holder.passText.setText(user.getPass());
 
         holder.accept.setOnClickListener(v -> {
-            boolean isInserted = db.insertData(user.getName(), user.getPhone(), user.getType(), user.getIdcard(), user.getHours(), user.getDays(), user.getCard(), user.getEmail(), user.getPass());
+            boolean isInserted = db.insertData(user.getName(), user.getPhone(), user.getType(), user.getIdcard(),
+                    user.getHours(), user.getDays(), user.getCard(), user.getEmail(), user.getPass(),
+                    user.getLatitude(), user.getLongitude(), user.getLocationName());
+
             String message = isInserted ? "Data saved successfully!" : "Error saving data!";
-            Toast.makeText(v.getContext(), message, Toast.LENGTH_SHORT).show();
-            String notificationMessage = isInserted ? user.getName() + " Registered Successfully" : user.getName() + "Application rejected your request";
+            String notificationMessage = isInserted ? user.getName() + " : Registered Successfully" : user.getName() + " : Application rejected your request";
+
             sendNotification("Registration Notification", notificationMessage);
             removeItem(position);
         });
 
         holder.reject.setOnClickListener(v -> {
-            String notificationMessage = user.getName() + " has been rejected.";
+            String notificationMessage = user.getName() + ": has been rejected.";
             sendNotification("Rejection Notification", notificationMessage);
             removeItem(position);
         });
@@ -83,19 +81,21 @@ public class RiderRVAdapter extends RecyclerView.Adapter<RiderRVAdapter.UserView
 
     @Override
     public int getItemCount() {
-        return (userList != null) ? userList.size() : 0;
+        return userList.size();
     }
 
     private void sendNotification(String title, String message) {
-        Intent intent = new Intent(context, RiderRVAdapter.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+        Intent someIntent = new Intent(context, RiderRegister.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, someIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        NotificationCompat.Builder notifBuilder = new NotificationCompat.Builder(context, channelID)
+        NotificationCompat.Builder notifBuilder = new NotificationCompat.Builder(context, "RiderChannel")
                 .setContentTitle(title)
                 .setContentText(message)
                 .setSmallIcon(R.drawable.notification)
                 .setStyle(new NotificationCompat.BigTextStyle().bigText(message))
-                .setContentIntent(pendingIntent);
+                .setContentIntent(pendingIntent)
+                .setColor(Color.GREEN)
+                .setPriority(NotificationCompat.PRIORITY_HIGH);
 
         notifManager.notify((int) System.currentTimeMillis(), notifBuilder.build());
     }
@@ -121,7 +121,6 @@ public class RiderRVAdapter extends RecyclerView.Adapter<RiderRVAdapter.UserView
     }
 
     private void removeItem(int position) {
-        RiderModalClass user = userList.get(position);
         userList.remove(position);
         notifyItemRemoved(position);
         notifyItemRangeChanged(position, userList.size());
