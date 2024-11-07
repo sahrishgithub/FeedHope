@@ -151,13 +151,14 @@ public class DonationCloth extends AppCompatActivity {
 
         if (!locationName.isEmpty() && latitude != 0.0f && longitude != 0.0f) {
             locationTextView.setText("Your current location is: " + locationName);
-            currentLocationText.setText("Current Location: " + locationName); // Display location in form
+//            currentLocationText.setText("Current Location: " + locationName); // Display location in form
         } else {
+            // Only display "Location not provided" if data is invalid
             locationTextView.setText("Location not provided.");
-            Toast.makeText(this, "Invalid location data received. Please ensure location access is enabled.", Toast.LENGTH_SHORT).show();
-            currentLocationText.setText("Current Location: Not available");
+//            currentLocationText.setText("Current Location: Not available"); // Set message when location is not available
         }
     }
+
 
     private void sendNotification(String title, String message) {
         // Create a NotificationManager instance
