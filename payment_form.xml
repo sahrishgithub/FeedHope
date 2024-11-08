@@ -1,36 +1,38 @@
-<?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    >
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Add a credit / debit card"
-        android:textStyle="bold"
-        android:textColor="@color/black"
-        android:textSize="35dp"
-        android:gravity="center"
-        android:layout_marginTop="70px"
+    <ImageView
+        android:layout_width="250dp"
+        android:layout_height="300dp"
+        android:layout_marginBottom="50dp"
+        android:src="@drawable/payment_form"
+        android:layout_gravity="center"
         />
 
-    <com.braintreepayments.cardform.view.CardForm
-        android:id="@+id/card_form"
+    <Spinner
+        android:id="@+id/amountSpinner"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="150dp"
+        android:layout_height="50dp"
+        android:layout_marginBottom="10dp"/>
+
+    <com.stripe.android.view.CardMultilineWidget
+        android:id="@+id/cardInputWidget"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         />
 
     <Button
-        android:id="@+id/submit"
+        android:id="@+id/btn_pay"
         android:layout_width="300dp"
         android:layout_height="50dp"
-        android:layout_marginTop="550dp"
-        android:layout_centerHorizontal="true"
-        android:text="Save payment method"
-        android:background="@drawable/round_homepage_button"
+        android:text="Pay"
+        android:layout_marginTop="50dp"
+        android:background="@drawable/button_blue"
+        android:layout_gravity="center"
         android:textColor="@color/white"
-        />
-
-</RelativeLayout>
+        android:textSize="18dp"/>
+</LinearLayout>
