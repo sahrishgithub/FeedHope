@@ -2,98 +2,144 @@ package com.example.unitconverter.ProviderInterface;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.location.Address;
-import android.location.Geocoder;
 import android.util.Log;
 
-import androidx.annotation.Nullable;
-
-import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class DonationDB extends SQLiteOpenHelper {
+    private static final String DATABASE_NAME = "donations.db";
+    private static final int DATABASE_VERSION = 16;
+    private static final String TABLE_NAME = "donations_table";
 
-    private static final String DB_NAME = "FeedHopeProject.db";
-    private static final int DB_VERSION = 13; // Increment version to apply changes
-    private Context context;  // Declare context here
-
-    // Modify the constructor to accept Context
-    public DonationDB(@Nullable Context context) {
-        super(context, DB_NAME, null, DB_VERSION);
-        this.context = context; // Initialize context
+    public DonationDB(Context context) {
+        super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        // Creating the table with columns including Latitude, Longitude, and Address
-        db.execSQL("CREATE TABLE ClothDonation (" +
-                "Name TEXT NOT NULL, " +
-                "Type TEXT NOT NULL, " +
-                "Condition TEXT NOT NULL, " +
-                "Quantity TEXT, " +
-                "Category TEXT NOT NULL, " +
-                "Seasonal TEXT NOT NULL, " +
-                "Size TEXT NOT NULL, " +
-                "Latitude REAL, " +     // Column for latitude
-                "Longitude REAL, " +    // Column for longitude
-                "Address TEXT" +        // Column for address
-                ")");
+        String createTable = "CREATE TABLE " + TABLE_NAME + " (" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "type TEXT, " +
+                "condition TEXT, " +
+                "quantity TEXT, " +
+                "category TEXT, " +
+                "season TEXT, " +
+                "size TEXT, " +
+                "latitude REAL, " +
+                "longitude REAL, " +
+                "location_name TEXT)";
+        db.execSQL(createTable);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        // Drop old table if exists and create a new one
-        db.execSQL("DROP TABLE IF EXISTS ClothDonation");
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
         onCreate(db);
     }
 
-    // Insert method modified to accept the context as a parameter
-    public boolean insert(String loggedInEmail, String selectedType, String selectedCondition, String quanity1, String selectedCategory, String seasonal, String selectedSize, double latitude, double longitude) {
-        // Get address from latitude and longitude using the context
-        String address = getAddressFromLocation(latitude, longitude);
+    public boolean insert(String type, String condition, String quantity, String category, String season, String size, double latitude, double longitude, String locationName) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("type", type);
+        values.put("condition", condition);
+        values.put("quantity", quantity);
+        values.put("category", category);
+        values.put("season", season);
+        values.put("size", size);
+        values.put("latitude", latitude);
+        values.put("longitude", longitude);
+        values.put("location_name", locationName);
 
-        // Open the database for writing
-        try (SQLiteDatabase mydb = this.getWritableDatabase()) {
-            // Prepare the data to be inserted into the database
-            ContentValues cv = new ContentValues();
-            cv.put("Name", loggedInEmail);              // User email as Name
-            cv.put("Type", selectedType);               // Selected Cloth Type
-            cv.put("Condition", selectedCondition);     // Selected Condition
-            cv.put("Quantity", quanity1);               // Quantity of the item
-            cv.put("Category", selectedCategory);       // Selected Category
-            cv.put("Seasonal", seasonal);               // Seasonal information (from RadioGroup)
-            cv.put("Size", selectedSize);               // Selected Size
-            cv.put("Latitude", latitude);               // Latitude of the location
-            cv.put("Longitude", longitude);             // Longitude of the location
-            cv.put("Address", address);                 // Address of the location
+        Log.d("DonationDB", "Inserting data: " + values);
 
-            // Insert the data into the ClothDonation table
-            long result = mydb.insert("ClothDonation", null, cv);
+        long result = db.insert(TABLE_NAME, null, values);
+        db.close();
 
-            // If insertion fails, result will be -1
-            return result != -1;
-        } catch (Exception e) {
-            // Handle any exceptions that occur during database operations
-            Log.e("DonationDB", "Insertion error", e);
+        if (result == -1) {
+            Log.e("DonationDB", "Failed to insert data into the database.");
             return false;
+        } else {
+            Log.d("DonationDB", "Data inserted successfully with row ID: " + result);
+            return true;
         }
+    }
+    // Add this method in DonationDB.java
+    public List<ClothItem> getAllDonations() {
+        List<ClothItem> clothItems = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String query = "SELECT * FROM " + TABLE_NAME;
+        Cursor cursor = db.rawQuery(query, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                String type = getStringFromCursor(cursor, "type");
+                String condition = getStringFromCursor(cursor, "condition");
+                String quantity = getStringFromCursor(cursor, "quantity");
+                String category = getStringFromCursor(cursor, "category");
+                String season = getStringFromCursor(cursor, "season");
+                String size = getStringFromCursor(cursor, "size");
+                double latitude = getDoubleFromCursor(cursor, "latitude");
+                double longitude = getDoubleFromCursor(cursor, "longitude");
+                String locationName = getStringFromCursor(cursor, "location_name");
+
+                ClothItem clothItem = new ClothItem(type, condition, quantity, category, season, size, locationName, latitude, longitude);
+                clothItems.add(clothItem);
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        db.close();
+
+        return clothItems;
     }
 
-    // Method to get the address from latitude and longitude using context
-    private String getAddressFromLocation(double latitude, double longitude) {
-        Geocoder geocoder = new Geocoder(context);  // Use the context here
-        try {
-            List<Address> addresses = geocoder.getFromLocation(latitude, longitude, 1);
-            if (addresses != null && !addresses.isEmpty()) {
-                Address address = addresses.get(0);
-                // Return the full address as a string
-                return address.getAddressLine(0); // You can also use address.getLocality() or address.getCountryName() for specific details
-            }
-        } catch (IOException e) {
-            Log.e("DonationDB", "Geocoder error", e);
-        }
-        return "Unknown Location"; // Return default value if location cannot be resolved
+    // Helper method to get String data safely
+    private String getStringFromCursor(Cursor cursor, String columnName) {
+        int columnIndex = cursor.getColumnIndex(columnName);
+        return columnIndex != -1 ? cursor.getString(columnIndex) : "";
     }
+
+    // Helper method to get double data safely
+    private double getDoubleFromCursor(Cursor cursor, String columnName) {
+        int columnIndex = cursor.getColumnIndex(columnName);
+        return columnIndex != -1 ? cursor.getDouble(columnIndex) : 0.0;
+    }
+
+
+    public ArrayList<ClothItem> readFoodData() {
+        ArrayList<ClothItem> clothItems = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        // Query to fetch only food-related data
+        String query = "SELECT * FROM " + TABLE_NAME + " WHERE category = 'Food'";
+        Cursor cursor = db.rawQuery(query, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                String type = getStringFromCursor(cursor, "type");
+                String condition = getStringFromCursor(cursor, "condition");
+                String quantity = getStringFromCursor(cursor, "quantity");
+                String category = getStringFromCursor(cursor, "category");
+                String season = getStringFromCursor(cursor, "season");
+                String size = getStringFromCursor(cursor, "size");
+                double latitude = getDoubleFromCursor(cursor, "latitude");
+                double longitude = getDoubleFromCursor(cursor, "longitude");
+                String locationName = getStringFromCursor(cursor, "location_name");
+
+                ClothItem clothItem = new ClothItem(type, condition, quantity, category, season, size, locationName, latitude, longitude);
+                clothItems.add(clothItem);
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        db.close();
+
+        return clothItems;
+    }
+
 }

@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_color">
+
+    <!-- App Bar with Toolbar -->
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/button_color"
+            android:title="Cloth Donation"
+            android:titleTextColor="@color/white">
+
+            <!-- Toolbar Title -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="FeedHope"
+                android:textColor="@color/white"
+                android:textSize="20dp"
+                android:layout_centerHorizontal="true"
+                android:layout_alignParentStart="true" />
+        </androidx.appcompat.widget.Toolbar>
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <!-- Cloth Donation Title -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="80dp"
+        android:text="Cloth Donation"
+        android:textSize="20dp"
+        android:textColor="@color/button_color"
+        android:textStyle="bold"
+        android:layout_centerHorizontal="true" />
+
+    <!-- Type Spinner -->
+    <Spinner
+        android:id="@+id/type"
+        android:layout_width="300dp"
+        android:layout_height="50dp"
+        android:entries="@array/cloth_type"
+        android:layout_marginTop="120dp"
+        android:layout_centerHorizontal="true" />
+
+    <!-- Condition Spinner -->
+    <Spinner
+        android:id="@+id/cloth_condition"
+        android:layout_width="300dp"
+        android:layout_height="50dp"
+        android:entries="@array/cloth_condition"
+        android:layout_marginTop="180dp"
+        android:layout_centerHorizontal="true" />
+
+    <!-- Quantity EditText -->
+    <EditText
+        android:id="@+id/quantity"
+        android:layout_width="300dp"
+        android:layout_height="50dp"
+        android:drawableLeft="@drawable/quantity"
+        android:paddingLeft="12dp"
+        android:drawablePadding="10dp"
+        android:layout_marginTop="250dp"
+        android:layout_centerHorizontal="true"
+        android:maxLength="30"
+        android:hint="Quantity"
+        android:inputType="numberDecimal" />
+
+    <!-- Category Spinner -->
+    <Spinner
+        android:id="@+id/cloth_category"
+        android:layout_width="300dp"
+        android:layout_height="50dp"
+        android:entries="@array/cloth_category"
+        android:layout_marginTop="320dp"
+        android:layout_centerHorizontal="true" />
+
+    <!-- Seasonal Clothes Text -->
+    <TextView
+        android:layout_width="300dp"
+        android:layout_height="50dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="370dp"
+        android:gravity="center"
+        android:hint="Seasonal Clothes"
+        android:textColor="@color/black"
+        android:textSize="20dp"
+        android:textStyle="italic" />
+
+    <!-- Radio Buttons for Seasons -->
+    <RadioGroup
+        android:id="@+id/radio_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="440dp"
+        android:layout_centerHorizontal="true"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:id="@+id/btn1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=" Winter "
+            android:textSize="18dp"
+            android:textStyle="italic" />
+
+        <RadioButton
+            android:id="@+id/btn2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=" Summer "
+            android:textSize="18dp"
+            android:textStyle="italic" />
+
+        <RadioButton
+            android:id="@+id/btn3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=" All Season "
+            android:textSize="18dp"
+            android:textStyle="italic" />
+    </RadioGroup>
+
+    <!-- Size Spinner -->
+    <Spinner
+        android:id="@+id/cloth_size"
+        android:layout_width="300dp"
+        android:layout_height="50dp"
+        android:entries="@array/cloth_size"
+        android:layout_marginTop="490dp"
+        android:layout_centerHorizontal="true" />
+
+    <!-- Current Location Text -->
+    <TextView
+        android:id="@+id/locationTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/cloth_size"
+        android:text="Your current location is: "
+        android:layout_marginTop="16dp" />
+
+    <!-- Register Button -->
+    <Button
+        android:id="@+id/register"
+        android:layout_width="300dp"
+        android:layout_height="50dp"
+        android:background="@drawable/button_blue"
+        android:textColor="@color/white"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="600dp"
+        android:text="Register"
+        android:textSize="19dp" />
+
+</RelativeLayout>
