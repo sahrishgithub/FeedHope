@@ -1,4 +1,4 @@
-package com.example.unitconverter.RiderInterface;
+package com.example.feedhope.RiderInterface;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -10,209 +10,91 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 
 public class RiderRegisterDB extends SQLiteOpenHelper {
-    private static final String DBName = "FeedHopeProject.db";
-    private static final int DB_VERSION = 15;  // Incremented version
-
+    private static final String DBName="FeedHopeProject.db";
     public RiderRegisterDB(@Nullable Context context) {
-        super(context, DBName, null, DB_VERSION);  // Updated version
+
+        super(context, DBName, null, 14);
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL("CREATE TABLE RiderRegister(" +
-                "Name TEXT NOT NULL, " +
-                "Phone TEXT NOT NULL, " +
-                "IDtype TEXT NOT NULL, " +
-                "IDNumber TEXT NOT NULL, " +
-                "Working_Hours TEXT NOT NULL, " +
-                "Availability_Days TEXT NOT NULL, " +
-                "Bank_Detail TEXT NOT NULL, " +
-                "Email TEXT PRIMARY KEY, " +
-                "Pass TEXT NOT NULL, " +
-                "Latitude REAL, " +           // Latitude column
-                "Longitude REAL, " +          // Longitude column
-                "LocationName TEXT);");       // Location name column
-    }
+        db.execSQL(" create table RiderRegister(Name TEXT NOT NULL,Phone TEXT NOT NULL,LicenseNo TEXT NOT NULL,Working_Hours TEXT NOT NULL,Availability_Days TEXT, Card TEXT NOT NULL,Email TEXT Primary key,Pass TEXT NOT NULL)");
+      }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        if (oldVersion < 12) {
-            db.execSQL("ALTER TABLE RiderRegister ADD COLUMN Latitude REAL;");
-            db.execSQL("ALTER TABLE RiderRegister ADD COLUMN Longitude REAL;");
-            db.execSQL("ALTER TABLE RiderRegister ADD COLUMN LocationName TEXT;");
-        }
+        db.execSQL("DROP TABLE IF EXISTS RiderRegister");
+        onCreate(db);
     }
-
-    public boolean insertData(String name1, String phone1, String selectedType, String idNumber1,
-                              String selectedHours, String selectedDays, String banking1,
-                              String email1, String pass1, double latitude, double longitude, String locationName) {
-        SQLiteDatabase myDB = null;
-        try {
-            myDB = this.getWritableDatabase();
+//    public void deleteTable() {
+//        SQLiteDatabase db = this.getWritableDatabase();
+//        db.execSQL("DROP TABLE IF EXISTS RiderRegister");
+//        db.close();
+//    }
+    public boolean insertData(String Name,String Phone, String Licence,String Working_Hours,String Availability_Days,String Card,String Email,String Pass) {
+        try (SQLiteDatabase myDB = this.getWritableDatabase()) {
             ContentValues cv = new ContentValues();
-            cv.put("Name", name1);
-            cv.put("Phone", phone1);
-            cv.put("IDtype", selectedType);
-            cv.put("IDNumber", idNumber1);
-            cv.put("Working_Hours", selectedHours);
-            cv.put("Availability_Days", selectedDays);
-            cv.put("Bank_Detail", banking1);
-            cv.put("Email", email1);
-            cv.put("Pass", pass1);
-            cv.put("Latitude", latitude);
-            cv.put("Longitude", longitude);
-            cv.put("LocationName", locationName);
-
-            // Log the values being inserted
-            Log.d("RiderRegisterDB", "Inserting data: " + cv.toString());
+            cv.put("Name", Name);
+            cv.put("Phone", Phone);
+            cv.put("LicenseNo", Licence);
+            cv.put("Working_Hours", Working_Hours);
+            cv.put("Availability_Days", Availability_Days);
+            cv.put("Card", Card);
+            cv.put("Email", Email);
+            cv.put("Pass", Pass);
 
             long result = myDB.insert("RiderRegister", null, cv);
-
+            myDB.close();
             if (result == -1) {
-                Log.e("RiderRegisterDB", "Insert failed.");
+                Log.e("RiderRegisterDB", "Failed to insert data");
                 return false;
             } else {
-                Log.d("RiderRegisterDB", "Insert successful. Row ID: " + result);
+                Log.d("RiderRegisterDB", "Data inserted successfully");
                 return true;
             }
-        } catch (Exception e) {
-            Log.e("RiderRegisterDB", "Insert data failed: " + e.getMessage());
-            return false;
-        } finally {
-            if (myDB != null && myDB.isOpen()) {
-                myDB.close();
-            }
         }
     }
 
+
+    public boolean checkUser(String email, String pass) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM RiderRegister WHERE email = ? AND pass = ?", new String[]{email, pass});
+        if (cursor.getCount() > 0) {
+            cursor.close();
+            return true;
+        }
+        cursor.close();
+        return false;
+    }
     public RiderModalClass read(String loggedInEmail) {
-        SQLiteDatabase myDB = null;
-        Cursor cursor = null;
-        RiderModalClass rider = null;
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query("RiderRegister", null, "Email = ?", new String[]{loggedInEmail}, null, null, null);
 
-        try {
-            myDB = this.getReadableDatabase();
-            String query = "SELECT * FROM RiderRegister WHERE Email = ?";
-            cursor = myDB.rawQuery(query, new String[]{loggedInEmail});
-
-            if (cursor != null && cursor.moveToFirst()) {
-                // Initialize variables
-                String name = null, phone = null, idType = null, idNumber = null;
-                String workingHours = null, availabilityDays = null, bankDetail = null;
-                String email = null, password = null, locationName = null;
-                double latitude = 0, longitude = 0;
-
-                // Get column indexes
-                int indexName = cursor.getColumnIndex("Name");
-                int indexPhone = cursor.getColumnIndex("Phone");
-                int indexIDType = cursor.getColumnIndex("IDtype");
-                int indexIDNumber = cursor.getColumnIndex("IDNumber");
-                int indexWorkingHours = cursor.getColumnIndex("Working_Hours");
-                int indexAvailabilityDays = cursor.getColumnIndex("Availability_Days");
-                int indexBankDetail = cursor.getColumnIndex("Bank_Detail");
-                int indexEmail = cursor.getColumnIndex("Email");
-                int indexPass = cursor.getColumnIndex("Pass");
-                int indexLatitude = cursor.getColumnIndex("Latitude");
-                int indexLongitude = cursor.getColumnIndex("Longitude");
-                int indexLocationName = cursor.getColumnIndex("LocationName");
-
-                // Check if the indexes are valid and fetch data
-                if (indexName >= 0) name = cursor.getString(indexName);
-                if (indexPhone >= 0) phone = cursor.getString(indexPhone);
-                if (indexIDType >= 0) idType = cursor.getString(indexIDType);
-                if (indexIDNumber >= 0) idNumber = cursor.getString(indexIDNumber);
-                if (indexWorkingHours >= 0) workingHours = cursor.getString(indexWorkingHours);
-                if (indexAvailabilityDays >= 0) availabilityDays = cursor.getString(indexAvailabilityDays);
-                if (indexBankDetail >= 0) bankDetail = cursor.getString(indexBankDetail);
-                if (indexEmail >= 0) email = cursor.getString(indexEmail);
-                if (indexPass >= 0) password = cursor.getString(indexPass);
-                if (indexLatitude >= 0) latitude = cursor.getDouble(indexLatitude);
-                if (indexLongitude >= 0) longitude = cursor.getDouble(indexLongitude);
-                if (indexLocationName >= 0) locationName = cursor.getString(indexLocationName);
-
-                // Create the RiderModalClass object
-                rider = new RiderModalClass(name, phone, idType, idNumber, workingHours, availabilityDays,
-                        bankDetail, email, password, latitude, longitude, locationName);
-            }
-        } catch (Exception e) {
-            Log.e("RiderRegisterDB", "Error reading data: " + e.getMessage());
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
-            if (myDB != null && myDB.isOpen()) {
-                myDB.close();
-            }
+        if (cursor != null && cursor.moveToFirst()) {
+            String name = cursor.getString(cursor.getColumnIndexOrThrow("Name"));
+            String phone = cursor.getString(cursor.getColumnIndexOrThrow("Phone"));
+            String email = cursor.getString(cursor.getColumnIndexOrThrow("Email"));
+            String pass = cursor.getString(cursor.getColumnIndexOrThrow("Pass"));
+            cursor.close();
+            return new RiderModalClass(name, phone, email, pass);
+        } else {
+            return null;
         }
-
-        return rider;
-    }
-
-    public boolean checkUser(String email1, String pass1) {
-        SQLiteDatabase myDB = null;
-        Cursor cursor = null;
-        boolean userExists = false;
-
-        try {
-            myDB = this.getReadableDatabase();
-            String query = "SELECT * FROM RiderRegister WHERE Email = ? AND Pass = ?";
-            cursor = myDB.rawQuery(query, new String[]{email1, pass1});
-
-            // Check if a record exists with the given email and password
-            userExists = cursor != null && cursor.moveToFirst();
-        } catch (Exception e) {
-            Log.e("RiderRegisterDB", "Error checking user: " + e.getMessage());
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
-            if (myDB != null && myDB.isOpen()) {
-                myDB.close();
-            }
-        }
-
-        return userExists;
     }
 
     public long update(RiderModalClass riderModalClass) {
-        SQLiteDatabase myDB = null;
-        long result = -1;
-
-        try {
-            myDB = this.getWritableDatabase();
-            ContentValues cv = new ContentValues();
-
-            // Populate the ContentValues with data from the RiderModalClass object
-            cv.put("Name", riderModalClass.getName());
-            cv.put("Phone", riderModalClass.getPhone());
-            cv.put("IDtype", riderModalClass.getIdType());
-            cv.put("IDNumber", riderModalClass.getIdNumber());
-            cv.put("Working_Hours", riderModalClass.getWorkingHours());
-            cv.put("Availability_Days", riderModalClass.getAvailabilityDays());
-            cv.put("Bank_Detail", riderModalClass.getBankDetail());
-            cv.put("Pass", riderModalClass.getPassword());
-            cv.put("Latitude", riderModalClass.getLatitude());
-            cv.put("Longitude", riderModalClass.getLongitude());
-            cv.put("LocationName", riderModalClass.getLocationName());
-
-            // Perform the update based on the email (primary key)
-            result = myDB.update("RiderRegister", cv, "Email = ?", new String[]{riderModalClass.getEmail()});
-
-            // Log success or failure
-            if (result == -1) {
-                Log.e("RiderRegisterDB", "Update failed.");
-            } else {
-                Log.d("RiderRegisterDB", "Update successful for Email: " + riderModalClass.getEmail());
-            }
-        } catch (Exception e) {
-            Log.e("RiderRegisterDB", "Error updating data: " + e.getMessage());
-        } finally {
-            if (myDB != null && myDB.isOpen()) {
-                myDB.close();
-            }
+        if (riderModalClass == null || riderModalClass.getEmail() == null) {
+            Log.e("RiderRegisterDB", "Rider or email is null");
+            return -1;
         }
 
-        return result;
-    }
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("Name", riderModalClass.getName());
+        values.put("Phone", riderModalClass.getPhone());
+        values.put("Email", riderModalClass.getEmail());
+        values.put("Pass", riderModalClass.getPass());
 
+        return db.update("RiderRegister", values, "Email = ?", new String[]{riderModalClass.getEmail()});
+    }
 }
