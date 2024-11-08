@@ -1,4 +1,4 @@
-package com.example.unitconverter.ReceiverInterface;
+package com.example.feedhope.ReceiverInterface;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,19 +10,18 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.example.unitconverter.AdminInterface.AdminHomePage;
-import com.example.unitconverter.ProviderInterface.FoodDetailsActivity;
-import com.example.unitconverter.R;
-
+import com.example.feedhope.R;
 import java.util.ArrayList;
 
 public class ReceiverHomePage extends AppCompatActivity {
     private String loggedInEmail;
     TextView UserName;
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.homepage_receiver);
+
         loggedInEmail = getIntent().getStringExtra("email");
         UserName = findViewById(R.id.receiver);
 
@@ -42,14 +41,13 @@ public class ReceiverHomePage extends AppCompatActivity {
             UserName.setText("User not found");
         }
 
-        ArrayList<InformDonationModalClass> modalClasses = new ArrayList<>();
-        db = new ReceiverRegisterDB(ReceiverHomePage.this);
-        modalClasses = db.readInformationData();
+        // Load data into the RecyclerView
+        ArrayList<InformDonationModalClass> modalClasses = db.readInformationData();
 
-        // Setup RecyclerView
-        InformRVAdapter rvAdapter = new InformRVAdapter(modalClasses, ReceiverHomePage.this);
+        // Pass loggedInEmail to the RecyclerView adapter
+        InformRVAdapter rvAdapter = new InformRVAdapter(modalClasses, this, loggedInEmail);
         RecyclerView recyclerView = findViewById(R.id.recyclerView);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(ReceiverHomePage.this, RecyclerView.VERTICAL, false);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setAdapter(rvAdapter);
     }
@@ -60,6 +58,7 @@ public class ReceiverHomePage extends AppCompatActivity {
         inflater.inflate(R.menu.option_menu, menu);
         return super.onCreateOptionsMenu(menu);
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
@@ -70,7 +69,6 @@ public class ReceiverHomePage extends AppCompatActivity {
             startActivity(intent);
             return true;
         } else if (id == android.R.id.home) {
-            // Handle the back button in the toolbar
             onBackPressed();
             return true;
         }

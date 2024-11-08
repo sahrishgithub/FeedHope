@@ -1,25 +1,19 @@
-package com.example.unitconverter.ReceiverInterface;
+package com.example.feedhope.ReceiverInterface;
 
-import android.app.NotificationChannel;
+import android.app.LauncherActivity;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
-import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.example.unitconverter.R;
-
+import com.example.feedhope.R;
 import java.util.ArrayList;
 
 public class ReceiverRVAdapter extends RecyclerView.Adapter<ReceiverRVAdapter.UserViewHolder> {
@@ -27,8 +21,6 @@ public class ReceiverRVAdapter extends RecyclerView.Adapter<ReceiverRVAdapter.Us
     private ReceiverRegisterDB db;
     private Context context;
     private NotificationManager notifManager;
-    private final String channelID = "ReceiverChannel";
-    private final String description = "Receiver Notification Channel";
 
     public ReceiverRVAdapter(ArrayList<ReceiverModalClass> userList, Context context, NotificationManager notifManager) {
         this.userList = (userList != null) ? userList : new ArrayList<>();
@@ -36,13 +28,6 @@ public class ReceiverRVAdapter extends RecyclerView.Adapter<ReceiverRVAdapter.Us
         this.db = new ReceiverRegisterDB(context);
         this.notifManager = notifManager;
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel notifChannel = new NotificationChannel(channelID, description, NotificationManager.IMPORTANCE_HIGH);
-            notifChannel.enableLights(true);
-            notifChannel.setLightColor(Color.GREEN);
-            notifChannel.enableVibration(true);
-            notifManager.createNotificationChannel(notifChannel);
-        }
     }
 
     @NonNull
@@ -66,20 +51,20 @@ public class ReceiverRVAdapter extends RecyclerView.Adapter<ReceiverRVAdapter.Us
         holder.passText.setText(user.getPass());
 
         holder.accept.setOnClickListener(v -> {
-            boolean isInserted = db.insertData(user.getReference(), user.getType(), user.getMember(), user.getRequirement(), user.getFrequency(), user.getTime(), user.getPhone(), user.getEmail(), user.getPass());
+            boolean isInserted = db.insertData(user.getReference(),user.getType(),user.getMember(),user.getRequirement(),user.getFrequency(),user.getTime(), user.getPhone(), user.getEmail(), user.getPass());
             String message = isInserted ? "Data saved successfully!" : "Error saving data!";
-            Toast.makeText(v.getContext(), message, Toast.LENGTH_SHORT).show();
-            String notificationMessage = isInserted ? user.getReference() + " Registered Successfully" : user.getReference() + "Application rejected your request";
+            String notificationMessage = isInserted ? user.getReference() + " : Registered Successfully" : user.getReference() + " : Application rejected your request" ;
             sendNotification("Registration Notification", notificationMessage);
             removeItem(position);
         });
 
         holder.reject.setOnClickListener(v -> {
-            String notificationMessage = user.getReference() + " has been rejected.";
+            String notificationMessage = user.getReference() + ": has been rejected.";
             sendNotification("Rejection Notification", notificationMessage);
             removeItem(position);
         });
     }
+
 
     @Override
     public int getItemCount() {
@@ -87,10 +72,10 @@ public class ReceiverRVAdapter extends RecyclerView.Adapter<ReceiverRVAdapter.Us
     }
 
     private void sendNotification(String title, String message) {
-        Intent intent = new Intent(context, ReceiverRVAdapter.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+        Intent someIntent = new Intent(context, LauncherActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, someIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
-        NotificationCompat.Builder notifBuilder = new NotificationCompat.Builder(context, channelID)
+        NotificationCompat.Builder notifBuilder = new NotificationCompat.Builder(context, "ReceiverChannel")
                 .setContentTitle(title)
                 .setContentText(message)
                 .setSmallIcon(R.drawable.notification)
@@ -119,9 +104,7 @@ public class ReceiverRVAdapter extends RecyclerView.Adapter<ReceiverRVAdapter.Us
             reject = itemView.findViewById(R.id.reject);
         }
     }
-
     private void removeItem(int position) {
-        ReceiverModalClass user = userList.get(position);
         userList.remove(position);
         notifyItemRemoved(position);
         notifyItemRangeChanged(position, userList.size());
