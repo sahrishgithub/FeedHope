@@ -1,23 +1,13 @@
 package com.example.unitconverter.RiderInterface;
 
-public class RiderModalClass {
+import android.os.Parcel;
+import android.os.Parcelable;
 
-    private String name;
-    private String phone;
-    private String type;
-    private String idcard;
-    private String hours;
-    private String days;
-    private String card;
-    private String email;
-    private String pass;
-    private double latitude;    // Field for latitude
-    private double longitude;   // Field for longitude
-    private String locationName; // Field for location name
+public class RiderModalClass implements Parcelable {
 
-    // Constructor with all fields (including location)
-    public RiderModalClass(String name, String phone, String type, String idcard, String hours, String days,
-                           String card, String email, String pass, double latitude, double longitude, String locationName) {
+    private String name,phone,type,idcard,hours,days,card,email,pass;
+
+    public RiderModalClass(String name, String phone,String type,String idcard,String hours,String days,String card,String email,String pass) {
         this.name = name;
         this.phone = phone;
         this.type = type;
@@ -27,142 +17,97 @@ public class RiderModalClass {
         this.card = card;
         this.email = email;
         this.pass = pass;
-        this.latitude = latitude;
-        this.longitude = longitude;
-        this.locationName = locationName;
     }
 
-    // Constructor with essential fields (without location data)
+    protected RiderModalClass(Parcel in) {
+        name = in.readString();
+        phone = in.readString();
+        type = in.readString();
+        idcard = in.readString();
+        hours = in.readString();
+        days = in.readString();
+        card = in.readString();
+        email = in.readString();
+        pass = in.readString();
+    }
+
+    public static final Creator<RiderModalClass> CREATOR = new Creator<RiderModalClass>() {
+        @Override
+        public RiderModalClass createFromParcel(Parcel in) {
+            return new RiderModalClass(in);
+        }
+
+        @Override
+        public RiderModalClass[] newArray(int size) {
+            return new RiderModalClass[size];
+        }
+    };
+
     public RiderModalClass(String name, String phone, String email, String pass) {
         this.name = name;
         this.phone = phone;
         this.email = email;
         this.pass = pass;
-        this.latitude = 0.0;   // Default value for latitude
-        this.longitude = 0.0;  // Default value for longitude
-        this.locationName = ""; // Default empty location name
-    }
-
-    // Getters and Setters for all fields
-    public String getName() {
-        return name;
     }
 
     public void setName(String name) {
         this.name = name;
     }
 
-    public String getPhone() {
-        return phone;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public void setPhone(String phone) {
         this.phone = phone;
     }
 
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public String getIdcard() {
-        return idcard;
-    }
-
-    public void setIdcard(String idcard) {
-        this.idcard = idcard;
-    }
-
-    public String getHours() {
-        return hours;
-    }
-
-    public void setHours(String hours) {
-        this.hours = hours;
-    }
-
-    public String getDays() {
-        return days;
-    }
-
-    public void setDays(String days) {
-        this.days = days;
-    }
-
-    public String getCard() {
-        return card;
-    }
-
-    public void setCard(String card) {
-        this.card = card;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPass() {
-        return pass;
-    }
-
     public void setPass(String pass) {
         this.pass = pass;
     }
 
-    // Getters and Setters for latitude, longitude, and locationName
-    public double getLatitude() {
-        return latitude;
+    public String getName() {
+        return name;
     }
-
-    public void setLatitude(double latitude) {
-        this.latitude = latitude;
+    public String getPhone() {
+        return phone;
     }
-
-    public double getLongitude() {
-        return longitude;
-    }
-
-    public void setLongitude(double longitude) {
-        this.longitude = longitude;
-    }
-
-    public String getLocationName() {
-        return locationName;
-    }
-
-    public void setLocationName(String locationName) {
-        this.locationName = locationName;
-    }
-
-    public String getPassword() {
-        return pass;
-    }
-
-    // Renamed these getters to match field names
-    public String getIdType() {
+    public String getType() {
         return type;
     }
-
-    public String getIdNumber() {
+    public String getIdcard() {
         return idcard;
     }
-
-    public String getWorkingHours() {
+    public String getHours() {
         return hours;
     }
-
-    public String getAvailabilityDays() {
+    public String getDays() {
         return days;
     }
-
-    public String getBankDetail() {
+    public String getCard() {
         return card;
+    }
+    public String getEmail() {
+        return email;
+    }
+    public String getPass() {
+        return pass;
+    }
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(name);
+        dest.writeString(phone);
+        dest.writeString(type);
+        dest.writeString(idcard);
+        dest.writeString(hours);
+        dest.writeString(days);
+        dest.writeString(card);
+        dest.writeString(email);
+        dest.writeString(pass);
     }
 }

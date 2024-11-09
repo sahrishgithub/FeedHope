@@ -1,10 +1,8 @@
 package com.example.unitconverter.AdminInterface;
 
-import android.app.DatePickerDialog;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -20,13 +18,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.NotificationCompat;
 
-import com.example.unitconverter.ProviderInterface.ProvideFood;
 import com.example.unitconverter.R;
 import com.example.unitconverter.RiderInterface.RiderAssignDutyDB;
-
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Locale;
 
 public class AssignDuty extends AppCompatActivity {
     private EditText username, pick, drop, date;
@@ -47,8 +40,6 @@ public class AssignDuty extends AppCompatActivity {
         pick = findViewById(R.id.pick);
         drop = findViewById(R.id.drop);
         date = findViewById(R.id.date);
-        Calendar calendar = Calendar.getInstance();
-
         submit_btn = findViewById(R.id.submit);
 
         // Setup Toolbar
@@ -61,24 +52,6 @@ public class AssignDuty extends AppCompatActivity {
             getSupportActionBar().setTitle("");
         }
 
-        date.setOnClickListener(v -> {
-            // Open DatePickerDialog
-            new DatePickerDialog(AssignDuty.this, (view, year, monthOfYear, dayOfMonth) -> {
-                // Set the selected date in the Calendar object
-                calendar.set(Calendar.YEAR, year);
-                calendar.set(Calendar.MONTH, monthOfYear);
-                calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-                // Open TimePickerDialog after DatePickerDialog
-                new TimePickerDialog(AssignDuty.this, (view1, hourOfDay, minute) -> {
-                    // Set the selected time in the Calendar object
-                    calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
-                    calendar.set(Calendar.MINUTE, minute);
-                    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
-                    date.setText(format.format(calendar.getTime()));
-                }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true).show();
-            }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show();
-        });
-
         // Initialize notification manager
         notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         createNotificationChannel();
@@ -88,50 +61,18 @@ public class AssignDuty extends AppCompatActivity {
             public void onClick(View v) {
                 db = new RiderAssignDutyDB(AssignDuty.this);
                 db.getWritableDatabase();
-
-                boolean isValid = true;
-                StringBuilder errorMessages = new StringBuilder();
-
                 String name1 = username.getText().toString().trim();
                 String pick1 = pick.getText().toString().trim();
                 String drop1 = drop.getText().toString().trim();
                 String date1 = date.getText().toString().trim();
 
-                username.setError(null);
-                pick.setError(null);
-                drop.setError(null);
-                date.setError(null);
-
-                if (name1.isEmpty()) {
-                    errorMessages.append("Name field is required.\n");
-                    username.setError("Name field is required");
-                    isValid = false;
-                }
-                if (pick1.isEmpty()) {
-                    errorMessages.append("Pick Location field is required.\n");
-                    pick.setError("Pick Location field is required");
-                    isValid = false;
-                }
-                if (drop1.isEmpty()) {
-                    errorMessages.append("Drop Location field is required.\n");
-                    drop.setError("Drop Location field is required");
-                    isValid = false;
-                }
-                if (date1.isEmpty()) {
-                    errorMessages.append("Date field is required.\n");
-                    date.setError("Date field is required");
-                    isValid = false;
-                }
-
-                if (isValid) {
-                    if(db.assignDuty(name1, pick1, drop1, date1, "Pending")) {
-                        Toast.makeText(AssignDuty.this, "Data Inserted", Toast.LENGTH_LONG).show();
-                        sendNotification(name1, "Duty Assigned");
-                    } else {
-                        Toast.makeText(AssignDuty.this, "Data not Inserted", Toast.LENGTH_LONG).show();
-                    }
+                if (name1.isEmpty() || pick1.isEmpty() || drop1.isEmpty() || date1.isEmpty()) {
+                    Toast.makeText(AssignDuty.this, "All fields are required", Toast.LENGTH_LONG).show();
+                } else if (db.assignDuty(name1, pick1, drop1, date1, "Pending")) {
+                    Toast.makeText(AssignDuty.this, "Data Inserted", Toast.LENGTH_LONG).show();
+                    sendNotification(name1, "Duty Assigned");
                 } else {
-                    Toast.makeText(AssignDuty.this, errorMessages.toString(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(AssignDuty.this, "Data not Inserted", Toast.LENGTH_LONG).show();
                 }
             }
         });
