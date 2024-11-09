@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".AdminInterface.AdminHomePage">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="700dp"
+        android:layout_margin="5dp">
+
+        <com.google.android.material.appbar.AppBarLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/button_color" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="FeedHope"
+                    android:textColor="@color/white"
+                    android:textSize="20dp"/>
+            </androidx.appcompat.widget.Toolbar>
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_marginStart="18dp"
+            android:layout_marginTop="80dp"
+            android:text="Provider Donation Detail"
+            android:textColor="@color/button_color"
+            android:textSize="20sp"
+            />
+        <LinearLayout
+            android:id="@+id/linearLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="150dp"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal"
+            android:weightSum="1"
+            >
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/food"
+                android:layout_width="128dp"
+                android:layout_height="128dp"
+                android:layout_margin="8dp"
+                android:layout_marginEnd="56dp"
+                android:clickable="true"
+                android:elevation="12dp"
+                android:focusable="true"
+                android:foreground="?android:attr/selectableItemBackground"
+                app:cardCornerRadius="8dp">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="#7BD0EF">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="90dp"
+                        android:layout_centerHorizontal="true"
+                        android:padding="10dp"
+                        android:layout_marginTop="10dp"
+                        android:src="@drawable/food"
+                        />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="Food"
+                        android:textAllCaps="true"
+                        android:textColor="@color/black"
+                        android:textSize="14sp"
+                        android:layout_marginTop="105dp"
+                        android:textStyle="bold"/>
+                </RelativeLayout>
+
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/toy"
+                android:layout_width="128dp"
+                android:layout_height="128dp"
+                android:layout_marginStart="36dp"
+                android:clickable="true"
+                android:elevation="12dp"
+                android:layout_gravity="center"
+                android:focusable="true"
+                android:foreground="?android:attr/selectableItemBackground"
+                app:cardCornerRadius="8dp">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="#F496B8">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="100dp"
+                        android:padding="10dp"
+                        android:src="@drawable/toy" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="Toy"
+                        android:textAllCaps="true"
+                        android:textColor="@color/black"
+                        android:layout_marginTop="105dp"
+                        android:textSize="14sp"
+                        android:textStyle="bold"/>
+                </RelativeLayout>
+
+            </androidx.cardview.widget.CardView>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="300dp"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal"
+            android:weightSum="1"
+            >
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/medicine"
+                android:layout_width="128dp"
+                android:layout_height="128dp"
+                android:layout_margin="8dp"
+                android:layout_marginEnd="56dp"
+                android:clickable="true"
+                android:elevation="12dp"
+                android:focusable="true"
+                android:foreground="?android:attr/selectableItemBackground"
+                app:cardCornerRadius="8dp">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="#B0FAB3">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="90dp"
+                        android:padding="10dp"
+                        android:layout_marginTop="10dp"
+                        android:src="@drawable/medicine"
+                        />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="Medicine"
+                        android:textAllCaps="true"
+                        android:textColor="@color/black"
+                        android:textSize="14sp"
+                        android:layout_marginTop="105dp"
+                        android:textStyle="bold"/>
+                </RelativeLayout>
+
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/shoe"
+                android:layout_width="128dp"
+                android:layout_height="128dp"
+                android:layout_marginStart="36dp"
+                android:clickable="true"
+                android:elevation="12dp"
+                android:layout_gravity="center"
+                android:focusable="true"
+                android:foreground="?android:attr/selectableItemBackground"
+                app:cardCornerRadius="8dp">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="#D38CE6">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="100dp"
+                        android:padding="10dp"
+                        android:src="@drawable/shoe" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="Shoe"
+                        android:textAllCaps="true"
+                        android:textColor="@color/black"
+                        android:layout_marginTop="105dp"
+                        android:textSize="14sp"
+                        android:textStyle="bold"/>
+                </RelativeLayout>
+            </androidx.cardview.widget.CardView>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="450dp"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal"
+            android:weightSum="1"
+            >
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cloth"
+                android:layout_width="128dp"
+                android:layout_height="128dp"
+                android:layout_margin="8dp"
+                android:layout_marginEnd="56dp"
+                android:clickable="true"
+                android:elevation="12dp"
+                android:focusable="true"
+                android:foreground="?android:attr/selectableItemBackground"
+                app:cardCornerRadius="8dp">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="#F1DD88">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="90dp"
+                        android:padding="10dp"
+                        android:layout_marginTop="10dp"
+                        android:src="@drawable/cloth" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="Cloth"
+                        android:textAllCaps="true"
+                        android:textColor="@color/black"
+                        android:textSize="14sp"
+                        android:layout_marginTop="105dp"
+                        android:textStyle="bold"/>
+                </RelativeLayout>
+            </androidx.cardview.widget.CardView>
+        </LinearLayout>
+
+    </RelativeLayout>
+
+</ScrollView>
