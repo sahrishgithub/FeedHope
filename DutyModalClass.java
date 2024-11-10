@@ -1,7 +1,23 @@
-package com.example.unitconverter.RiderInterface;
+package com.example.feedhope.RiderInterface.Duty;
 
 public class DutyModalClass {
     private String name,pick,drop,date,status;
+    private int completedCount,pendingCount;
+
+    public void setCompletedCount(int completedCount) {
+        this.completedCount = completedCount;
+    }
+
+    public void setPendingCount(int pendingCount) {
+        this.pendingCount = pendingCount;
+    }
+
+    public int getCompletedCount() {
+        return completedCount;
+    }
+    public int getPendingCount() {
+        return pendingCount;
+    }
     public String getName() { return name; }
     public void setName(String name) {this.name = name;}
     public String getPick()
