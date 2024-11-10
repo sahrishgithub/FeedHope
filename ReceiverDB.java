@@ -5,14 +5,13 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
 import java.util.ArrayList;
 
 public class ReceiverDB extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "ReceiverDB";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
     // Table name
     private static final String TABLE_RECEIVER = "Receiver";
@@ -28,6 +27,11 @@ public class ReceiverDB extends SQLiteOpenHelper {
     private static final String COLUMN_PHONE = "phone";
     private static final String COLUMN_EMAIL = "email";
     private static final String COLUMN_PASSWORD = "password";
+
+    // New columns for receiver's current location
+    private static final String COLUMN_LATITUDE = "latitude";
+    private static final String COLUMN_LONGITUDE = "longitude";
+    private static final String COLUMN_LOCATION_NAME = "location_name"; // New column for location name
 
     public ReceiverDB(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -45,40 +49,52 @@ public class ReceiverDB extends SQLiteOpenHelper {
                 COLUMN_TIME + " TEXT, " +
                 COLUMN_PHONE + " TEXT, " +
                 COLUMN_EMAIL + " TEXT, " +
-                COLUMN_PASSWORD + " TEXT)";
+                COLUMN_PASSWORD + " TEXT, " +
+                COLUMN_LATITUDE + " REAL, " +  // New column for latitude
+                COLUMN_LONGITUDE + " REAL, " + // New column for longitude
+                COLUMN_LOCATION_NAME + " TEXT)"; // New column for location name
         db.execSQL(CREATE_TABLE);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        // Drop older tables if existed
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_RECEIVER);
-        onCreate(db);
+        if (oldVersion < 2) {
+            db.execSQL("ALTER TABLE " + TABLE_RECEIVER + " ADD COLUMN " + COLUMN_LATITUDE + " REAL");
+            db.execSQL("ALTER TABLE " + TABLE_RECEIVER + " ADD COLUMN " + COLUMN_LONGITUDE + " REAL");
+            db.execSQL("ALTER TABLE " + TABLE_RECEIVER + " ADD COLUMN " + COLUMN_LOCATION_NAME + " TEXT");
+        }
     }
 
-    // Method to insert receiver data
-    public long insertReceiverData(String reference, String type, String member, String requirement,
-                                   String frequency, String time, String phone, String email, String password) {
-        SQLiteDatabase db = this.getWritableDatabase();
 
-        ContentValues values = new ContentValues();
-        values.put(COLUMN_REFERENCE, reference);
-        values.put(COLUMN_TYPE, type);
-        values.put(COLUMN_MEMBER, member);
-        values.put(COLUMN_REQUIREMENT, requirement);
-        values.put(COLUMN_FREQUENCY, frequency);
-        values.put(COLUMN_TIME, time);
-        values.put(COLUMN_PHONE, phone);
-        values.put(COLUMN_EMAIL, email);
-        values.put(COLUMN_PASSWORD, password);
+    // Method to insert receiver data with location
+//    public long insertReceiverData(String reference, String selectedType, String member, String selectedRequirement,
+//                                   String frequency, String time, String phone, String email, String pass,
+//                                   double latitude, double longitude, String locationName) {
+//        SQLiteDatabase db = this.getWritableDatabase();
+//
+//        ContentValues values = new ContentValues();
+//        values.put(COLUMN_REFERENCE, reference);
+//        values.put(COLUMN_TYPE, selectedType);
+//        values.put(COLUMN_MEMBER, member);
+//        values.put(COLUMN_REQUIREMENT, selectedRequirement);
+//        values.put(COLUMN_FREQUENCY, frequency);
+//        values.put(COLUMN_TIME, time);
+//        values.put(COLUMN_PHONE, phone);
+//        values.put(COLUMN_EMAIL, email);
+//        values.put(COLUMN_PASSWORD, pass);
+//
+//        // Insert location data
+//        values.put(COLUMN_LATITUDE, latitude);  // Store latitude
+//        values.put(COLUMN_LONGITUDE, longitude);  // Store longitude
+//        values.put(COLUMN_LOCATION_NAME, locationName); // Store location name
+//
+//        // Inserting row
+//        long id = db.insert(TABLE_RECEIVER, null, values);
+//        db.close();
+//        return id;
+//    }
 
-        // Inserting row
-        long id = db.insert(TABLE_RECEIVER, null, values);
-        db.close();
-        return id;
-    }
-
-    // Method to retrieve all receiver data
+    // Method to retrieve all receiver data including location
     public ArrayList<ReceiverModalClass> getAllReceivers() {
         ArrayList<ReceiverModalClass> receiverList = new ArrayList<>();
         String selectQuery = "SELECT * FROM " + TABLE_RECEIVER;
@@ -90,77 +106,73 @@ public class ReceiverDB extends SQLiteOpenHelper {
             do {
                 ReceiverModalClass receiver = new ReceiverModalClass();
 
-                // Check and fetch each column value safely
+                // Safely get column values
                 int columnIndex;
 
                 columnIndex = cursor.getColumnIndex(COLUMN_ID);
                 if (columnIndex != -1) {
                     receiver.setId(cursor.getInt(columnIndex));
-                } else {
-                    Log.e("ReceiverDB", "Column 'id' not found in the database.");
                 }
 
                 columnIndex = cursor.getColumnIndex(COLUMN_REFERENCE);
                 if (columnIndex != -1) {
                     receiver.setReference(cursor.getString(columnIndex));
-                } else {
-                    Log.e("ReceiverDB", "Column 'reference' not found in the database.");
                 }
 
                 columnIndex = cursor.getColumnIndex(COLUMN_TYPE);
                 if (columnIndex != -1) {
                     receiver.setType(cursor.getString(columnIndex));
-                } else {
-                    Log.e("ReceiverDB", "Column 'type' not found in the database.");
                 }
 
                 columnIndex = cursor.getColumnIndex(COLUMN_MEMBER);
                 if (columnIndex != -1) {
                     receiver.setMember(cursor.getString(columnIndex));
-                } else {
-                    Log.e("ReceiverDB", "Column 'member' not found in the database.");
                 }
 
                 columnIndex = cursor.getColumnIndex(COLUMN_REQUIREMENT);
                 if (columnIndex != -1) {
                     receiver.setRequirement(cursor.getString(columnIndex));
-                } else {
-                    Log.e("ReceiverDB", "Column 'requirement' not found in the database.");
                 }
 
                 columnIndex = cursor.getColumnIndex(COLUMN_FREQUENCY);
                 if (columnIndex != -1) {
                     receiver.setFrequency(cursor.getString(columnIndex));
-                } else {
-                    Log.e("ReceiverDB", "Column 'frequency' not found in the database.");
                 }
 
                 columnIndex = cursor.getColumnIndex(COLUMN_TIME);
                 if (columnIndex != -1) {
                     receiver.setTime(cursor.getString(columnIndex));
-                } else {
-                    Log.e("ReceiverDB", "Column 'time' not found in the database.");
                 }
 
                 columnIndex = cursor.getColumnIndex(COLUMN_PHONE);
                 if (columnIndex != -1) {
                     receiver.setPhone(cursor.getString(columnIndex));
-                } else {
-                    Log.e("ReceiverDB", "Column 'phone' not found in the database.");
                 }
 
                 columnIndex = cursor.getColumnIndex(COLUMN_EMAIL);
                 if (columnIndex != -1) {
                     receiver.setEmail(cursor.getString(columnIndex));
-                } else {
-                    Log.e("ReceiverDB", "Column 'email' not found in the database.");
                 }
 
                 columnIndex = cursor.getColumnIndex(COLUMN_PASSWORD);
                 if (columnIndex != -1) {
                     receiver.setPassword(cursor.getString(columnIndex));
-                } else {
-                    Log.e("ReceiverDB", "Column 'password' not found in the database.");
+                }
+
+                // Retrieve and set latitude, longitude, and location name
+                columnIndex = cursor.getColumnIndex(COLUMN_LATITUDE);
+                if (columnIndex != -1) {
+                    receiver.setLatitude(cursor.getDouble(columnIndex));
+                }
+
+                columnIndex = cursor.getColumnIndex(COLUMN_LONGITUDE);
+                if (columnIndex != -1) {
+                    receiver.setLongitude(cursor.getDouble(columnIndex));
+                }
+
+                columnIndex = cursor.getColumnIndex(COLUMN_LOCATION_NAME);
+                if (columnIndex != -1) {
+                    receiver.setLocationName(cursor.getString(columnIndex)); // Set location name
                 }
 
                 receiverList.add(receiver);
@@ -246,6 +258,21 @@ public class ReceiverDB extends SQLiteOpenHelper {
             if (columnIndex != -1) {
                 receiver.setPassword(cursor.getString(columnIndex));
             }
+
+            columnIndex = cursor.getColumnIndex(COLUMN_LATITUDE);
+            if (columnIndex != -1) {
+                receiver.setLatitude(cursor.getDouble(columnIndex));
+            }
+
+            columnIndex = cursor.getColumnIndex(COLUMN_LONGITUDE);
+            if (columnIndex != -1) {
+                receiver.setLongitude(cursor.getDouble(columnIndex));
+            }
+
+            columnIndex = cursor.getColumnIndex(COLUMN_LOCATION_NAME);
+            if (columnIndex != -1) {
+                receiver.setLocationName(cursor.getString(columnIndex));
+            }
         }
 
         if (cursor != null) {
@@ -256,37 +283,68 @@ public class ReceiverDB extends SQLiteOpenHelper {
         return receiver;
     }
 
-    // Method to read information data (assuming a table for donation or related data)
+    public boolean insert(String name1, String quantity1, String selectedStorage, String expire1, String pending) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        // Create ContentValues to store data for the new entry
+        ContentValues values = new ContentValues();
+        values.put("name", name1); // Replace "name" with the actual column name
+        values.put("quantity", quantity1); // Replace "quantity" with the actual column name
+        values.put("storage", selectedStorage); // Replace "storage" with the actual column name
+        values.put("expire", expire1); // Replace "expire" with the actual column name
+        values.put("pending", pending); // Replace "pending" with the actual column name
+
+        // Insert the row and check if the operation was successful
+        long result = db.insert("ItemTable", null, values); // Replace "ItemTable" with the actual table name
+
+        db.close();
+
+        // Return true if insertion was successful, false otherwise
+        return result != -1;
+    }
+
     public ArrayList<InformDonationModalClass> readInformationData() {
+        ArrayList<InformDonationModalClass> informationList = new ArrayList<>();
+        String selectQuery = "SELECT * FROM ItemTable"; // Replace "ItemTable" with the actual table name.
+
         SQLiteDatabase db = this.getReadableDatabase();
-        ArrayList<InformDonationModalClass> donationList = new ArrayList<>();
-
-        // Query to get all data from the relevant table
-        String selectQuery = "SELECT * FROM " + "YourInformationTable"; // Replace with actual table name
-
         Cursor cursor = db.rawQuery(selectQuery, null);
 
         if (cursor != null && cursor.moveToFirst()) {
             do {
-                InformDonationModalClass donation = new InformDonationModalClass();
+                InformDonationModalClass information = new InformDonationModalClass();
 
-                // Safely get column values
+                // Safely get column values and set them in the InformDonationModalClass object
                 int columnIndex;
 
-                // Assuming InformDonationModalClass has similar fields as ReceiverModalClass
-                columnIndex = cursor.getColumnIndex("column_name1"); // Replace with actual column name
+                columnIndex = cursor.getColumnIndex("name"); // Replace "name" with the actual column name
                 if (columnIndex != -1) {
-                    donation.setField1(cursor.getString(columnIndex)); // Replace with actual setter method
+                    information.setName(cursor.getString(columnIndex));
                 }
 
-                columnIndex = cursor.getColumnIndex("column_name2"); // Replace with actual column name
+                columnIndex = cursor.getColumnIndex("quantity"); // Replace "quantity" with the actual column name
                 if (columnIndex != -1) {
-                    donation.setField2(cursor.getString(columnIndex)); // Replace with actual setter method
+                    information.setQuantity(cursor.getString(columnIndex));
                 }
 
-                // Continue for other fields as necessary...
+                columnIndex = cursor.getColumnIndex("storage"); // Replace "storage" with the actual column name
+                if (columnIndex != -1) {
+                    information.setStorage(cursor.getString(columnIndex));
+                }
 
-                donationList.add(donation);
+                columnIndex = cursor.getColumnIndex("expire"); // Replace "expire" with the actual column name
+                if (columnIndex != -1) {
+                    information.setExpire(cursor.getString(columnIndex));
+                }
+
+                columnIndex = cursor.getColumnIndex("pending"); // Replace "pending" with the actual column name
+                if (columnIndex != -1) {
+                    information.setPending(cursor.getString(columnIndex));
+                }
+
+                // Add the information object to the list
+                informationList.add(information);
+
             } while (cursor.moveToNext());
         }
 
@@ -295,84 +353,67 @@ public class ReceiverDB extends SQLiteOpenHelper {
         }
 
         db.close();
-        return donationList;
+        return informationList;
     }
 
-    public boolean insert(String name1, String quantity1, String selectedStorage, String expire1, String pending) {
-        // Get a writable database instance
+    public boolean updateInformStatus(String email, String status) {
         SQLiteDatabase db = this.getWritableDatabase();
 
-        // Prepare ContentValues to hold the data to insert
+        // Create a ContentValues object to store the updated status
         ContentValues values = new ContentValues();
-        values.put("name", name1);           // Assuming there's a 'name' column
-        values.put("quantity", quantity1);   // Assuming there's a 'quantity' column
-        values.put("storage", selectedStorage); // Assuming there's a 'storage' column
-        values.put("expire", expire1);       // Assuming there's an 'expire' column
-        values.put("status", pending);       // Assuming 'pending' represents the donation status (e.g., 'pending' status)
+        values.put("status", status); // "status" should be the actual column name in the database where status is stored
 
-        // Insert the data into the Donations table (or whichever table you need)
-        long result = db.insert("Donations", null, values);  // Change 'Donations' to the actual table name
+        // Update the row where the email matches the provided email
+        int rowsAffected = db.update(TABLE_RECEIVER, values, COLUMN_EMAIL + " = ?", new String[]{email});
 
         db.close();
 
-        // Return true if insertion was successful, false otherwise
-        return result != -1;
-    }
-
-    public boolean insertData(String reference, String type, String member, String requirement, String frequency, String time, String phone, String email, String pass) {
-        // Get a writable database instance
-        SQLiteDatabase db = this.getWritableDatabase();
-
-        // Prepare ContentValues to hold the data to insert
-        ContentValues values = new ContentValues();
-        values.put(COLUMN_REFERENCE, reference);       // Insert the reference value
-        values.put(COLUMN_TYPE, type);                 // Insert the type value
-        values.put(COLUMN_MEMBER, member);             // Insert the member value
-        values.put(COLUMN_REQUIREMENT, requirement);   // Insert the requirement value
-        values.put(COLUMN_FREQUENCY, frequency);       // Insert the frequency value
-        values.put(COLUMN_TIME, time);                 // Insert the time value
-        values.put(COLUMN_PHONE, phone);               // Insert the phone value
-        values.put(COLUMN_EMAIL, email);               // Insert the email value
-        values.put(COLUMN_PASSWORD, pass);             // Insert the password value
-
-        // Insert the data into the Receiver table
-        long result = db.insert(TABLE_RECEIVER, null, values); // Insert into the "Receiver" table
-
-        db.close();
-
-        // Return true if insertion was successful, false otherwise
-        return result != -1;
+        // Return true if at least one row was updated, false otherwise
+        return rowsAffected > 0;
     }
 
     public boolean checkUser(String email1, String pass1) {
         SQLiteDatabase db = this.getReadableDatabase();
 
-        // Define a boolean to return the result
-        boolean userExists = false;
-
-        // Query to check if a user with the given email and password exists in the database
+        // Query to find the receiver by email and password
         String selectQuery = "SELECT * FROM " + TABLE_RECEIVER + " WHERE " + COLUMN_EMAIL + " = ? AND " + COLUMN_PASSWORD + " = ?";
         Cursor cursor = db.rawQuery(selectQuery, new String[]{email1, pass1});
 
-        // Check if the cursor contains any rows, meaning a matching user was found
-        if (cursor != null && cursor.moveToFirst()) {
-            userExists = true; // User exists with the provided email and password
-        }
+        // If a matching user is found, return true, otherwise false
+        boolean userExists = cursor != null && cursor.moveToFirst();
 
-        // Close the cursor and database connection
         if (cursor != null) {
             cursor.close();
         }
 
         db.close();
+        return userExists;
+    }
 
-        return userExists; // Return the result (true if user exists, false otherwise)
+    public long insertData(String reference, String type, String member, String requirement,
+                           String frequency, String time, String phone, String email, String pass) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_REFERENCE, reference);
+        values.put(COLUMN_TYPE, type);
+        values.put(COLUMN_MEMBER, member);
+        values.put(COLUMN_REQUIREMENT, requirement);
+        values.put(COLUMN_FREQUENCY, frequency);
+        values.put(COLUMN_TIME, time);
+        values.put(COLUMN_PHONE, phone);
+        values.put(COLUMN_EMAIL, email);
+        values.put(COLUMN_PASSWORD, pass);
+
+        // Inserting row and getting the ID
+        long id = db.insert(TABLE_RECEIVER, null, values);
+        db.close();
+        return id;
     }
 
     public long update(ReceiverModalClass receiverModalClass) {
         SQLiteDatabase db = this.getWritableDatabase();
 
-        // Prepare ContentValues with the new data for the receiver
         ContentValues values = new ContentValues();
         values.put(COLUMN_REFERENCE, receiverModalClass.getReference());
         values.put(COLUMN_TYPE, receiverModalClass.getType());
@@ -383,33 +424,70 @@ public class ReceiverDB extends SQLiteOpenHelper {
         values.put(COLUMN_PHONE, receiverModalClass.getPhone());
         values.put(COLUMN_EMAIL, receiverModalClass.getEmail());
         values.put(COLUMN_PASSWORD, receiverModalClass.getPassword());
+        values.put(COLUMN_LATITUDE, receiverModalClass.getLatitude());
+        values.put(COLUMN_LONGITUDE, receiverModalClass.getLongitude());
+        values.put(COLUMN_LOCATION_NAME, receiverModalClass.getLocationName());
 
-        // Update the receiver's data in the database where the id matches
-        long result = db.update(TABLE_RECEIVER, values, COLUMN_ID + " = ?", new String[]{String.valueOf(receiverModalClass.getId())});
+        // Update the receiver based on their ID
+        int rowsAffected = db.update(TABLE_RECEIVER, values, COLUMN_ID + " = ?", new String[]{String.valueOf(receiverModalClass.getId())});
 
         db.close();
 
-        // Return the number of rows affected, or -1 if there was an error
-        return result;
+        return rowsAffected; // Returns the number of rows affected (should be 1 if the update was successful)
     }
 
-    public boolean updateInformStatus(String name, String selectedStatus) {
+//    public long insertReceiverData(String reference, String selectedType, String member, String selectedRequirement,
+//                                   String frequency, String time, String phone, String email, String pass,
+//                                   double latitude, double longitude, String locationName) {
+//        SQLiteDatabase db = this.getWritableDatabase();
+//
+//        ContentValues values = new ContentValues();
+//        values.put(COLUMN_REFERENCE, reference);
+//        values.put(COLUMN_TYPE, selectedType);
+//        values.put(COLUMN_MEMBER, member);
+//        values.put(COLUMN_REQUIREMENT, selectedRequirement);
+//        values.put(COLUMN_FREQUENCY, frequency);
+//        values.put(COLUMN_TIME, time);
+//        values.put(COLUMN_PHONE, phone);
+//        values.put(COLUMN_EMAIL, email);
+//        values.put(COLUMN_PASSWORD, pass);
+//
+//        // Insert location data
+//        values.put(COLUMN_LATITUDE, latitude);  // Store latitude
+//        values.put(COLUMN_LONGITUDE, longitude);  // Store longitude
+//        values.put(COLUMN_LOCATION_NAME, locationName); // Store location name
+//
+//        // Inserting row
+//        long id = db.insert(TABLE_RECEIVER, null, values);
+//        db.close();
+//        return id;
+//    }
+
+    public long insertReceiverData(String reference, String selectedType, String member, String selectedRequirement,
+                                   String frequency, String time, String phone, String email, String pass,
+                                   double latitude, double longitude, String locationName) {
         SQLiteDatabase db = this.getWritableDatabase();
-
-        // Prepare ContentValues to hold the new status data
         ContentValues values = new ContentValues();
-        values.put("status", selectedStatus);  // Assuming 'status' is a column in the table for the status of the donation
+        values.put(COLUMN_REFERENCE, reference);
+        values.put(COLUMN_TYPE, selectedType);
+        values.put(COLUMN_MEMBER, member);
+        values.put(COLUMN_REQUIREMENT, selectedRequirement);
+        values.put(COLUMN_FREQUENCY, frequency);
+        values.put(COLUMN_TIME, time);
+        values.put(COLUMN_PHONE, phone);
+        values.put(COLUMN_EMAIL, email);
+        values.put(COLUMN_PASSWORD, pass);
 
-        // Update the status for the specific record where the name matches
-        int rowsAffected = db.update("YourDonationTable",  // Replace "YourDonationTable" with the actual table name
-                values,
-                "name = ?",  // Column to match the donation name
-                new String[]{name});  // The name to match
+        // Ensure the location values are correctly inserted
+        values.put(COLUMN_LATITUDE, latitude);  // Store latitude
+        values.put(COLUMN_LONGITUDE, longitude);  // Store longitude
+        values.put(COLUMN_LOCATION_NAME, locationName); // Store location name
 
+        // Inserting row
+        long id = db.insert(TABLE_RECEIVER, null, values);
         db.close();
-
-        // If rowsAffected > 0, update was successful, return true. Otherwise, return false
-        return rowsAffected > 0;
+        return id;
     }
+
 
 }
