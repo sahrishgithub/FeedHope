@@ -5,7 +5,6 @@
     android:layout_height="match_parent"
     android:background="@color/background_color">
 
-    <!-- App Bar with Toolbar -->
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -14,23 +13,17 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/button_color"
-            android:title="Cloth Donation"
-            android:titleTextColor="@color/white">
+            android:background="@color/button_color" >
 
-            <!-- Toolbar Title -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="FeedHope"
                 android:textColor="@color/white"
-                android:textSize="20dp"
-                android:layout_centerHorizontal="true"
-                android:layout_alignParentStart="true" />
+                android:textSize="20dp"/>
         </androidx.appcompat.widget.Toolbar>
     </com.google.android.material.appbar.AppBarLayout>
 
-    <!-- Cloth Donation Title -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -39,27 +32,27 @@
         android:textSize="20dp"
         android:textColor="@color/button_color"
         android:textStyle="bold"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        />
 
-    <!-- Type Spinner -->
     <Spinner
         android:id="@+id/type"
         android:layout_width="300dp"
         android:layout_height="50dp"
         android:entries="@array/cloth_type"
         android:layout_marginTop="120dp"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        />
 
-    <!-- Condition Spinner -->
     <Spinner
-        android:id="@+id/cloth_condition"
+        android:id="@+id/condition"
         android:layout_width="300dp"
         android:layout_height="50dp"
-        android:entries="@array/cloth_condition"
+        android:entries="@array/condition"
         android:layout_marginTop="180dp"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        />
 
-    <!-- Quantity EditText -->
     <EditText
         android:id="@+id/quantity"
         android:layout_width="300dp"
@@ -71,18 +64,18 @@
         android:layout_centerHorizontal="true"
         android:maxLength="30"
         android:hint="Quantity"
-        android:inputType="numberDecimal" />
+        android:inputType="numberDecimal"
+        />
 
-    <!-- Category Spinner -->
     <Spinner
-        android:id="@+id/cloth_category"
+        android:id="@+id/category"
         android:layout_width="300dp"
         android:layout_height="50dp"
         android:entries="@array/cloth_category"
         android:layout_marginTop="320dp"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        />
 
-    <!-- Seasonal Clothes Text -->
     <TextView
         android:layout_width="300dp"
         android:layout_height="50dp"
@@ -94,7 +87,6 @@
         android:textSize="20dp"
         android:textStyle="italic" />
 
-    <!-- Radio Buttons for Seasons -->
     <RadioGroup
         android:id="@+id/radio_btn"
         android:layout_width="wrap_content"
@@ -129,25 +121,15 @@
             android:textStyle="italic" />
     </RadioGroup>
 
-    <!-- Size Spinner -->
     <Spinner
-        android:id="@+id/cloth_size"
+        android:id="@+id/size"
         android:layout_width="300dp"
         android:layout_height="50dp"
         android:entries="@array/cloth_size"
         android:layout_marginTop="490dp"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        />
 
-    <!-- Current Location Text -->
-    <TextView
-        android:id="@+id/locationTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/cloth_size"
-        android:text="Your current location is: "
-        android:layout_marginTop="16dp" />
-
-    <!-- Register Button -->
     <Button
         android:id="@+id/register"
         android:layout_width="300dp"
@@ -155,8 +137,9 @@
         android:background="@drawable/button_blue"
         android:textColor="@color/white"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="600dp"
+        android:layout_marginTop="560dp"
         android:text="Register"
-        android:textSize="19dp" />
+        android:textSize="19dp"
+        />
 
 </RelativeLayout>
