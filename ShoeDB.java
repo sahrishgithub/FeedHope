@@ -1,123 +1,71 @@
-package com.example.unitconverter.ProviderInterface;
+package com.example.feedhope.ProviderInterface.ShoeDonation;
 
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
+
+import androidx.annotation.Nullable;
+
+import java.util.ArrayList;
 
 public class ShoeDB extends SQLiteOpenHelper {
-
-    // Database Name and Version
-    private static final String DATABASE_NAME = "database_shoe.db";
-    private static final int DATABASE_VERSION = 18;
-
-    // Table and Columns
-    public static final String TABLE_NAME = "donation_shoes";
-    public static final String COLUMN_ID = "id";
-    public static final String COLUMN_TYPE = "type";
-    public static final String COLUMN_CONDITION = "condition";
-    public static final String COLUMN_SIZE = "size";
-    public static final String COLUMN_QUANTITY = "quantity";
-    public static final String COLUMN_GENDER = "gender";
-    public static final String COLUMN_LATITUDE = "latitude";
-    public static final String COLUMN_LONGITUDE = "longitude";
-    public static final String COLUMN_LOCATION_NAME = "location_name";
-
-    public ShoeDB(Context context) {
-        super(context, DATABASE_NAME, null, DATABASE_VERSION);
+    private static final String DBName="FeedHopeProject.db";
+    public ShoeDB(@Nullable Context context) {
+        super(context, DBName, null, 19);
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String CREATE_TABLE = "CREATE TABLE " + TABLE_NAME + " (" +
-                COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                COLUMN_TYPE + " TEXT, " +
-                COLUMN_CONDITION + " TEXT, " +
-                COLUMN_SIZE + " TEXT, " +
-                COLUMN_QUANTITY + " INTEGER, " +
-                COLUMN_GENDER + " TEXT, " +
-                COLUMN_LATITUDE + " REAL, " +
-                COLUMN_LONGITUDE + " REAL, " +
-                COLUMN_LOCATION_NAME + " TEXT" +
-                ")";
-        db.execSQL(CREATE_TABLE);
+        db.execSQL("create table ShoeDonation(Name TEXT NOT NULL,ShoeType TEXT NOT NULL,Quantity TEXT NOT NULL,Condition TEXT NOT NULL,Gender TEXT Not NULL,Size TEXT NOT NULL)");
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS ShoeDonation");
         onCreate(db);
     }
 
-    // Method to add a new donation
-    public long addDonation(String type, String condition, String size, int quantity, String gender,
-                            double latitude, double longitude, String locationName) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put(COLUMN_TYPE, type);
-        values.put(COLUMN_CONDITION, condition);
-        values.put(COLUMN_SIZE, size);
-        values.put(COLUMN_QUANTITY, quantity);
-        values.put(COLUMN_GENDER, gender);
-        values.put(COLUMN_LATITUDE, latitude);
-        values.put(COLUMN_LONGITUDE, longitude);
-        values.put(COLUMN_LOCATION_NAME, locationName);
-
-        long result = db.insert(TABLE_NAME, null, values);
-        db.close();
-        return result;
+    public boolean insert(String Name,String ShoeType,String Quantity,String Condition, String Gender,String Size){
+        try(SQLiteDatabase mydb = this.getWritableDatabase()) {
+            ContentValues cv = new ContentValues();
+            cv.put("Name",Name);
+            cv.put("ShoeType",ShoeType);
+            cv.put("Quantity", Quantity);
+            cv.put("Condition", Condition);
+            cv.put("Gender", Gender);
+            cv.put("Size", Size);
+            long result = mydb.insert("ShoeDonation", null, cv);
+            mydb.close();
+            if (result == -1) {
+                Log.e("ShoeDB", "Failed to insert data");
+                return false;
+            } else {
+                Log.d("ShoeDB", "Data inserted successfully");
+                return true;
+            }
+        }
     }
 
-    // Method to get all donations
-    public Cursor getAllDonations() {
+    public ArrayList<ShoeModalClass> readShoeData() {
         SQLiteDatabase db = this.getReadableDatabase();
-        String query = "SELECT * FROM " + TABLE_NAME;
-        return db.rawQuery(query, null);
-    }
+        Cursor cursor = db.rawQuery("SELECT * FROM ShoeDonation", null);
+        ArrayList<ShoeModalClass> modalClasses = new ArrayList<>();
 
-    // Method to get a specific donation by ID
-    public Cursor getDonationById(long id) {
-        SQLiteDatabase db = this.getReadableDatabase();
-        String query = "SELECT * FROM " + TABLE_NAME + " WHERE " + COLUMN_ID + " = ?";
-        return db.rawQuery(query, new String[]{String.valueOf(id)});
-    }
-
-    // Method to update a donation record
-    public int updateDonation(long id, String type, String condition, String size, int quantity,
-                              String gender, double latitude, double longitude, String locationName) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put(COLUMN_TYPE, type);
-        values.put(COLUMN_CONDITION, condition);
-        values.put(COLUMN_SIZE, size);
-        values.put(COLUMN_QUANTITY, quantity);
-        values.put(COLUMN_GENDER, gender);
-        values.put(COLUMN_LATITUDE, latitude);
-        values.put(COLUMN_LONGITUDE, longitude);
-        values.put(COLUMN_LOCATION_NAME, locationName);
-
-        return db.update(TABLE_NAME, values, COLUMN_ID + " = ?", new String[]{String.valueOf(id)});
-    }
-
-    // Method to delete a donation record
-    public void deleteDonation(long id) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        db.delete(TABLE_NAME, COLUMN_ID + " = ?", new String[]{String.valueOf(id)});
-        db.close();
-    }
-
-    // Method to count total donations
-    public int getDonationCount() {
-        SQLiteDatabase db = this.getReadableDatabase();
-        String query = "SELECT COUNT(*) FROM " + TABLE_NAME;
-        Cursor cursor = db.rawQuery(query, null);
-        int count = 0;
         if (cursor.moveToFirst()) {
-            count = cursor.getInt(0);
+            do {
+                String name = cursor.getString(0);
+                String type = cursor.getString(1);
+                String quantity = cursor.getString(2);
+                String condition = cursor.getString(3);
+                String gender = cursor.getString(4);
+                String size = cursor.getString(5);
+                modalClasses.add(new ShoeModalClass(name,type, quantity, condition, gender,size));
+            } while (cursor.moveToNext());
         }
         cursor.close();
-        return count;
+        return modalClasses;
     }
 }
