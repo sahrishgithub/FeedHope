@@ -6,6 +6,16 @@
     >
 
     <ImageView
+        android:id="@+id/back_arrow"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:src="@drawable/back_arrow"
+        android:clickable="true"
+        android:focusable="true"
+        android:layout_margin="10dp"
+        android:layout_marginStart="10dp"/>
+
+    <ImageView
         android:layout_width="250dp"
         android:layout_height="300dp"
         android:layout_marginBottom="50dp"
@@ -14,7 +24,7 @@
         />
 
     <Spinner
-        android:id="@+id/amountSpinner"
+        android:id="@+id/amount"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_marginBottom="10dp"/>
