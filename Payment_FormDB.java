@@ -1,18 +1,23 @@
-package com.example.feedhope.AppInterface;
+package com.example.feedhope.ProviderInterface.PaymentDonation;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
 
+import com.example.feedhope.ProviderInterface.ToyDonation.ToyModalClass;
+
+import java.util.ArrayList;
+
 public class Payment_FormDB extends SQLiteOpenHelper {
     private static final String DBName = "FeedHopeProject.db";
 
     public Payment_FormDB(@Nullable Context context) {
-        super(context, DBName, null, 15);
+        super(context, DBName, null, 19);
     }
 
     @Override
@@ -41,5 +46,20 @@ public class Payment_FormDB extends SQLiteOpenHelper {
                 return true;
             }
         }
+    }
+    public ArrayList<PaymentModalClass> readPaymentData() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM Payment_Donation", null);
+        ArrayList<PaymentModalClass> modalClasses = new ArrayList<>();
+
+        if (cursor.moveToFirst()) {
+            do {
+                String name = cursor.getString(0);
+                String amount = cursor.getString(1);
+                modalClasses.add(new PaymentModalClass(name,amount));
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return modalClasses;
     }
 }

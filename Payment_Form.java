@@ -1,12 +1,15 @@
-package com.example.feedhope.AppInterface;
+package com.example.feedhope.ProviderInterface.PaymentDonation;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.feedhope.R;
 import com.stripe.android.PaymentConfiguration;
 import com.stripe.android.Stripe;
@@ -18,6 +21,7 @@ import com.stripe.android.view.CardMultilineWidget;
 public class Payment_Form extends AppCompatActivity {
     private static final String PUBLISHABLE_KEY = "pk_test_51QIE1c00zQwAWWuC74pt5M0Rie9Msf37ZperWzuWqPTQnzcBrN1TQm5oE2mAfpQj3viOWQK5PV3flfRZlWICRJ9K00AsH7zl3W"; // Use your Stripe test mode publishable key
     private Stripe stripe;
+    ImageView back;
     private CardMultilineWidget cardForm;
     private Button btnPay;
     String loggedInEmail;
@@ -32,8 +36,16 @@ public class Payment_Form extends AppCompatActivity {
         PaymentConfiguration.init(this, PUBLISHABLE_KEY);
         cardForm = findViewById(R.id.cardInputWidget);
         btnPay = findViewById(R.id.btn_pay);
-        amountSpinner = findViewById(R.id.amountSpinner);
+        amountSpinner = findViewById(R.id.amount);
         loggedInEmail = getIntent().getStringExtra("email");
+        back = findViewById(R.id.back_arrow);
+
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
 
         paymentFormDB = new Payment_FormDB(this);
         String[] amounts = {"100 PKR", "500 PKR", "1000 PKR", "5000 PKR"};
