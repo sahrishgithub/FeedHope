@@ -27,7 +27,7 @@
     <ImageView
         android:layout_width="200dp"
         android:layout_height="200dp"
-        android:src="@drawable/shoe"
+        android:src="@drawable/donate_shoe"
         android:layout_marginTop="70dp"
         android:layout_centerHorizontal="true"
         />
@@ -74,7 +74,7 @@
         android:textStyle="italic" />
 
     <RadioGroup
-        android:id="@+id/radio_btn"
+        android:id="@+id/gender"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
@@ -106,23 +106,17 @@
             android:textSize="18dp"
             android:textStyle="italic" />
     </RadioGroup>
-    <Spinner
+
+    <EditText
         android:id="@+id/size"
         android:layout_width="300dp"
         android:layout_height="50dp"
-        android:entries="@array/size"
-        android:layout_marginTop="550dp"
+        android:drawablePadding="10dp"
+        android:layout_marginTop="560dp"
         android:layout_centerHorizontal="true"
+        android:hint="Shoe Size"
+        android:inputType="numberDecimal"
         />
-    <TextView
-        android:id="@+id/location"
-        android:layout_width="300dp"
-        android:layout_height="50dp"
-        android:layout_marginTop="580dp"
-        android:layout_centerHorizontal="true"
-        android:gravity="center"
-        android:text="Your current location is:"
-        android:textSize="16sp" />
 
     <Button
         android:id="@+id/register"
@@ -131,7 +125,7 @@
         android:background="@drawable/button_blue"
         android:textColor="@color/white"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="640dp"
+        android:layout_marginTop="620dp"
         android:text="Register"
         android:textSize="19dp"
         />
