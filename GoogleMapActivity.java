@@ -1,4 +1,4 @@
-package com.example.unitconverter.AppInterface;
+package com.example.feedhope.AppInterface;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -19,11 +19,12 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
-import com.example.unitconverter.R;
+import com.example.feedhope.R;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -153,6 +154,13 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
         }
     }
 
+    private void addMarker(MarkerOptions markerOptions) {
+        if (mMap != null) {
+            mMap.addMarker(markerOptions);
+        }
+    }
+
+
     private void updateMapWithCurrentLocation(Location location) {
         LatLng currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
 
@@ -181,13 +189,26 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
         }
     }
 
+    private void clear() {
+        if (mMap != null) {
+            mMap.clear();
+        }
+    }
+
+
+    private void moveCamera(CameraUpdate cameraUpdate) {
+        if (mMap != null) {
+            mMap.moveCamera(cameraUpdate);
+        }
+    }
+
 
     private void storeCurrentLocationInPreferences(double latitude, double longitude, String locationName) {
         SharedPreferences sharedPreferences = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putFloat(KEY_LATITUDE, (float) latitude);
-        editor.putFloat(KEY_LONGITUDE, (float) longitude);
-        editor.putString(KEY_LOCATION_NAME, locationName);
+        editor.putString(KEY_LOCATION_NAME, locationName); // Store location name
+        editor.putFloat(KEY_LATITUDE, (float) latitude);   // Store latitude
+        editor.putFloat(KEY_LONGITUDE, (float) longitude); // Store longitude
         editor.apply();
     }
 
@@ -239,6 +260,14 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
             mMap.setMyLocationEnabled(true);
         }
     }
+
+    private void setMyLocationEnabled(boolean enabled) {
+        if (mMap != null && (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
+                ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)) {
+            mMap.setMyLocationEnabled(enabled);
+        }
+    }
+
 
     @Override
     protected void onStop() {
