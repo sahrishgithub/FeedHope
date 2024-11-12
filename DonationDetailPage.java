@@ -2,10 +2,12 @@ package com.example.feedhope.AdminInterface;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
 
 import com.example.feedhope.ProviderInterface.ClothDonation.ClothDetailActivity;
@@ -27,6 +29,13 @@ public class DonationDetailPage extends AppCompatActivity {
         shoe = findViewById(R.id.shoe);
         medicine = findViewById(R.id.medicine);
         toy = findViewById(R.id.toy);
+
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setTitle("");
+        }
 
         food.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -64,5 +73,16 @@ public class DonationDetailPage extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 }
