@@ -1,4 +1,4 @@
-package com.example.unitconverter.RiderInterface;
+package com.example.feedhope.RiderInterface.Duty;
 
 import android.content.Context;
 import android.content.Intent;
@@ -9,10 +9,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.example.unitconverter.AdminInterface.AdminHomePage;
-import com.example.unitconverter.AdminInterface.AssignDuty;
-import com.example.unitconverter.R;
+import com.example.feedhope.R;
 import java.util.ArrayList;
 
 public class DutyRVAdapter extends RecyclerView.Adapter<DutyRVAdapter.ViewHolder> {
@@ -34,7 +31,7 @@ public class DutyRVAdapter extends RecyclerView.Adapter<DutyRVAdapter.ViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-//        final int itemPosition = position;
+
         DutyModalClass modal = dutyModalClasses.get(position);
         holder.userName.setText(modal.getName());
         holder.pickName.setText(modal.getPick());
@@ -43,8 +40,8 @@ public class DutyRVAdapter extends RecyclerView.Adapter<DutyRVAdapter.ViewHolder
         holder.update.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(context,Update_Status.class);
-                intent.putExtra("email", modal.getName());
+                Intent intent = new Intent(context, DutyUpdateStatus.class);
+                intent.putExtra("dutyId", modal.getDutyID());
                 context.startActivity(intent);
             }
         });

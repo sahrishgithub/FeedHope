@@ -1,15 +1,14 @@
-package com.example.unitconverter.RiderInterface;
+package com.example.feedhope.RiderInterface.Duty;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.MenuItem;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.example.unitconverter.R;
-
+import com.example.feedhope.R;
 import java.util.ArrayList;
 
 public class DutyDetailsActivity extends AppCompatActivity {
@@ -22,7 +21,7 @@ public class DutyDetailsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.rv_duties);
+        setContentView(R.layout.rv_rider_duties);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -32,9 +31,12 @@ public class DutyDetailsActivity extends AppCompatActivity {
             getSupportActionBar().setTitle("");
         }
 
+        SharedPreferences sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
+        String userEmail = sharedPreferences.getString("user_email", "");
+
         modalClasses = new ArrayList<>();
         dbHandler = new DutyDB(DutyDetailsActivity.this);
-        modalClasses = dbHandler.readDutyData();
+        modalClasses = dbHandler.readRiderDuty(userEmail);
         rvAdapter = new DutyRVAdapter(modalClasses, DutyDetailsActivity.this);
         recyclerView = findViewById(R.id.recyclerView);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(DutyDetailsActivity.this, RecyclerView.VERTICAL, false);
@@ -44,8 +46,7 @@ public class DutyDetailsActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                // Handle the back button click here
-                onBackPressed(); // Go back to the previous activity
+                onBackPressed();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
