@@ -1,10 +1,11 @@
-package com.example.feedhope.ReceiverInterface;
+package com.example.feedhope.ReceiverInterface.ReceiverRegister;
 
 import android.app.LauncherActivity;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,8 @@ import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.feedhope.R;
+import com.google.gson.Gson;
+
 import java.util.ArrayList;
 
 public class ReceiverRVAdapter extends RecyclerView.Adapter<ReceiverRVAdapter.UserViewHolder> {
@@ -33,7 +36,7 @@ public class ReceiverRVAdapter extends RecyclerView.Adapter<ReceiverRVAdapter.Us
     @NonNull
     @Override
     public UserViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_view_receiver, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_view_register_receiver, parent, false);
         return new UserViewHolder(view);
     }
 
@@ -108,5 +111,15 @@ public class ReceiverRVAdapter extends RecyclerView.Adapter<ReceiverRVAdapter.Us
         userList.remove(position);
         notifyItemRemoved(position);
         notifyItemRangeChanged(position, userList.size());
+
+        // Remove item from SharedPreferences
+        SharedPreferences sharedPreferences = context.getSharedPreferences("receiverPrefs", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+
+        // Convert the updated list to JSON and save it back to SharedPreferences
+        Gson gson = new Gson();
+        String updatedJson = gson.toJson(userList);
+        editor.putString("receiverList", updatedJson);
+        editor.apply();
     }
 }

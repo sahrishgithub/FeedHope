@@ -1,13 +1,11 @@
-package com.example.unitconverter.ProviderInterface;
+package com.example.feedhope.ProviderInterface.ProviderRegister;
 
 import android.app.LauncherActivity;
-import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
-import android.os.Build;
+import android.content.SharedPreferences;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +14,9 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 import androidx.recyclerview.widget.RecyclerView;
-import com.example.unitconverter.R;
+import com.example.feedhope.R;
+import com.google.gson.Gson;
+
 import java.util.ArrayList;
 
 public class ProviderRegisterRVAdapter extends RecyclerView.Adapter<ProviderRegisterRVAdapter.UserViewHolder> {
@@ -35,7 +35,7 @@ public class ProviderRegisterRVAdapter extends RecyclerView.Adapter<ProviderRegi
     @NonNull
     @Override
     public UserViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_view_provider, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_view_register_provider, parent, false);
         return new UserViewHolder(view);
     }
 
@@ -50,7 +50,7 @@ public class ProviderRegisterRVAdapter extends RecyclerView.Adapter<ProviderRegi
         holder.accept.setOnClickListener(v -> {
             boolean isInserted = db.insert(user.getName(), user.getPhone(), user.getEmail(), user.getPass());
             String message = isInserted ? "Data saved successfully!" : "Error saving data!";
-            String notificationMessage = isInserted ? user.getName() + " : Registered Successfully" : user.getName() + " : Application rejected your request" ;
+            String notificationMessage = isInserted ? user.getName() + " : Registered Successfully" : user.getName() + " : Already registered" ;
             sendNotification("Registration Notification", notificationMessage);
             removeItem(position);
         });
@@ -99,5 +99,16 @@ public class ProviderRegisterRVAdapter extends RecyclerView.Adapter<ProviderRegi
         userList.remove(position);
         notifyItemRemoved(position);
         notifyItemRangeChanged(position, userList.size());
+
+        // Remove item from SharedPreferences
+        SharedPreferences sharedPreferences = context.getSharedPreferences("providerPrefs", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+
+        // Convert the updated list to JSON and save it back to SharedPreferences
+        Gson gson = new Gson();
+        String updatedJson = gson.toJson(userList);
+        editor.putString("providerList", updatedJson);
+        editor.apply(); // Apply changes asynchronously
     }
+
 }
