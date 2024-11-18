@@ -10,11 +10,12 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class ClothDB extends SQLiteOpenHelper {
     private static final String DBName="FeedHopeProject.db";
     public ClothDB(@Nullable Context context) {
-        super(context, DBName, null, 19);
+        super(context, DBName, null, 42);
     }
 
     @Override
@@ -53,7 +54,7 @@ public class ClothDB extends SQLiteOpenHelper {
     public ArrayList<ClothModelClass> readClothData() {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT * FROM ClothDonation", null);
-        ArrayList<ClothModelClass> modalClasses = new ArrayList<>();
+        ArrayList<ClothModelClass> clothModalClasses = new ArrayList<>();
 
         if (cursor.moveToFirst()) {
             do {
@@ -64,10 +65,13 @@ public class ClothDB extends SQLiteOpenHelper {
                 String category = cursor.getString(4);
                 String seasonal = cursor.getString(5);
                 String size = cursor.getString(6);
-                modalClasses.add(new ClothModelClass(name,type, condition, quantity, category, seasonal,size));
+                clothModalClasses.add(new ClothModelClass(name,type, condition, quantity, category, seasonal,size));
             } while (cursor.moveToNext());
         }
         cursor.close();
-        return modalClasses;
+        db.close();
+        // Reverse the list to show the latest data at the top
+        Collections.reverse(clothModalClasses );
+        return clothModalClasses ;
     }
 }

@@ -10,11 +10,12 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class MedicineDB extends SQLiteOpenHelper {
     private static final String DBName="FeedHopeProject.db";
     public MedicineDB(@Nullable Context context) {
-        super(context, DBName, null, 19);
+        super(context, DBName, null, 42);
     }
 
     @Override
@@ -53,7 +54,7 @@ public class MedicineDB extends SQLiteOpenHelper {
     public ArrayList<MedicineModalClass> readMedicineData() {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT * FROM MedicineDonation", null);
-        ArrayList<MedicineModalClass> modalClasses = new ArrayList<>();
+        ArrayList<MedicineModalClass> medicinmodalClasses = new ArrayList<>();
 
         if (cursor.moveToFirst()) {
             do {
@@ -64,10 +65,13 @@ public class MedicineDB extends SQLiteOpenHelper {
                 String condition = cursor.getString(4);
                 String manufacture = cursor.getString(5);
                 String expire = cursor.getString(6);
-                modalClasses.add(new MedicineModalClass(name,medicineName,form, quantity, condition, manufacture, expire));
+                medicinmodalClasses.add(new MedicineModalClass(name,medicineName,form, quantity, condition, manufacture, expire));
             } while (cursor.moveToNext());
         }
         cursor.close();
-        return modalClasses;
+        db.close();
+        // Reverse the list to show the latest data at the top
+        Collections.reverse(medicinmodalClasses);
+        return medicinmodalClasses;
     }
 }
