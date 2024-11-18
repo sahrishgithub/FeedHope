@@ -1,5 +1,7 @@
 package com.example.feedhope.ReceiverInterface.FoodInform;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.MenuItem;
 import androidx.appcompat.app.AppCompatActivity;
@@ -29,9 +31,12 @@ public class FoodInformDetail extends AppCompatActivity {
             getSupportActionBar().setTitle("");
         }
 
+        SharedPreferences sharedPreferences = getSharedPreferences("FoodInformPrefs", Context.MODE_PRIVATE);
+        String userEmail = sharedPreferences.getString("FoodInform", "");
+
         modalClasses = new ArrayList<>();
         dbHandler = new FoodInformDB(FoodInformDetail.this);
-        modalClasses = dbHandler.readFoodData();
+        modalClasses = dbHandler.readFoodInformation(userEmail);
         rvAdapter = new FoodInformRVAdapter(modalClasses, FoodInformDetail.this);
         recyclerView = findViewById(R.id.recyclerView);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(FoodInformDetail.this, RecyclerView.VERTICAL, false);
