@@ -1,5 +1,7 @@
 package com.example.feedhope.ReceiverInterface.GiftInform;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.MenuItem;
 import androidx.appcompat.app.AppCompatActivity;
@@ -29,9 +31,12 @@ public class GiftInformDetail extends AppCompatActivity {
             getSupportActionBar().setTitle("");
         }
 
+        SharedPreferences sharedPreferences = getSharedPreferences("FoodInformPrefs", Context.MODE_PRIVATE);
+        String userEmail = sharedPreferences.getString("FoodInform", "");
+
         modalClasses = new ArrayList<>();
         dbHandler = new GiftInformDB(GiftInformDetail.this);
-        modalClasses = dbHandler.readGiftData();
+        modalClasses = dbHandler.readGiftInformation(userEmail);
         rvAdapter = new GiftInformRVAdapter(modalClasses, GiftInformDetail.this);
         recyclerView = findViewById(R.id.recyclerView);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(GiftInformDetail.this, RecyclerView.VERTICAL, false);
