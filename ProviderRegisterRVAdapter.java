@@ -46,9 +46,10 @@ public class ProviderRegisterRVAdapter extends RecyclerView.Adapter<ProviderRegi
         holder.phoneText.setText(user.getPhone());
         holder.emailText.setText(user.getEmail());
         holder.passText.setText(user.getPass());
+        holder.locationText.setText(user.getLocation());
 
         holder.accept.setOnClickListener(v -> {
-            boolean isInserted = db.insert(user.getName(), user.getPhone(), user.getEmail(), user.getPass());
+            boolean isInserted = db.insert(user.getName(), user.getPhone(), user.getEmail(), user.getPass(), user.getLocation());
             String message = isInserted ? "Data saved successfully!" : "Error saving data!";
             String notificationMessage = isInserted ? user.getName() + " : Registered Successfully" : user.getName() + " : Already registered" ;
             sendNotification("Registration Notification", notificationMessage);
@@ -82,7 +83,7 @@ public class ProviderRegisterRVAdapter extends RecyclerView.Adapter<ProviderRegi
     }
 
     static class UserViewHolder extends RecyclerView.ViewHolder {
-        TextView nameText, phoneText, emailText, passText;
+        TextView nameText, phoneText, emailText, passText,locationText;
         Button accept, reject;
 
         public UserViewHolder(@NonNull View itemView) {
@@ -91,6 +92,7 @@ public class ProviderRegisterRVAdapter extends RecyclerView.Adapter<ProviderRegi
             phoneText = itemView.findViewById(R.id.phone);
             emailText = itemView.findViewById(R.id.email);
             passText = itemView.findViewById(R.id.pass);
+            locationText = itemView.findViewById(R.id.location);
             accept = itemView.findViewById(R.id.accept);
             reject = itemView.findViewById(R.id.reject);
         }
