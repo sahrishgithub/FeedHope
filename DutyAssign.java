@@ -10,11 +10,14 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -34,18 +37,20 @@ import com.example.feedhope.RiderInterface.Register.RiderRegisterDB;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Locale;
 
 public class DutyAssign extends AppCompatActivity {
     private EditText date;
-    private Spinner pick, drop, username;
+    private Spinner pick, drop;
     private Button submit_btn;
+    private Spinner username;
+    private RiderRegisterDB riderDB;
+    private ArrayList<String> riderEmails;
     private DutyDB db;
     private ProviderDB providerDB;
     private ReceiverRegisterDB receiverDB;
     // Fetch the list of all rider emails
-    RiderRegisterDB riderDB = new RiderRegisterDB(this);
-    private ArrayList<String> providerLocations;
     private static final String CHANNEL_ID = "DutyChannel";
     private static final String CHANNEL_NAME = "Duty Notifications";
     private NotificationManager notificationManager;
@@ -55,7 +60,8 @@ public class DutyAssign extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.duty_assign);
 
-        username = findViewById(R.id.name);
+        username = findViewById(R.id.username);
+        riderDB = new RiderRegisterDB(this);
         pick = findViewById(R.id.pick_location);
         providerDB = new ProviderDB(this);
         drop = findViewById(R.id.drop);
@@ -63,17 +69,45 @@ public class DutyAssign extends AppCompatActivity {
         date = findViewById(R.id.date);
         Calendar calendar = Calendar.getInstance();
         submit_btn = findViewById(R.id.submit);
-
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setTitle("");
         }
 
+
+        // Initially, the spinner should be hidden until username is clicked
+        username.setVisibility(View.GONE);
+        TextView usernameTextView = findViewById(R.id.username1);
+        // Fetch and populate the spinner with rider emails
+        loadRiderEmails();
+        usernameTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Show the spinner (dropdown) when the username is clicked
+                username.setVisibility(View.VISIBLE);
+
+                // Set up the spinner with emails using ArrayAdapter
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(DutyAssign.this, android.R.layout.simple_spinner_dropdown_item, riderEmails);
+                username.setAdapter(adapter);
+
+                // Optional: Handle selection of an email
+                username.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                        String selectedEmail = riderEmails.get(position);
+                        // Do something with the selected email
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parentView) {
+                        // Handle case where nothing is selected
+                    }
+                });
+            }
+        });
         date.setOnClickListener(v -> {
-            // Advance the calendar by one day to start the selection from the next day
             calendar.add(Calendar.DAY_OF_YEAR, 1);
 
             // Open DatePickerDialog with the minimum date set to the next day
@@ -101,17 +135,14 @@ public class DutyAssign extends AppCompatActivity {
 
             // Set the minimum selectable date in the DatePickerDialog to the next day
             datePickerDialog.getDatePicker().setMinDate(calendar.getTimeInMillis());
-
             // Show the DatePickerDialog
             datePickerDialog.show();
         });
-
-
         notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         createNotificationChannel();
 
 
-        /// Fetch provider locations and set it to the 'pick' Spinner
+        // Fetch provider locations and set it to the 'pick' Spinner
         ArrayList<String> providerLocations = providerDB.getAllProviderLocations();
         providerLocations.add(0, "Select Pick Location");  // Add the default item at the beginning
 
@@ -249,6 +280,44 @@ public class DutyAssign extends AppCompatActivity {
 
     }
 
+
+    private void loadRiderEmails() {
+        // Fetch all rider emails from the database
+        riderEmails = riderDB.getAllRiderEmails();
+        riderEmails.add(0, "Select Rider Email");  // Add a default item to prompt the user
+
+        // Create an ArrayAdapter to bind the list to the spinner
+        ArrayAdapter<String> riderAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, riderEmails) {
+            @Override
+            public boolean isEnabled(int position) {
+                // Disable the first item (Select Rider Email) so it's not selectable
+                return position != 0;  // Return false for the first item (position 0), making it non-selectable
+            }
+
+            @Override
+            public View getDropDownView(int position, View convertView, ViewGroup parent) {
+                View view = super.getDropDownView(position, convertView, parent);
+                TextView tv = (TextView) view;
+                // Set the color for the placeholder item (e.g., gray to indicate it's unselectable)
+                tv.setTextColor(position == 0 ? Color.GRAY : Color.BLACK);  // Gray color for the placeholder
+                return view;
+            }
+        };
+
+        // Set the layout resource for the dropdown (standard dropdown item layout)
+        riderAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        // Set the adapter to the spinner
+        username.setAdapter(riderAdapter);  // Assuming 'username' is your spinner
+
+        // Optionally set the initial selection to the placeholder item (position 0)
+        username.setSelection(0);  // This ensures the spinner starts with "Select Rider Email" selected
+    }
+
+
+
+
+
     private void createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel(
@@ -266,6 +335,7 @@ public class DutyAssign extends AppCompatActivity {
 
     private void sendNotification(String riderName, String title) {
         Intent intent = new Intent(this, DutyAssign.class);
+        //pending allow other app can use
         PendingIntent pendingIntent = PendingIntent.getActivity(
                 this,
                 0,
@@ -294,4 +364,5 @@ public class DutyAssign extends AppCompatActivity {
                 return super.onOptionsItemSelected(item);
         }
     }
+
 }
