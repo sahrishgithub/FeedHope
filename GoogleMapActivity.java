@@ -1,32 +1,24 @@
 package com.example.feedhope.AppInterface;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Looper;
 import android.util.Log;
-import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-
 import com.example.feedhope.R;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
-import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -46,8 +38,7 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
 
     private double currentLatitude;
     private double currentLongitude;
-    private GoogleMap mMap;
-    private GoogleMapDB dbHelper;
+    private com.google.android.gms.maps.GoogleMap mMap;
     private FusedLocationProviderClient fusedLocationClient;
     private LocationRequest locationRequest;
     private LocationCallback locationCallback;
@@ -59,9 +50,7 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
         super.onCreate(savedInstanceState);
         setContentView(R.layout.google_map);
 
-        dbHelper = new GoogleMapDB(this);
         geocoder = new Geocoder(this, Locale.getDefault());
-
         fusedLocationClient = new FusedLocationProviderClient(this);
         locationRequest = LocationRequest.create()
                 .setInterval(10000)
@@ -131,36 +120,6 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
         }
     }
 
-    private void retrieveDataAndDisplayMarkers() {
-        SQLiteDatabase db = dbHelper.getReadableDatabase();
-        Cursor cursor = null;
-        try {
-            cursor = db.query(GoogleMapDB.TABLE_NAME,
-                    new String[]{GoogleMapDB.COLUMN_NAME, GoogleMapDB.COLUMN_LATITUDE, GoogleMapDB.COLUMN_LONGITUDE},
-                    null, null, null, null, null);
-
-            while (cursor.moveToNext()) {
-                String name = cursor.getString(cursor.getColumnIndexOrThrow(GoogleMapDB.COLUMN_NAME));
-                double latitude = cursor.getDouble(cursor.getColumnIndexOrThrow(GoogleMapDB.COLUMN_LATITUDE));
-                double longitude = cursor.getDouble(cursor.getColumnIndexOrThrow(GoogleMapDB.COLUMN_LONGITUDE));
-                LatLng location = new LatLng(latitude, longitude);
-                mMap.addMarker(new MarkerOptions().position(location).title(name));
-            }
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
-            db.close();
-        }
-    }
-
-    private void addMarker(MarkerOptions markerOptions) {
-        if (mMap != null) {
-            mMap.addMarker(markerOptions);
-        }
-    }
-
-
     private void updateMapWithCurrentLocation(Location location) {
         LatLng currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
 
@@ -170,38 +129,22 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
 
             String address = getAddressFromLocation(currentLocation);
             if (address != null) {
-                if (storeLocationInDatabase(address, location.getLatitude(), location.getLongitude())) {
-                    // Add a red marker for the current location
-                    mMap.addMarker(new MarkerOptions()
-                            .position(currentLocation)
-                            .title(address)
-                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))); // Set marker color to red
+                // Add a red marker for the current location
+                mMap.addMarker(new MarkerOptions()
+                        .position(currentLocation)
+                        .title(address)
+                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))); // Set marker color to red
 
-                    currentLatitude = location.getLatitude();
-                    currentLongitude = location.getLongitude();
-                    lastKnownLocation = currentLocation;
+                currentLatitude = location.getLatitude();
+                currentLongitude = location.getLongitude();
+                lastKnownLocation = currentLocation;
 
-                    storeCurrentLocationInPreferences(currentLatitude, currentLongitude, address);
-                }
+                storeCurrentLocationInPreferences(currentLatitude, currentLongitude, address);
             } else {
                 Log.e("MapsActivity", "Failed to retrieve address for location.");
             }
         }
     }
-
-    private void clear() {
-        if (mMap != null) {
-            mMap.clear();
-        }
-    }
-
-
-    private void moveCamera(CameraUpdate cameraUpdate) {
-        if (mMap != null) {
-            mMap.moveCamera(cameraUpdate);
-        }
-    }
-
 
     private void storeCurrentLocationInPreferences(double latitude, double longitude, String locationName) {
         SharedPreferences sharedPreferences = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
@@ -224,50 +167,12 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
         return null;
     }
 
-    private boolean storeLocationInDatabase(String name, double latitude, double longitude) {
-        if (!locationExistsInDatabase(latitude, longitude)) {
-            SQLiteDatabase db = dbHelper.getWritableDatabase();
-            ContentValues values = new ContentValues();
-            values.put(GoogleMapDB.COLUMN_NAME, name);
-            values.put(GoogleMapDB.COLUMN_LATITUDE, latitude);
-            values.put(GoogleMapDB.COLUMN_LONGITUDE, longitude);
-            db.insert(GoogleMapDB.TABLE_NAME, null, values);
-            db.close();
-            return true;
-        }
-        return false;
-    }
-
-    private boolean locationExistsInDatabase(double latitude, double longitude) {
-        SQLiteDatabase db = dbHelper.getReadableDatabase();
-        Cursor cursor = null;
-        try {
-            String selection = GoogleMapDB.COLUMN_LATITUDE + " = ? AND " + GoogleMapDB.COLUMN_LONGITUDE + " = ?";
-            String[] selectionArgs = {String.valueOf(latitude), String.valueOf(longitude)};
-            cursor = db.query(GoogleMapDB.TABLE_NAME, null, selection, selectionArgs, null, null, null);
-            return cursor.getCount() > 0;
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
-            db.close();
-        }
-    }
-
     private void enableMyLocation() {
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
                 ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             mMap.setMyLocationEnabled(true);
         }
     }
-
-    private void setMyLocationEnabled(boolean enabled) {
-        if (mMap != null && (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
-                ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)) {
-            mMap.setMyLocationEnabled(enabled);
-        }
-    }
-
 
     @Override
     protected void onStop() {
@@ -276,9 +181,8 @@ public class GoogleMapActivity extends AppCompatActivity implements OnMapReadyCa
     }
 
     @Override
-    public void onMapReady(@NonNull GoogleMap googleMap) {
+    public void onMapReady(@NonNull com.google.android.gms.maps.GoogleMap googleMap) {
         mMap = googleMap;
-        retrieveDataAndDisplayMarkers();
         enableMyLocation(); // Call this to enable My Location layer
         startLocationUpdates();
     }
