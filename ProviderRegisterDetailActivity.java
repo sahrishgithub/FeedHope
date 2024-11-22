@@ -58,8 +58,7 @@ public class ProviderRegisterDetailActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                // Handle the back button click here
-                onBackPressed(); // Go back to the previous activity
+                onBackPressed();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

@@ -1,4 +1,4 @@
-package com.example.unitconverter.ProviderInterface;
+package com.example.feedhope.ProviderInterface.ProviderRegister;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -6,19 +6,21 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.InputType;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-
-import com.example.unitconverter.R;
+import com.example.feedhope.R;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
@@ -27,22 +29,24 @@ import com.mailjet.client.MailjetClient;
 import com.mailjet.client.MailjetRequest;
 import com.mailjet.client.MailjetResponse;
 import com.mailjet.client.resource.Emailv31;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
-
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Random;
 
 public class ProviderRegister extends AppCompatActivity {
-    private EditText name, phone, email, pass;
-    private boolean isPasswordVisible = false;
-    private Button register;
-    private ArrayList<ProviderModalClass> providerList;
-    private SharedPreferences sharedPreferences;
-    private Gson gson;
+    EditText name, phone, email, pass;
+    boolean isPasswordVisible = false;
+    Button register;
+    ArrayList<ProviderModalClass> providerList;
+    SharedPreferences sharedPreferences;
+    Gson gson;
     int otp;
+    TextView LocationTextView;
+    String PREFS_NAME = "LocationPrefs";
+    String KEY_LOCATION_NAME = "currentLocationName";
+    String LocationName;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -53,40 +57,99 @@ public class ProviderRegister extends AppCompatActivity {
         phone = findViewById(R.id.phone);
         email = findViewById(R.id.email);
         pass = findViewById(R.id.pass);
+        LocationTextView = findViewById(R.id.location);
         register = findViewById(R.id.register);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        // for back option
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setTitle("");
+        }
+
+        // Retrieve the location data from SharedPreferences
+        retrieveCurrentLocation();
+        // Display the location to the user
+        if (LocationName != null) {
+            LocationTextView.setText("Current location: " + LocationName);
+        } else {
+            LocationTextView.setText("Location not provided.");
         }
 
         sharedPreferences = getSharedPreferences("providerPrefs", Context.MODE_PRIVATE);
         gson = new Gson();
         loadData();
 
-        pass.setOnTouchListener((v, event) -> {
-            final int DRAWABLE_RIGHT = 2;  // Index for the drawableRight
-            if (event.getAction() == MotionEvent.ACTION_UP) {
-                if (event.getRawX() >= (pass.getRight() - pass.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
-                    // Toggle the visibility of the password
-                    if (isPasswordVisible) {
-                        // Hide password
-                        pass.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-                        pass.setCompoundDrawablesWithIntrinsicBounds(R.drawable.pass, 0, R.drawable.close_eye, 0);
-                    } else {
-                        // Show password
-                        pass.setInputType(InputType.TYPE_CLASS_TEXT);
-                        pass.setCompoundDrawablesWithIntrinsicBounds(R.drawable.pass, 0, R.drawable.open_eye, 0);
+        pass.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                {
+                    final int DRAWABLE_RIGHT = 2;
+                    if (event.getAction() == MotionEvent.ACTION_UP) {
+                        if (event.getRawX() >= (pass.getRight() - pass.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
+                            if (isPasswordVisible) {
+                                pass.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                                pass.setCompoundDrawablesWithIntrinsicBounds(R.drawable.pass, 0, R.drawable.close_eye, 0);
+                            } else {
+                                pass.setInputType(InputType.TYPE_CLASS_TEXT);
+                                pass.setCompoundDrawablesWithIntrinsicBounds(R.drawable.pass, 0, R.drawable.open_eye, 0);
+                            }
+                            isPasswordVisible = !isPasswordVisible;
+                            pass.setSelection(pass.getText().length());
+                            return true;
+                        }
                     }
-                    isPasswordVisible = !isPasswordVisible;
-                    pass.setSelection(pass.getText().length());
-                    return true;
                 }
+                return false;
             }
-            return false;
+        });
+
+        phone.addTextChangedListener(new TextWatcher() {
+            private boolean isUpdating = false;
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                // Do nothing here
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (isUpdating) return;
+
+                isUpdating = true;
+                String text = s.toString();
+
+                // Ensure the prefix is "+92"
+                if (!text.startsWith("+92")) {
+                    text = "+92" + text.replace("+92", ""); // Remove any duplicate "+92"
+                }
+
+                // Remove invalid characters and ensure it starts with "+923"
+                if (text.length() > 3) {
+                    String digits = text.substring(3).replaceAll("[^0-9]", ""); // Extract only digits
+
+                    // Enforce that the first digit after "+92" must be "3"
+                    if (digits.startsWith("0")) {
+                        digits = digits.substring(1); // Remove the leading "0"
+                    }
+
+                    if (!digits.startsWith("3")) {
+                        digits = "3" + digits.replaceFirst("^\\d*", ""); // Ensure it starts with "3"
+                    }
+
+                    digits = digits.length() > 10 ? digits.substring(0, 10) : digits; // Limit to 9 digits
+                    text = "+92" + digits;
+                }
+
+                phone.setText(text);
+                phone.setSelection(text.length()); // Move cursor to the end
+                isUpdating = false;
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                // Do nothing here
+            }
         });
 
         register.setOnClickListener(new View.OnClickListener() {
@@ -99,40 +162,26 @@ public class ProviderRegister extends AppCompatActivity {
                 String phone1 = phone.getText().toString().trim();
                 String email1 = email.getText().toString().trim();
                 String pass1 = pass.getText().toString().trim();
+                String location1=LocationTextView.getText().toString().trim();
 
                 name.setError(null);
                 phone.setError(null);
                 email.setError(null);
                 pass.setError(null);
+                LocationTextView.setError(null);
 
                 if (name1.isEmpty()) {
-                    errorMessages.append("Name field is required.\n");
                     name.setError("Name field is required");
                     isValid = false;
                 }
-                if (phone1.isEmpty()) {
-                    errorMessages.append("Phone field is required.\n");
-                    phone.setError("Phone field is required.");
-                    isValid = false;
-                } else if (!isValidPhoneNumber(phone1)) {
-                    errorMessages.append("Please enter a valid phone number.\n");
+                if (!isValidPhoneNumber(phone1)) {
                     phone.setError("Please enter a valid phone number.");
                     isValid = false;
                 }
-                if (email1.isEmpty()) {
-                    errorMessages.append("Email field is required.\n");
-                    email.setError("Email field is required");
-                    isValid = false;
-                } else if (!isValidEmail(email1)) {
-                    errorMessages.append("Please enter a valid email address.\n");
+                if (!isValidEmail(email1)) {
                     email.setError("Please enter a valid email address");
                     isValid = false;
-                }if (pass1.isEmpty()) {
-                    errorMessages.append("Password field is required.\n");
-                    pass.setError("Password field is required");
-                    isValid = false;
-                }else if (pass1.length() != 8) {
-                    errorMessages.append("Password must be at least 8 characters long.\n");
+                }if (pass1.length() != 8) {
                     pass.setError("Password must be at least 8 characters long");
                     isValid = false;
                 }
@@ -148,17 +197,17 @@ public class ProviderRegister extends AppCompatActivity {
                         otp = generateRandomOTP();
                         sendOTPEmail(name1,email1, otp);
 
-                        Intent intent = new Intent(ProviderRegister.this, OTPVerificationProvider.class);
+                        Intent intent = new Intent(ProviderRegister.this, ProviderOTPVerification.class);
                         intent.putExtra("name", name1);
                         intent.putExtra("phone", phone1);
                         intent.putExtra("email", email1);
                         intent.putExtra("pass", pass1);
+                        intent.putExtra("location",location1);
                         intent.putExtra("generated_otp", otp);
                         startActivity(intent);
                     } else {
                         Toast.makeText(ProviderRegister.this, "Please enter your email", Toast.LENGTH_SHORT).show();
                     }
-
                 } else {
                     Toast.makeText(ProviderRegister.this, errorMessages.toString(), Toast.LENGTH_LONG).show();
                 }
@@ -167,12 +216,23 @@ public class ProviderRegister extends AppCompatActivity {
 
     }
 
-    private int generateRandomOTP() {
-        Random random = new Random();
-        return 10000 + random.nextInt(90000); // Generates a random 5-digit number
+    private void retrieveCurrentLocation() {
+        SharedPreferences sharedPreferences = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        LocationName = sharedPreferences.getString(KEY_LOCATION_NAME, ""); // Retrieve location name
+
+        if (!LocationName.isEmpty()) {
+            LocationTextView.setText("Your current location is: " + LocationName);
+        } else {
+            LocationTextView.setText("Location not provided.");
+            Toast.makeText(this, "Invalid location data received. Please ensure location access is enabled.", Toast.LENGTH_SHORT).show();
+        }
     }
 
-    // Method to send OTP email using Mailjet API
+    private int generateRandomOTP() {
+        Random random = new Random();
+        return 10000 + random.nextInt(90000);
+    }
+
     @SuppressLint("StaticFieldLeak")
     private void sendOTPEmail(final String name, final String email, final int otp) {
         new AsyncTask<Void, Void, Boolean>() {
@@ -185,7 +245,7 @@ public class ProviderRegister extends AppCompatActivity {
                                     .put(new JSONObject()
                                             .put(Emailv31.Message.FROM, new JSONObject()
                                                     .put("Email", "rohaashraf7@gmail.com")
-                                                    .put("Name", "Roha Ashraf"))
+                                                    .put("Name", "Feed Hope"))
                                             .put(Emailv31.Message.TO, new JSONArray()
                                                     .put(new JSONObject()
                                                             .put("Email", email)
@@ -234,7 +294,6 @@ public class ProviderRegister extends AppCompatActivity {
         if (providerList == null) {
             providerList = new ArrayList<>();
         }
-        // Log data loaded
         Log.d("ProviderRegister", "Loaded provider list size: " + providerList.size());
     }
 
@@ -243,7 +302,6 @@ public class ProviderRegister extends AppCompatActivity {
         String json = gson.toJson(providerList);
         editor.putString("providerList", json);
         editor.apply();
-        // Log data saved
         Log.d("ProviderRegister", "Data saved: " + json);
     }
 
@@ -251,8 +309,7 @@ public class ProviderRegister extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                // Handle the back button click here
-                onBackPressed(); // Go back to the previous activity
+                onBackPressed();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

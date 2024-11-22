@@ -1,13 +1,14 @@
-package com.example.unitconverter.ProviderInterface;
+package com.example.feedhope.ProviderInterface.ProviderRegister;
 
 public class ProviderModalClass {
-
-    private String name;
-    private String phone;
-    private String email;
-    private String pass;
-
-    // Constructor with all fields
+    String name,phone,email,pass,location;
+    public ProviderModalClass(String name, String phone, String email, String pass,String location) {
+        this.name = name;
+        this.phone = phone;
+        this.email = email;
+        this.pass = pass;
+        this.location = location;
+    }
     public ProviderModalClass(String name, String phone, String email, String pass) {
         this.name = name;
         this.phone = phone;
@@ -15,7 +16,12 @@ public class ProviderModalClass {
         this.pass = pass;
     }
 
-    // Getters and Setters
+    public void setLocation(String location) {
+        this.location = location;
+    }
+    public String getLocation() {
+        return location;
+    }
     public String getName() {
         return name;
     }

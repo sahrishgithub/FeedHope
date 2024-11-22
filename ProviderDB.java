@@ -6,33 +6,29 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
-
 import androidx.annotation.Nullable;
-
 import java.util.ArrayList;
 
 public class ProviderDB extends SQLiteOpenHelper {
-    private SQLiteDatabase db;
     private static final String DBName="FeedHopeProject.db";
     public ProviderDB(@Nullable Context context) {
-        super(context, DBName, null, 42);
+        super(context, DBName, null, 47);
     }
-    // Method to retrieve all provider locations
+
     public ArrayList<String> getAllProviderLocations() {
         ArrayList<String> locations = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT location FROM ProviderRegister", null);
-
+        Cursor cursor = db.rawQuery("SELECT Location FROM RegisterProvider", null);
         if (cursor != null) {
             try {
-                int columnIndex = cursor.getColumnIndex("location");
+                int columnIndex = cursor.getColumnIndex("Location");
                 if (columnIndex != -1) {  // Ensure the column exists
                     while (cursor.moveToNext()) {
                         String location = cursor.getString(columnIndex); // Get the location
                         locations.add(location);
                     }
                 } else {
-                    Log.e("Database", "Column 'location' not found.");
+                    Log.e("Database", "Column 'Location' not found.");
                 }
             } catch (Exception e) {
                 Log.e("Database", "Error retrieving data: " + e.getMessage());
@@ -42,45 +38,43 @@ public class ProviderDB extends SQLiteOpenHelper {
         } else {
             Log.e("Database", "Cursor is null.");
         }
-
         return locations;
     }
 
-
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL("create table ProviderRegister( " +
-                "Name TEXT NOT NULL,\n" +
-                "    Phone TEXT NOT NULL,\n" +
-                "    Email TEXT PRIMARY KEY,\n" +
-                "    Pass TEXT NOT NULL,\n" +
-                "    location TEXT NOT NULL)");
+        db.execSQL("create table RegisterProvider(Name TEXT NOT NULL,Phone TEXT NOT NULL,Email TEXT Primary key,Pass TEXT NOT NULL,Location TEXT NOT NULL)");
        }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS ProviderRegister");
+        db.execSQL("DROP TABLE IF EXISTS RegisterProvider");
         onCreate(db);
     }
 
-    public boolean insert(String name, String phone, String email, String pass, String location) {
+    public boolean insert(String name,String phone, String email,String pass,String Location){
         try(SQLiteDatabase mydb = this.getWritableDatabase()) {
             ContentValues cv = new ContentValues();
             cv.put("Name", name);
             cv.put("Phone", phone);
             cv.put("Email", email);
             cv.put("Pass", pass);
-            cv.put("Location", location);
-            long result = mydb.insert("ProviderRegister", null, cv);
-            Log.d("ProviderDB", "Inserting: " + location);
+            cv.put("Location",Location);
+            long result = mydb.insert("RegisterProvider", null, cv);
             mydb.close();
-            return result != -1;
+            if (result == -1) {
+                Log.e("ProviderRegisterDB", "Failed to insert data");
+                return false;
+            } else {
+                Log.d("ProviderRegisterDB", "Data inserted successfully");
+                return true;
+            }
         }
     }
 
     public boolean checkUser(String email, String pass) {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT * FROM ProviderRegister WHERE email = ? AND pass = ?", new String[]{email, pass});
+        Cursor cursor = db.rawQuery("SELECT * FROM RegisterProvider WHERE email = ? AND pass = ?", new String[]{email, pass});
         if (cursor.getCount() > 0) {
             cursor.close();
             return true;
@@ -91,33 +85,33 @@ public class ProviderDB extends SQLiteOpenHelper {
 
     public ProviderModalClass read(String loggedInEmail) {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.query("ProviderRegister", null, "Email = ?", new String[]{loggedInEmail}, null, null, null);
+        Cursor cursor = db.query("RegisterProvider", null, "Email = ?", new String[]{loggedInEmail}, null, null, null);
+
         if (cursor != null && cursor.moveToFirst()) {
             String name = cursor.getString(cursor.getColumnIndexOrThrow("Name"));
             String phone = cursor.getString(cursor.getColumnIndexOrThrow("Phone"));
             String email = cursor.getString(cursor.getColumnIndexOrThrow("Email"));
             String pass = cursor.getString(cursor.getColumnIndexOrThrow("Pass"));
-            String location = cursor.getString(cursor.getColumnIndexOrThrow("location"));
             cursor.close();
-            return new ProviderModalClass(name, phone, email, pass, location);
+            return new ProviderModalClass(name, phone, email, pass);
+        } else {
+            return null;
         }
-        cursor.close();
-        return null;
     }
-
 
     public long update(ProviderModalClass provider) {
         if (provider == null || provider.getEmail() == null) {
             Log.e("ProviderRegisterDB", "Provider or email is null");
             return -1;
         }
+
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put("Name", provider.getName());
         values.put("Phone", provider.getPhone());
         values.put("Email", provider.getEmail());
         values.put("Pass", provider.getPass());
-        values.put("location",provider.getLocation());
-        return db.update("ProviderRegister", values, "Email = ?", new String[]{provider.getEmail()});
+
+        return db.update("RegisterProvider", values, "Email = ?", new String[]{provider.getEmail()});
     }
 }

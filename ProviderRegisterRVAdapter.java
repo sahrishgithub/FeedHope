@@ -112,5 +112,4 @@ public class ProviderRegisterRVAdapter extends RecyclerView.Adapter<ProviderRegi
         editor.putString("providerList", updatedJson);
         editor.apply(); // Apply changes asynchronously
     }
-
 }
