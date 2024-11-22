@@ -111,6 +111,7 @@ public class ReceiverRegister extends AppCompatActivity {
 
         phone.addTextChangedListener(new TextWatcher() {
             private boolean isUpdating = false;
+            private boolean isToastShown = false;
 
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -126,26 +127,22 @@ public class ReceiverRegister extends AppCompatActivity {
 
                 // Ensure the prefix is "+92"
                 if (!text.startsWith("+92")) {
-                    text = "+92" + text.replace("+92", ""); // Remove any duplicate "+92"
+                    text = "+92" + text.replace("+92", ""); // Remove duplicate "+92"
                 }
 
-                // Remove invalid characters and ensure it starts with "+923"
-                if (text.length() > 3) {
-                    String digits = text.substring(3).replaceAll("[^0-9]", ""); // Extract only digits
+                // Remove invalid characters and ensure only digits after "+92"
+                String digits = text.length() > 3 ? text.substring(3).replaceAll("[^0-9]", "") : "";
 
-                    // Enforce that the first digit after "+92" must be "3"
-                    if (digits.startsWith("0")) {
-                        digits = digits.substring(1); // Remove the leading "0"
-                    }
-
-                    if (!digits.startsWith("3")) {
-                        digits = "3" + digits.replaceFirst("^\\d*", ""); // Ensure it starts with "3"
-                    }
-
-                    digits = digits.length() > 10 ? digits.substring(0, 10) : digits; // Limit to 9 digits
-                    text = "+92" + digits;
+                // Enforce starting with "3" and limit to 10 digits
+                if (digits.length() > 0 && !digits.startsWith("3")) {
+                    digits = "3" + digits.replaceFirst("^\\d*", ""); // Ensure it starts with "3"
                 }
 
+                if (digits.length() > 10) {
+                    digits = digits.substring(0, 10); // Limit to 10 digits
+                }
+
+                text = "+92" + digits;
                 phone.setText(text);
                 phone.setSelection(text.length()); // Move cursor to the end
                 isUpdating = false;
@@ -153,9 +150,25 @@ public class ReceiverRegister extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                // Do nothing here
+                // Validate the total number of digits after "+92"
+                String text = phone.getText().toString();
+                if (text.startsWith("+92")) {
+                    String digits = text.substring(3).replaceAll("[^0-9]", ""); // Extract only digits after "+92"
+
+                    if (digits.length() != 10 && !isToastShown) {
+                        isToastShown = true; // Prevent showing multiple toasts
+                        showToast("Phone number must have exactly 10 digits.");
+                    } else if (digits.length() == 10) {
+                        isToastShown = false; // Reset if the condition is met
+                    }
+                }
+            }
+
+            private void showToast(String message) {
+                Toast.makeText(phone.getContext(), message, Toast.LENGTH_SHORT).show();
             }
         });
+
 
         frequency.setOnCheckedChangeListener((group, checkedId) -> {
             RadioButton frequencybtn = findViewById(checkedId);
@@ -191,7 +204,7 @@ public class ReceiverRegister extends AppCompatActivity {
             LocationTextView.setError(null);
 
             if (!isValidPhoneNumber(phone1)) {
-                phone.setError("Use format like +923012846389");
+                phone.setError("Please enter a valid phone number.");
                 isValid = false;
             }
             if (reference1.isEmpty()) {
@@ -202,8 +215,8 @@ public class ReceiverRegister extends AppCompatActivity {
                 errorMessages.append("Please select a valid Organization Type.\n");
                 isValid = false;
             }
-            if (member1.isEmpty()) {
-                member.setError("Member field is required");
+            if (member1.isEmpty() || Integer.parseInt(member1) < 20) {
+                member.setError("Members must be greater than 20.");
                 isValid = false;
             }
             if (!isValidCardNumber(card1)) {
@@ -255,6 +268,16 @@ public class ReceiverRegister extends AppCompatActivity {
                 Toast.makeText(ReceiverRegister.this, errorMessages.toString(), Toast.LENGTH_LONG).show();
             }
         });
+    }
+    private boolean isValidPhoneNumber(String phoneNumber) {
+        PhoneNumberUtil phoneNumberUtil = PhoneNumberUtil.getInstance();
+        try {
+            Phonenumber.PhoneNumber number = phoneNumberUtil.parse(phoneNumber, "Pakistan");
+            return phoneNumberUtil.isValidNumber(number);
+        } catch (Exception e) {
+            Log.e("PhoneValidation", "Invalid phone number: " + phoneNumber, e);
+            return false;
+        }
     }
     private boolean isValidCardNumber(String cardNumber) {
         int sum = 0;
@@ -324,16 +347,6 @@ public class ReceiverRegister extends AppCompatActivity {
                 }
             }
         }.execute();
-    }
-    private boolean isValidPhoneNumber(String phoneNumber) {
-        PhoneNumberUtil phoneNumberUtil = PhoneNumberUtil.getInstance();
-        try {
-            Phonenumber.PhoneNumber number = phoneNumberUtil.parse(phoneNumber, "Pakistan");
-            return phoneNumberUtil.isValidNumber(number);
-        } catch (Exception e) {
-            Log.e("PhoneValidation", "Invalid phone number: " + phoneNumber, e);
-            return false;
-        }
     }
 
     private boolean isValidEmail(String email) {
