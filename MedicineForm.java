@@ -10,23 +10,21 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.NotificationCompat;
 
-import com.example.feedhope.AdminInterface.InformDonation;
-import com.example.feedhope.ProviderInterface.FoodDonation.FoodProvide;
 import com.example.feedhope.R;
 
 import java.util.Calendar;
 
 public class MedicineForm extends AppCompatActivity {
     Spinner form,condition;
+    TextView pack;
     EditText name,quantity,manufacture,expire;
     Button register;
     MedicineDB db;
@@ -43,6 +41,7 @@ public class MedicineForm extends AppCompatActivity {
         condition = findViewById(R.id.condition);
         manufacture = findViewById(R.id.manufacture);
         expire = findViewById(R.id.expire);
+        pack = findViewById(R.id.pack);
 
         register = findViewById(R.id.register);
         loggedInEmail = getIntent().getStringExtra("email");
@@ -60,29 +59,47 @@ public class MedicineForm extends AppCompatActivity {
             int year = calendar.get(Calendar.YEAR);
             int month = calendar.get(Calendar.MONTH);
             int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+            // Set the calendar for the minimum selectable date (2 years before current date)
+            final Calendar minDate = Calendar.getInstance();
+            minDate.add(Calendar.YEAR, -2); // Two years prior to the current date
+
             // Create DatePickerDialog and set the selected date in EditText
             DatePickerDialog datePickerDialog = new DatePickerDialog(MedicineForm.this,
                     (view, year1, monthOfYear, dayOfMonth) -> {
-                        // monthOfYear is 0-indexed so add 1
                         String selectedDate = dayOfMonth + "/" + (monthOfYear + 1) + "/" + year1;
                         manufacture.setText(selectedDate);
-                    }, year, month, day);
+                    },
+                    year, month, day);
+
+            // Restrict the date selection to two years prior to the current date and today
+            datePickerDialog.getDatePicker().setMinDate(minDate.getTimeInMillis());
+            datePickerDialog.getDatePicker().setMaxDate(calendar.getTimeInMillis());
             datePickerDialog.show();
         });
 
         expire.setOnClickListener(v -> {
+            // Get the current date
             final Calendar calendar = Calendar.getInstance();
             int year = calendar.get(Calendar.YEAR);
             int month = calendar.get(Calendar.MONTH);
             int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+            // Set the calendar for the maximum selectable date (1 year from the current date)
+            final Calendar maxDate = Calendar.getInstance();
+            maxDate.add(Calendar.YEAR, 1); // One year after the current date
+
             // Create DatePickerDialog and set the selected date in EditText
             DatePickerDialog datePickerDialog = new DatePickerDialog(MedicineForm.this,
                     (view, year1, monthOfYear, dayOfMonth) -> {
                         String selectedDate = dayOfMonth + "/" + (monthOfYear + 1) + "/" + year1;
                         expire.setText(selectedDate);
-                    }, year, month, day);
-            // Restrict the date selection to the current date and future dates
+                    },
+                    year, month, day);
+
+            // Restrict the date selection to the current date and one year from the current date
             datePickerDialog.getDatePicker().setMinDate(calendar.getTimeInMillis());
+            datePickerDialog.getDatePicker().setMaxDate(maxDate.getTimeInMillis());
             datePickerDialog.show();
         });
 
@@ -127,7 +144,8 @@ public class MedicineForm extends AppCompatActivity {
             }
 
             if (isValid) {
-                if (db.insert(loggedInEmail,name1,selectedForm, quantity1, selectedCondition, manufacture1,expire1)) {
+                String Quantity = quantity1+" "+pack.getText().toString().trim();
+                if (db.insert(loggedInEmail,name1,selectedForm, Quantity, selectedCondition, manufacture1,expire1)) {
                     Toast.makeText(MedicineForm.this, "Data Inserted", Toast.LENGTH_LONG).show();
                     sendNotification("Medicine Donation Detail", "The Medicine details have been added successfully.");
                     finish();
