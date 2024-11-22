@@ -1,47 +1,20 @@
-package com.example.unitconverter.RiderInterface;
+package com.example.feedhope.RiderInterface.Register;
 
-import android.os.Parcel;
-import android.os.Parcelable;
+public class RiderModalClass {
 
-public class RiderModalClass implements Parcelable {
+    String name,phone,licence,hours,email,pass,location;
+    long card;
 
-    private String name,phone,type,idcard,hours,days,card,email,pass;
-
-    public RiderModalClass(String name, String phone,String type,String idcard,String hours,String days,String card,String email,String pass) {
+    public RiderModalClass(String name, String phone, String licence, String hours,long card,String email, String pass, String location) {
         this.name = name;
         this.phone = phone;
-        this.type = type;
-        this.idcard = idcard;
+        this.licence = licence;
         this.hours = hours;
-        this.days = days;
         this.card = card;
         this.email = email;
         this.pass = pass;
+        this.location = location;
     }
-
-    protected RiderModalClass(Parcel in) {
-        name = in.readString();
-        phone = in.readString();
-        type = in.readString();
-        idcard = in.readString();
-        hours = in.readString();
-        days = in.readString();
-        card = in.readString();
-        email = in.readString();
-        pass = in.readString();
-    }
-
-    public static final Creator<RiderModalClass> CREATOR = new Creator<RiderModalClass>() {
-        @Override
-        public RiderModalClass createFromParcel(Parcel in) {
-            return new RiderModalClass(in);
-        }
-
-        @Override
-        public RiderModalClass[] newArray(int size) {
-            return new RiderModalClass[size];
-        }
-    };
 
     public RiderModalClass(String name, String phone, String email, String pass) {
         this.name = name;
@@ -50,64 +23,67 @@ public class RiderModalClass implements Parcelable {
         this.pass = pass;
     }
 
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public String getName() {
+        return name;
+    }
+
     public void setName(String name) {
         this.name = name;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public String getPhone() {
+        return phone;
     }
 
     public void setPhone(String phone) {
         this.phone = phone;
     }
 
-    public void setPass(String pass) {
-        this.pass = pass;
+    public String getLicence() {
+        return licence;
     }
 
-    public String getName() {
-        return name;
+    public void setLicence(String licence) {
+        this.licence = licence;
     }
-    public String getPhone() {
-        return phone;
-    }
-    public String getType() {
-        return type;
-    }
-    public String getIdcard() {
-        return idcard;
-    }
+
     public String getHours() {
         return hours;
     }
-    public String getDays() {
-        return days;
+
+    public void setHours(String hours) {
+        this.hours = hours;
     }
-    public String getCard() {
+
+    public long getCard() {
         return card;
     }
+
+    public void setCard(long card) {
+        this.card = card;
+    }
+
     public String getEmail() {
         return email;
     }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
     public String getPass() {
         return pass;
     }
-    @Override
-    public int describeContents() {
-        return 0;
-    }
 
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(name);
-        dest.writeString(phone);
-        dest.writeString(type);
-        dest.writeString(idcard);
-        dest.writeString(hours);
-        dest.writeString(days);
-        dest.writeString(card);
-        dest.writeString(email);
-        dest.writeString(pass);
+    public void setPass(String pass) {
+        this.pass = pass;
     }
 }

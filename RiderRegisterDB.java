@@ -1,4 +1,4 @@
-package com.example.unitconverter.RiderInterface;
+package com.example.feedhope.RiderInterface.Register;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -6,44 +6,68 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
+
 import androidx.annotation.Nullable;
 
-import com.example.unitconverter.ProviderInterafce.ProviderModalClass;
+import java.util.ArrayList;
 
 public class RiderRegisterDB extends SQLiteOpenHelper {
-    private static final String DBName="FeedHopeProject.db";
-    public RiderRegisterDB(@Nullable Context context) {
+    private static final String DBName = "FeedHopeProject.db";
 
-        super(context, DBName, null, 3);
+    public RiderRegisterDB(@Nullable Context context) {
+        super(context, DBName, null, 47);
+    }
+
+    public ArrayList<String> getAllRiderEmails() {
+        ArrayList<String> emails = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT Email FROM RegisterRider";
+        Cursor cursor = db.rawQuery(query, null);
+
+        if (cursor != null && cursor.moveToFirst()) {
+            int emailColumnIndex = cursor.getColumnIndex("Email"); // Correct column name
+            if (emailColumnIndex != -1) {
+                do {
+                    String email = cursor.getString(emailColumnIndex);
+                    emails.add(email);
+                } while (cursor.moveToNext());
+            }
+        }
+        cursor.close();
+        db.close();
+        return emails;
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL("create table ProviderRegister(Name TEXT NOT NULL,Phone TEXT NOT NULL,Email TEXT Primary key,Pass TEXT NOT NULL)");
-        db.execSQL(" create table ReceiverRegister(Members TEXT NOT NULL,Organization_Refrence TEXT NOT NULL, Organization_Type TEXT NOT NULL, Requirement TEXT NOT NULL, Frequency TEXT NOT NULL, Time TEXT NOT NULL,Phone TEXT NOT NULL,Email TEXT Primary key,Pass TEXT NOT NULL)");
-        db.execSQL(" create table RiderRegister(Name TEXT NOT NULL,Phone TEXT NOT NULL,IDtype TEXT NOT NULL, IDNumber TEXT NOT NULL,Working_Hours TEXT NOT NULL,Availability_Days TEXT NOT NULL, Bank_Detail TEXT NOT NULL,Email TEXT Primary key,Pass TEXT NOT NULL)");
+        db.execSQL(" create table RegisterRider(Name TEXT NOT NULL,Phone TEXT NOT NULL,LicenseNo TEXT NOT NULL,Working_Hours TEXT,Card INTEGER NOT NULL,Email TEXT Primary key,Pass TEXT NOT NULL,Location TEXT NOT NULL)");
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        if (oldVersion < 3) {
-            db.execSQL(" create table RiderRegister(Name TEXT NOT NULL,Phone TEXT NOT NULL,IDtype TEXT NOT NULL, IDNumber TEXT NOT NULL,Working_Hours TEXT NOT NULL,Availability_Days TEXT NOT NULL, Bank_Detail TEXT NOT NULL,Email TEXT Primary key,Pass TEXT NOT NULL)");
-        }
+        db.execSQL("DROP TABLE IF EXISTS RegisterRider");
+        onCreate(db);
     }
-    public boolean insertData(String Name,String Phone,String IDtype, String IDNumber,String Working_Hours,String Availability_Days,String Bank_Detail, String Email,String Pass) {
+
+    public void deleteTable() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL("DROP TABLE IF EXISTS ShoeDonation");
+        db.close();
+    }
+
+    public boolean insertData(String Name, String Phone, String Licence, String Working_Hours, long Card, String Email, String Pass, String Location) {
         try (SQLiteDatabase myDB = this.getWritableDatabase()) {
             ContentValues cv = new ContentValues();
             cv.put("Name", Name);
             cv.put("Phone", Phone);
-            cv.put("IDtype", IDtype);
-            cv.put("IDNumber", IDNumber);
+            cv.put("LicenseNo", Licence);
             cv.put("Working_Hours", Working_Hours);
-            cv.put("Availability_Days", Availability_Days);
-            cv.put("Bank_Detail", Bank_Detail);
+            cv.put("Card", Card);
             cv.put("Email", Email);
             cv.put("Pass", Pass);
+            cv.put("Location", Location);
 
-            long result = myDB.insert("RiderRegister", null, cv);
+            long result = myDB.insert("RegisterRider", null, cv);
             myDB.close();
             if (result == -1) {
                 Log.e("RiderRegisterDB", "Failed to insert data");
@@ -57,7 +81,7 @@ public class RiderRegisterDB extends SQLiteOpenHelper {
 
     public boolean checkUser(String email, String pass) {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT * FROM RiderRegister WHERE email = ? AND pass = ?", new String[]{email, pass});
+        Cursor cursor = db.rawQuery("SELECT * FROM RegisterRider WHERE email = ? AND pass = ?", new String[]{email, pass});
         if (cursor.getCount() > 0) {
             cursor.close();
             return true;
@@ -65,9 +89,10 @@ public class RiderRegisterDB extends SQLiteOpenHelper {
         cursor.close();
         return false;
     }
+
     public RiderModalClass read(String loggedInEmail) {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.query("RiderRegister", null, "Email = ?", new String[]{loggedInEmail}, null, null, null);
+        Cursor cursor = db.query("RegisterRider", null, "Email = ?", new String[]{loggedInEmail}, null, null, null);
 
         if (cursor != null && cursor.moveToFirst()) {
             String name = cursor.getString(cursor.getColumnIndexOrThrow("Name"));
@@ -94,6 +119,6 @@ public class RiderRegisterDB extends SQLiteOpenHelper {
         values.put("Email", riderModalClass.getEmail());
         values.put("Pass", riderModalClass.getPass());
 
-        return db.update("RiderRegister", values, "Email = ?", new String[]{riderModalClass.getEmail()});
+        return db.update("RegisterRider", values, "Email = ?", new String[]{riderModalClass.getEmail()});
     }
 }

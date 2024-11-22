@@ -34,7 +34,6 @@ public class RiderRegisterDetailActivity extends AppCompatActivity {
             getSupportActionBar().setTitle("");
         }
 
-        // Retrieve the JSON string from the intent
         String riderJson = getIntent().getStringExtra("riderList");
         ArrayList<RiderModalClass> riderList;
         if (riderJson != null) {
@@ -60,8 +59,7 @@ public class RiderRegisterDetailActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                // Handle the back button click here
-                onBackPressed(); // Go back to the previous activity
+                onBackPressed();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

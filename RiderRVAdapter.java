@@ -46,15 +46,15 @@ public class RiderRVAdapter extends RecyclerView.Adapter<RiderRVAdapter.UserView
         holder.phoneText.setText(user.getPhone());
         holder.licenceText.setText(user.getLicence());
         holder.hoursText.setText(user.getHours());
-        holder.daysText.setText(user.getDays());
-        holder.cardText.setText(user.getCard());
+        holder.cardText.setText(String.valueOf(user.getCard()));
         holder.emailText.setText(user.getEmail());
         holder.passText.setText(user.getPass());
+        holder.locationText.setText(user.getLocation());
 
         holder.accept.setOnClickListener(v -> {
-            boolean isInserted = db.insertData(user.getName(),user.getPhone(),user.getLicence(),user.getHours(),user.getDays(), user.getCard(), user.getEmail(), user.getPass());
+            boolean isInserted = db.insertData(user.getName(),user.getPhone(),user.getLicence(),user.getHours(), user.getCard(), user.getEmail(), user.getPass(),user.getLocation());
             String message = isInserted ? "Data saved successfully!" : "Error saving data!";
-            String notificationMessage = isInserted ? user.getName() + " : Registered Successfully" : user.getName() + " : Application rejected your request" ;
+            String notificationMessage = isInserted ? user.getName() + " : Registered Successfully" : user.getName() + " : Already Registered or any Null Field" ;
             sendNotification("Registration Notification", notificationMessage);
             removeItem(position);
         });
@@ -86,7 +86,7 @@ public class RiderRVAdapter extends RecyclerView.Adapter<RiderRVAdapter.UserView
     }
 
     static class UserViewHolder extends RecyclerView.ViewHolder {
-        TextView nameText, phoneText, licenceText, hoursText, daysText, cardText,emailText, passText;
+        TextView nameText,phoneText,licenceText,hoursText,cardText,emailText, passText,locationText;
         Button accept, reject;
         public UserViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -94,10 +94,10 @@ public class RiderRVAdapter extends RecyclerView.Adapter<RiderRVAdapter.UserView
             phoneText = itemView.findViewById(R.id.phone);
             licenceText = itemView.findViewById(R.id.licence);
             hoursText = itemView.findViewById(R.id.hours);
-            daysText = itemView.findViewById(R.id.days);
             cardText = itemView.findViewById(R.id.card);
             emailText = itemView.findViewById(R.id.email);
             passText = itemView.findViewById(R.id.pass);
+            locationText = itemView.findViewById(R.id.location);
 
             accept = itemView.findViewById(R.id.accept);
             reject = itemView.findViewById(R.id.reject);

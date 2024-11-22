@@ -1,7 +1,4 @@
-package com.example.unitconverter.RiderInterface;
-
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.NotificationCompat;
+package com.example.feedhope.RiderInterface.Register;
 
 import android.annotation.SuppressLint;
 import android.app.NotificationChannel;
@@ -21,18 +18,18 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import com.example.unitconverter.AppInterface.OTP_Status;
-import com.example.unitconverter.R;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
+import com.example.feedhope.AppInterface.OTP_Status;
+import com.example.feedhope.R;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.mailjet.client.MailjetClient;
 import com.mailjet.client.MailjetRequest;
 import com.mailjet.client.MailjetResponse;
 import com.mailjet.client.resource.Emailv31;
-
+import org.json.JSONArray;
+import org.json.JSONObject;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Random;
@@ -64,13 +61,12 @@ public class OTPVerificationRider extends AppCompatActivity {
         Intent intent = getIntent();
         String name = intent.getStringExtra("name");
         String phone = intent.getStringExtra("phone");
-        String IDType = intent.getStringExtra("IDtype");
-        String IDNumber = intent.getStringExtra("IDNumber");
+        String licence = intent.getStringExtra("licence");
         String hours = intent.getStringExtra("hours");
-        String days = intent.getStringExtra("days");
-        String banking = intent.getStringExtra("banking");
+        long card = Long.parseLong(intent.getStringExtra("card"));
         String email = intent.getStringExtra("email");
         String pass = intent.getStringExtra("pass");
+        String location=intent.getStringExtra("location");
         generatedOTP = getIntent().getIntExtra("generated_otp", 0);
 
         notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
@@ -96,7 +92,7 @@ public class OTPVerificationRider extends AppCompatActivity {
                     riderList = new ArrayList<>();
                 }
 
-                riderList.add(new RiderModalClass(name, phone,IDType,IDNumber,hours,days,banking, email, pass));
+                riderList.add(new RiderModalClass(name,phone,licence,hours,card,email,pass,location));
                 SharedPreferences.Editor editor = sharedPreferences.edit();
                 editor.putString("riderList", gson.toJson(riderList));
                 editor.apply();
@@ -173,7 +169,7 @@ public class OTPVerificationRider extends AppCompatActivity {
                                     .put(new JSONObject()
                                             .put(Emailv31.Message.FROM, new JSONObject()
                                                     .put("Email", "rohaashraf7@gmail.com")
-                                                    .put("Name", "Roha Ashraf"))
+                                                    .put("Name", "Feed Hope"))
                                             .put(Emailv31.Message.TO, new JSONArray()
                                                     .put(new JSONObject()
                                                             .put("Email", email)
