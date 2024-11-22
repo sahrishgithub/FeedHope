@@ -1,243 +1,374 @@
-package com.example.unitconverter.ReceiverInterface;
+package com.example.feedhope.ReceiverInterface.ReceiverRegister;
 
-import static com.example.unitconverter.AppInterface.GoogleMapActivity.KEY_LATITUDE;
-import static com.example.unitconverter.AppInterface.GoogleMapActivity.KEY_LOCATION_NAME;
-import static com.example.unitconverter.AppInterface.GoogleMapActivity.KEY_LONGITUDE;
-
+import android.annotation.SuppressLint;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.InputType;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.MotionEvent;
-import android.view.inputmethod.EditorInfo;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
-import com.example.unitconverter.R;
+import androidx.appcompat.widget.Toolbar;
+import com.example.feedhope.R;
+import com.example.feedhope.ReceiverInterface.ReceiverLogin;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.google.i18n.phonenumbers.PhoneNumberUtil;
+import com.google.i18n.phonenumbers.Phonenumber;
+import com.mailjet.client.MailjetClient;
+import com.mailjet.client.MailjetRequest;
+import com.mailjet.client.MailjetResponse;
+import com.mailjet.client.resource.Emailv31;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Random;
 
 public class ReceiverRegister extends AppCompatActivity {
-
-    private static final String PREFS_NAME = "LocationPrefs";
-    private TextView locationTextView;
-    private String locationName;
-    private double latitude, longitude;
-    private EditText member, time, phone, email, pass;
-    AutoCompleteTextView reference;
-    private Spinner type, requirement;
+    private EditText member,reference, card, phone, email, pass;
+    private Spinner type;
     private Button register;
     private boolean isPasswordVisible = false;
-    private TextView login;
-    private String selectedTime = "";
     private ArrayList<ReceiverModalClass> receiverList;
     private SharedPreferences sharedPreferences;
     private Gson gson;
-    private RadioGroup radioGroup;
-    private static final String CHANNEL_ID = "ReceiverChannel";
-    private static final String CHANNEL_NAME = "Receiver Notifications";
+    int otp;
+    TextView LocationTextView;
+    String PREFS_NAME = "LocationPrefs";
+    String KEY_LOCATION_NAME = "currentLocationName";
+    String LocationName;
 
+    @SuppressLint({"ClickableViewAccessibility", "MissingInflatedId"})
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.register_receiver);
 
-        // Initialize SharedPreferences before using it
-        sharedPreferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-        radioGroup = findViewById(R.id.radio_btn); // Initialize RadioGroup here
-
-        // Initialize AutoCompleteTextView for reference
         reference = findViewById(R.id.reference);
-        if (reference != null) {
-            String referenceText = reference.getText().toString();
-            // Log the reference or handle logic
-            Log.d("ReceiverRegister", "Reference Text: " + referenceText);
-        } else {
-            Log.e("ReceiverRegister", "AutoCompleteTextView reference is null");
-        }
-
-        // Initialize other views
         type = findViewById(R.id.type);
         member = findViewById(R.id.member);
-        requirement = findViewById(R.id.requirement);
-        time = findViewById(R.id.time);
+        card = findViewById(R.id.card);
+        RadioGroup frequency = findViewById(R.id.frequency);
         phone = findViewById(R.id.phone);
         email = findViewById(R.id.email);
         pass = findViewById(R.id.pass);
+        LocationTextView = findViewById(R.id.location);
         register = findViewById(R.id.register);
-        login = findViewById(R.id.login);
-        locationTextView = findViewById(R.id.location);
 
-        // Retrieve location data from SharedPreferences
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setTitle("");
+        }
+
         retrieveCurrentLocation();
+        // Display the location to the user
+        if (LocationName != null) {
+            LocationTextView.setText("Current location: " + LocationName);
+        } else {
+            LocationTextView.setText("Location not provided.");
+        }
 
-        // Display the current location
-        locationTextView.setText("Current Location: " + locationName);
+        sharedPreferences = getSharedPreferences("receiverPrefs", Context.MODE_PRIVATE);
+        gson = new Gson();
+        loadData();
 
-        // Set up other UI components
-        setupUI();
-
-        // Handle register button click
-        register.setOnClickListener(v -> handleRegisterButtonClick());
-
-        // Handle login button click
-        login.setOnClickListener(v -> {
-            // Logic for navigating to the login screen
-        });
-    }
-
-    private void setupUI() {
-        // Disable suggestions for phone input field
-        phone.setInputType(InputType.TYPE_CLASS_PHONE);
-        phone.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI);
-
-        // Set up password visibility toggle
         pass.setOnTouchListener((v, event) -> {
             final int DRAWABLE_RIGHT = 2;
             if (event.getAction() == MotionEvent.ACTION_UP) {
                 if (event.getRawX() >= (pass.getRight() - pass.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
-                    // Toggle the visibility of the password
-                    togglePasswordVisibility();
+                    if (isPasswordVisible) {
+                        pass.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                        pass.setCompoundDrawablesWithIntrinsicBounds(R.drawable.pass, 0, R.drawable.close_eye, 0);
+                    } else {
+                        pass.setInputType(InputType.TYPE_CLASS_TEXT);
+                        pass.setCompoundDrawablesWithIntrinsicBounds(R.drawable.pass, 0, R.drawable.open_eye, 0);
+                    }
+                    isPasswordVisible = !isPasswordVisible;
+                    pass.setSelection(pass.getText().length());
                     return true;
                 }
             }
             return false;
         });
 
-        // Time picker dialog
-        time.setOnClickListener(v -> {
-            Calendar calendar = Calendar.getInstance();
-            int hour = calendar.get(Calendar.HOUR_OF_DAY);
-            int minute = calendar.get(Calendar.MINUTE);
+        phone.addTextChangedListener(new TextWatcher() {
+            private boolean isUpdating = false;
 
-            TimePickerDialog timePickerDialog = new TimePickerDialog(ReceiverRegister.this,
-                    (view, hourOfDay, minute1) -> {
-                        selectedTime = String.format("%02d:%02d", hourOfDay, minute1);
-                        time.setText(selectedTime);
-                    }, hour, minute, true);
-            timePickerDialog.show();
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                // Do nothing here
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (isUpdating) return;
+
+                isUpdating = true;
+                String text = s.toString();
+
+                // Ensure the prefix is "+92"
+                if (!text.startsWith("+92")) {
+                    text = "+92" + text.replace("+92", ""); // Remove any duplicate "+92"
+                }
+
+                // Remove invalid characters and ensure it starts with "+923"
+                if (text.length() > 3) {
+                    String digits = text.substring(3).replaceAll("[^0-9]", ""); // Extract only digits
+
+                    // Enforce that the first digit after "+92" must be "3"
+                    if (digits.startsWith("0")) {
+                        digits = digits.substring(1); // Remove the leading "0"
+                    }
+
+                    if (!digits.startsWith("3")) {
+                        digits = "3" + digits.replaceFirst("^\\d*", ""); // Ensure it starts with "3"
+                    }
+
+                    digits = digits.length() > 10 ? digits.substring(0, 10) : digits; // Limit to 9 digits
+                    text = "+92" + digits;
+                }
+
+                phone.setText(text);
+                phone.setSelection(text.length()); // Move cursor to the end
+                isUpdating = false;
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                // Do nothing here
+            }
+        });
+
+        frequency.setOnCheckedChangeListener((group, checkedId) -> {
+            RadioButton frequencybtn = findViewById(checkedId);
+            String frequency1 = frequencybtn.getText().toString();
+            Toast.makeText(ReceiverRegister.this, "Selected: " + frequency1, Toast.LENGTH_SHORT).show();
+        });
+
+        register.setOnClickListener(v -> {
+            String reference1, member1, frequency1, phone1,card1,email1, pass1;
+            boolean isValid = true;
+            StringBuilder errorMessages = new StringBuilder();
+
+            reference1 = reference.getText().toString().trim();
+            String selectedType = type.getSelectedItem().toString();
+            member1 = member.getText().toString().trim();
+            card1 = card.getText().toString().trim();
+
+            int frequencyCheckedRadioButtonId = frequency.getCheckedRadioButtonId();
+            RadioButton selectedFrequency = findViewById(frequencyCheckedRadioButtonId);
+            frequency1 = (selectedFrequency != null) ? selectedFrequency.getText().toString().trim() : "";
+
+            phone1 = phone.getText().toString().trim();
+            email1 = email.getText().toString().trim();
+            pass1 = pass.getText().toString().trim();
+            String location1=LocationTextView.getText().toString().trim();
+
+            reference.setError(null);
+            member.setError(null);
+            phone.setError(null);
+            email.setError(null);
+            pass.setError(null);
+            card.setError(null);
+            LocationTextView.setError(null);
+
+            if (!isValidPhoneNumber(phone1)) {
+                phone.setError("Use format like +923012846389");
+                isValid = false;
+            }
+            if (reference1.isEmpty()) {
+                reference.setError("Reference field is required");
+                isValid = false;
+            }
+            if (selectedType.equals("Select Organization Type")) {
+                errorMessages.append("Please select a valid Organization Type.\n");
+                isValid = false;
+            }
+            if (member1.isEmpty()) {
+                member.setError("Member field is required");
+                isValid = false;
+            }
+            if (!isValidCardNumber(card1)) {
+                card.setError("Please enter a valid card number.");
+                isValid = false;
+            }
+            if (frequency1.isEmpty()) {
+                errorMessages.append("Please select a frequency.\n");
+                isValid = false;
+            }
+            if (!isValidEmail(email1)) {
+                email.setError("Please enter a valid email address");
+                isValid = false;
+            }if (pass1.length() != 8) {
+                pass.setError("Password must be at least 8 characters long");
+                isValid = false;
+            }
+
+            if (isValid) {
+                saveData();
+                reference.setText("");
+                member.setText("");
+                phone.setText("");
+                card.setText("");
+                email.setText("");
+                pass.setText("");
+                Toast.makeText(ReceiverRegister.this, "Your OTP was sent successfully! Check your email to continue.", Toast.LENGTH_SHORT).show();
+
+                if (!email1.isEmpty()) {
+                    otp = generateRandomOTP();
+                    sendOTPEmail(reference1,email1, otp);
+
+                    Intent intent = new Intent(ReceiverRegister.this, OTPVerificationReceiver.class);
+                    intent.putExtra("reference", reference1);
+                    intent.putExtra("type", selectedType);
+                    intent.putExtra("member", member1);
+                    intent.putExtra("selectedFrequency", frequency1);
+                    intent.putExtra("phone", phone1);
+                    intent.putExtra("card",card1);
+                    intent.putExtra("email", email1);
+                    intent.putExtra("pass", pass1);
+                    intent.putExtra("location",location1);
+                    intent.putExtra("generated_otp", otp);
+                    startActivity(intent);
+                } else {
+                    Toast.makeText(ReceiverRegister.this, "Please enter your email", Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                Toast.makeText(ReceiverRegister.this, errorMessages.toString(), Toast.LENGTH_LONG).show();
+            }
         });
     }
-
-    private void togglePasswordVisibility() {
-        if (isPasswordVisible) {
-            pass.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-            pass.setCompoundDrawablesWithIntrinsicBounds(R.drawable.pass, 0, R.drawable.close_eye, 0);
-        } else {
-            pass.setInputType(InputType.TYPE_CLASS_TEXT);
-            pass.setCompoundDrawablesWithIntrinsicBounds(R.drawable.pass, 0, R.drawable.open_eye, 0);
+    private boolean isValidCardNumber(String cardNumber) {
+        int sum = 0;
+        boolean alternate = false;
+        for (int i = cardNumber.length() - 1; i >= 0; i--) {
+            int n = Integer.parseInt(cardNumber.substring(i, i + 1));
+            if (alternate) {
+                n *= 2;
+                if (n > 9) {
+                    n = (n % 10) + 1;
+                }
+            }
+            sum += n;
+            alternate = !alternate;
         }
-        isPasswordVisible = !isPasswordVisible;
-        pass.setSelection(pass.getText().length());
+        return (sum % 10 == 0);
     }
-
-    private void handleRegisterButtonClick() {
-        String reference1 = reference.getText().toString().trim();
-        String selectedType = type.getSelectedItem().toString();
-        String member1 = member.getText().toString().trim();
-        String selectedRequirement = requirement.getSelectedItem().toString();
-        int selectedRadioButtonId = radioGroup.getCheckedRadioButtonId();
-        RadioButton selectedRadioButton = findViewById(selectedRadioButtonId);
-        String frequency1 = selectedRadioButton != null ? selectedRadioButton.getText().toString().trim() : "";
-        String time1 = selectedTime;
-        String phone1 = phone.getText().toString().trim();
-        String email1 = email.getText().toString().trim();
-        String pass1 = pass.getText().toString().trim();
-
-        boolean isValid = validateInputs(reference1, selectedType, member1, selectedRequirement, frequency1, time1, phone1, email1, pass1);
-
-        if (isValid) {
-            saveReceiverData(reference1, selectedType, member1, selectedRequirement, frequency1, time1, phone1, email1, pass1,locationName,longitude,latitude);
-        } else {
-            Toast.makeText(ReceiverRegister.this, "Please fix the errors in the form.", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private boolean validateInputs(String reference, String selectedType, String member, String selectedRequirement,
-                                   String frequency, String time, String phone, String email, String pass) {
-        boolean isValid = true;
-
-        if (reference.isEmpty()) {
-            isValid = false;
-            // Set error on the AutoCompleteTextView reference, not on the String reference.
-            this.reference.setError("Reference field is required.");
-        }
-        if (selectedType.equals("Select Organization Type")) {
-            isValid = false;
-        }
-        if (member.isEmpty()) {
-            isValid = false;
-            this.member.setError("Member field is required.");
-        }
-        if (selectedRequirement.equals("Select Food Requirement")) {
-            isValid = false;
-        }
-        if (frequency.isEmpty()) {
-            isValid = false;
-        }
-        if (time.isEmpty()) {
-            isValid = false;
-            this.time.setError("Time field is required.");
-        }
-        if (phone.isEmpty()) {
-            isValid = false;
-            this.phone.setError("Phone field is required.");
-        }
-        if (email.isEmpty()) {
-            isValid = false;
-            this.email.setError("Email field is required.");
-        }
-        if (pass.isEmpty()) {
-            isValid = false;
-            this.pass.setError("Password field is required.");
-        }
-
-        return isValid;
-    }
-
-    private void saveReceiverData(String reference, String selectedType, String member, String selectedRequirement,
-                                  String frequency, String time, String phone, String email, String pass,String locationName,double longitude,double latitude) {
-        ReceiverDB receiverDB = new ReceiverDB(this);
-        long id = receiverDB.insertReceiverData(reference, selectedType, member, selectedRequirement, frequency, time, phone, email, pass,longitude,latitude,locationName);
-        if (id != -1) {
-            Toast.makeText(ReceiverRegister.this, "Receiver data saved with ID: " + id, Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(ReceiverRegister.this, "Failed to save data", Toast.LENGTH_SHORT).show();
-        }
-    }
-
     private void retrieveCurrentLocation() {
         SharedPreferences sharedPreferences = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-        locationName = sharedPreferences.getString(KEY_LOCATION_NAME, ""); // Retrieve location name
-        latitude = sharedPreferences.getFloat(KEY_LATITUDE, Float.NaN);
-        longitude = sharedPreferences.getFloat(KEY_LONGITUDE, Float.NaN);
+        LocationName = sharedPreferences.getString(KEY_LOCATION_NAME, ""); // Retrieve location name
 
-        if (!locationName.isEmpty() && !Double.isNaN(latitude) && !Double.isNaN(longitude)) {
-            locationTextView.setText("Your current location is: " + locationName);
+        if (!LocationName.isEmpty()) {
+            LocationTextView.setText("Current location: " + LocationName);
         } else {
-            locationTextView.setText("Location not provided.");
+            LocationTextView.setText("Location not provided.");
             Toast.makeText(this, "Invalid location data received. Please ensure location access is enabled.", Toast.LENGTH_SHORT).show();
         }
+    }
+    private int generateRandomOTP() {
+        Random random = new Random();
+        return 10000 + random.nextInt(90000);
+    }
+    @SuppressLint("StaticFieldLeak")
+    private void sendOTPEmail(final String name, final String email, final int otp) {
+        new AsyncTask<Void, Void, Boolean>() {
+            @Override
+            protected Boolean doInBackground(Void... voids) {
+                try {
+                    MailjetClient client = new MailjetClient("39e58097b0b1794f1c673706c2670bbd", "602023b0c0d0e53caebe724f142be291");
+                    MailjetRequest request = new MailjetRequest(Emailv31.resource)
+                            .property(Emailv31.MESSAGES, new JSONArray()
+                                    .put(new JSONObject()
+                                            .put(Emailv31.Message.FROM, new JSONObject()
+                                                    .put("Email", "rohaashraf7@gmail.com")
+                                                    .put("Name", "Feed Hope"))
+                                            .put(Emailv31.Message.TO, new JSONArray()
+                                                    .put(new JSONObject()
+                                                            .put("Email", email)
+                                                            .put("Name", name)))
+                                            .put(Emailv31.Message.SUBJECT, "Your OTP Code")
+                                            .put(Emailv31.Message.TEXTPART, "Your OTP code is: " + otp)
+                                            .put(Emailv31.Message.CUSTOMID, "AppOTPVerification")));
+
+                    MailjetResponse response = client.post(request);
+                    return response.getStatus() == 200;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return false;
+                }
+            }
+
+            protected void onPostExecute(Boolean success) {
+                if (success) {
+                    Toast.makeText(ReceiverRegister.this, "OTP sent successfully!", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(ReceiverRegister.this, "Failed to send OTP. Please check your email.", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }.execute();
+    }
+    private boolean isValidPhoneNumber(String phoneNumber) {
+        PhoneNumberUtil phoneNumberUtil = PhoneNumberUtil.getInstance();
+        try {
+            Phonenumber.PhoneNumber number = phoneNumberUtil.parse(phoneNumber, "Pakistan");
+            return phoneNumberUtil.isValidNumber(number);
+        } catch (Exception e) {
+            Log.e("PhoneValidation", "Invalid phone number: " + phoneNumber, e);
+            return false;
+        }
+    }
+
+    private boolean isValidEmail(String email) {
+        String emailPattern = "^[a-zA-Z0-9._%+-]+@(gmail\\.com|hotmail\\.com|yahoo\\.com|outlook\\.com)$";
+        return email.matches(emailPattern);
+    }
+
+    private void loadData() {
+        String json = sharedPreferences.getString("receiverList", null);
+        Type type = new TypeToken<ArrayList<ReceiverModalClass>>() {}.getType();
+        receiverList = gson.fromJson(json, type);
+
+        if (receiverList == null) {
+            receiverList = new ArrayList<>();
+        }
+        Log.d("ReceiverRegister", "Loaded receiver list size: " + receiverList.size());
+    }
+
+    private void saveData() {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        String json = gson.toJson(receiverList);
+        editor.putString("receiverList", json);
+        editor.apply();
+        // Log data saved
+        Log.d("ReceiverRegister", "Data saved: " + json);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            finish();
-            return true;
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-        return super.onOptionsItemSelected(item);
     }
 }

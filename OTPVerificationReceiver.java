@@ -1,7 +1,4 @@
-package com.example.unitconverter.ReceiverInterface;
-
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.NotificationCompat;
+package com.example.feedhope.ReceiverInterface.ReceiverRegister;
 
 import android.annotation.SuppressLint;
 import android.app.NotificationChannel;
@@ -21,24 +18,23 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import com.example.unitconverter.AppInterface.OTP_Status;
-import com.example.unitconverter.R;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
+import com.example.feedhope.AppInterface.OTP_Status;
+import com.example.feedhope.R;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.mailjet.client.MailjetClient;
 import com.mailjet.client.MailjetRequest;
 import com.mailjet.client.MailjetResponse;
 import com.mailjet.client.resource.Emailv31;
-
+import org.json.JSONArray;
+import org.json.JSONObject;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Random;
 
 public class OTPVerificationReceiver extends AppCompatActivity {
-
     private EditText otp0, otp1, otp2, otp3, otp4;
     private TextView resend,emailText;
     private Button verifyButton;
@@ -61,17 +57,16 @@ public class OTPVerificationReceiver extends AppCompatActivity {
         verifyButton = findViewById(R.id.verifybtn);
         resend = findViewById(R.id.resend);
 
-        // Get OTP and email from Intent
         Intent intent = getIntent();
         String reference = intent.getStringExtra("reference");
         String referencetype = intent.getStringExtra("type");
-        String member = intent.getStringExtra("member");
-        String requirement = intent.getStringExtra("requirement");
+        int member = Integer.parseInt(intent.getStringExtra("member"));
         String frequency = intent.getStringExtra("selectedFrequency");
-        String time = intent.getStringExtra("selectedTime");
         String phone = intent.getStringExtra("phone");
+        long card = Long.parseLong(intent.getStringExtra("card"));
         String email = intent.getStringExtra("email");
         String pass = intent.getStringExtra("pass");
+        String location=intent.getStringExtra("location");
         generatedOTP = getIntent().getIntExtra("generated_otp", 0);
 
         notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
@@ -98,8 +93,7 @@ public class OTPVerificationReceiver extends AppCompatActivity {
                 if (receiverList == null) {
                     receiverList = new ArrayList<>();
                 }
-
-                receiverList.add(new ReceiverModalClass(reference, referencetype,member,requirement,frequency,time, phone, email, pass));
+                receiverList.add(new ReceiverModalClass(reference, referencetype,member,frequency, phone,card, email, pass,location));
                 SharedPreferences.Editor editor = sharedPreferences.edit();
                 editor.putString("receiverList", gson.toJson(receiverList));
                 editor.apply();
@@ -175,7 +169,7 @@ public class OTPVerificationReceiver extends AppCompatActivity {
                                     .put(new JSONObject()
                                             .put(Emailv31.Message.FROM, new JSONObject()
                                                     .put("Email", "rohaashraf7@gmail.com")
-                                                    .put("Name", "Roha Ashraf"))
+                                                    .put("Name", "Feed Hope"))
                                             .put(Emailv31.Message.TO, new JSONArray()
                                                     .put(new JSONObject()
                                                             .put("Email", email)

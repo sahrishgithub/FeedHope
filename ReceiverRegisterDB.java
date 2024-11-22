@@ -6,73 +6,65 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
-
 import androidx.annotation.Nullable;
-
-import com.example.feedhope.ReceiverInterface.InformDonation.InformDonationModalClass;
-
 import java.util.ArrayList;
-
 public class ReceiverRegisterDB extends SQLiteOpenHelper {
-    private SQLiteDatabase db;
     private static final String DBName="FeedHopeProject.db";
     public ReceiverRegisterDB(@Nullable Context context) {
 
-        super(context, DBName, null, 42);
+        super(context, DBName, null, 47);
     }
     public ArrayList<String> getAllReceiverLocations() {
         ArrayList<String> locations = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();  // Properly gets the readable database instance
-        Cursor cursor = db.rawQuery("SELECT location FROM ReceiverRegister", null);
+        Cursor cursor = db.rawQuery("SELECT Location FROM RegisterReceiver", null);
 
         if (cursor != null) {
             try {
-                int columnIndex = cursor.getColumnIndex("location");
+                int columnIndex = cursor.getColumnIndex("Location");
                 if (columnIndex != -1) {
                     while (cursor.moveToNext()) {
                         String location = cursor.getString(columnIndex);
                         locations.add(location);
                     }
                 } else {
-                    Log.e("Database", "Column 'location' not found.");
+                    Log.e("Database", "Column 'Location' not found.");
                 }
             } catch (Exception e) {
                 Log.e("Database", "Error retrieving data: " + e.getMessage());
             } finally {
-                cursor.close();  // Always close the cursor
+                cursor.close();
             }
         } else {
             Log.e("Database", "Cursor is null.");
         }
 
+
         return locations;
     }
-
-
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL(" create table ReceiverRegister(Organization_Refrence TEXT NOT NULL, Organization_Type TEXT NOT NULL,Members TEXT NOT NULL, Requirement TEXT NOT NULL, Frequency TEXT NOT NULL, Time TEXT NOT NULL,Phone TEXT NOT NULL,Email TEXT Primary key,Pass TEXT NOT NULL,location TEXT NOT NULL)");
+        db.execSQL(" create table RegisterReceiver(Organization_Reference TEXT NOT NULL, Organization_Type TEXT NOT NULL,Members INTEGER NOT NULL, Frequency TEXT NOT NULL,Phone TEXT NOT NULL,CardNo INTEGER NOT NULL,Email TEXT Primary key,Pass TEXT NOT NULL,Location TEXT NOT NULL)");
      }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS ReceiverRegister");
+        db.execSQL("DROP TABLE IF EXISTS RegisterReceiver");
         onCreate(db);
     }
-    public boolean insertData(String Organization_Refrence,String Organization_Type,String Members,String Requirement,String Frequency,String Time,String Phone, String Email,String Pass,String location) {
+    public boolean insertData(String Organization_Reference,String Organization_Type,int Members,String Frequency,String Phone,long CardNo, String Email,String Pass,String Location) {
         try (SQLiteDatabase myDB = this.getWritableDatabase()) {
             ContentValues cv = new ContentValues();
-            cv.put("Organization_Refrence", Organization_Refrence);
+            cv.put("Organization_Reference", Organization_Reference);
             cv.put("Organization_Type", Organization_Type);
             cv.put("Members", Members);
-            cv.put("Requirement", Requirement);
             cv.put("Frequency", Frequency);
-            cv.put("Time", Time);
             cv.put("Phone", Phone);
+            cv.put("CardNo",CardNo);
             cv.put("Email", Email);
             cv.put("Pass", Pass);
-            cv.put("location",location);
-            long result = myDB.insert("ReceiverRegister", null, cv);
+            cv.put("Location",Location);
+            long result = myDB.insert("RegisterReceiver", null, cv);
             myDB.close();
             if (result == -1) {
                 Log.e("ReceiverRegisterDB", "Failed to insert data");
@@ -86,12 +78,44 @@ public class ReceiverRegisterDB extends SQLiteOpenHelper {
 
     public boolean checkUser(String email, String pass) {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT * FROM ReceiverRegister WHERE email = ? AND pass = ?", new String[]{email, pass});
+        Cursor cursor = db.rawQuery("SELECT * FROM RegisterReceiver WHERE email = ? AND pass = ?", new String[]{email, pass});
         if (cursor.getCount() > 0) {
             cursor.close();
             return true;
         }
         cursor.close();
         return false;
+    }
+
+    public ReceiverModalClass read(String loggedInEmail) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query("RegisterReceiver", null, "Email = ?", new String[]{loggedInEmail}, null, null, null);
+
+        if (cursor != null && cursor.moveToFirst()) {
+            String reference = cursor.getString(cursor.getColumnIndexOrThrow("Organization_Reference"));
+            String phone = cursor.getString(cursor.getColumnIndexOrThrow("Phone"));
+            String email = cursor.getString(cursor.getColumnIndexOrThrow("Email"));
+            String pass = cursor.getString(cursor.getColumnIndexOrThrow("Pass"));
+            cursor.close();
+            return new ReceiverModalClass(reference, phone, email, pass);
+        } else {
+            return null;
+        }
+    }
+
+    public long update(ReceiverModalClass receiver) {
+        if (receiver == null || receiver.getEmail() == null) {
+            Log.e("ReceiverRegisterDB", "Receiver or email is null");
+            return -1;
+        }
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("Organization_Reference", receiver.getReference());
+        values.put("Phone", receiver.getPhone());
+        values.put("Email", receiver.getEmail());
+        values.put("Pass", receiver.getPass());
+
+        return db.update("RegisterReceiver", values, "Email = ?", new String[]{receiver.getEmail()});
     }
 }

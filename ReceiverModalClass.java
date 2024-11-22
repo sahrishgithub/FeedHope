@@ -1,20 +1,21 @@
-package com.example.unitconverter.ReceiverInterface;
+package com.example.feedhope.ReceiverInterface.ReceiverRegister;
 
 public class ReceiverModalClass {
-    private String reference, type, member, requirement, frequency, time, phone, email, pass;
-    private boolean isRejected;
+    String reference, type,frequency, email, pass,location,phone;
+    int member;
+    long cardNo;
+    boolean isRejected;
 
-    public ReceiverModalClass(String reference, String type, String member, String requirement, String frequency, String time, String phone, String email, String pass) {
+    public ReceiverModalClass(String reference, String type, int member, String frequency, String phone,long cardNo, String email, String pass,String location) {
         this.reference = reference;
         this.type = type;
         this.member = member;
-        this.requirement = requirement;
         this.frequency = frequency;
-        this.time = time;
         this.phone = phone;
+        this.cardNo = cardNo;
         this.email = email;
         this.pass = pass;
-        this.isRejected = false; // Default value
+        this.location = location;
     }
 
     public ReceiverModalClass(String reference, String phone, String email, String pass) {
@@ -22,10 +23,16 @@ public class ReceiverModalClass {
         this.phone = phone;
         this.email = email;
         this.pass = pass;
-        this.isRejected = false; // Default value
     }
 
-    // Getters and setters
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
     public String getReference() {
         return reference;
     }
@@ -42,20 +49,12 @@ public class ReceiverModalClass {
         this.type = type;
     }
 
-    public String getMember() {
+    public int getMember() {
         return member;
     }
 
-    public void setMember(String member) {
+    public void setMember(int member) {
         this.member = member;
-    }
-
-    public String getRequirement() {
-        return requirement;
-    }
-
-    public void setRequirement(String requirement) {
-        this.requirement = requirement;
     }
 
     public String getFrequency() {
@@ -66,12 +65,12 @@ public class ReceiverModalClass {
         this.frequency = frequency;
     }
 
-    public String getTime() {
-        return time;
+    public void setCardNo(long cardNo) {
+        this.cardNo = cardNo;
     }
 
-    public void setTime(String time) {
-        this.time = time;
+    public long getCardNo() {
+        return cardNo;
     }
 
     public String getPhone() {

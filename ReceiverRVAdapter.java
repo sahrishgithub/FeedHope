@@ -45,18 +45,18 @@ public class ReceiverRVAdapter extends RecyclerView.Adapter<ReceiverRVAdapter.Us
         ReceiverModalClass user = userList.get(position);
         holder.referenceText.setText(user.getReference());
         holder.typeText.setText(user.getType());
-        holder.memberText.setText(user.getMember());
-        holder.requirementText.setText(user.getRequirement());
+        holder.memberText.setText(String.valueOf(user.getMember()));
         holder.frequencyText.setText(user.getFrequency());
-        holder.timeText.setText(user.getTime());
         holder.phoneText.setText(user.getPhone());
+        holder.cardText.setText(String.valueOf(user.getCardNo()));
         holder.emailText.setText(user.getEmail());
         holder.passText.setText(user.getPass());
+        holder.locationText.setText(user.getLocation());
 
         holder.accept.setOnClickListener(v -> {
-            boolean isInserted = db.insertData(user.getReference(),user.getType(),user.getMember(),user.getRequirement(),user.getFrequency(),user.getTime(), user.getPhone(), user.getEmail(), user.getPass());
+            boolean isInserted = db.insertData(user.getReference(),user.getType(),user.getMember(),user.getFrequency(), user.getPhone(),user.getCardNo(), user.getEmail(), user.getPass(),user.getLocation());
             String message = isInserted ? "Data saved successfully!" : "Error saving data!";
-            String notificationMessage = isInserted ? user.getReference() + " : Registered Successfully" : user.getReference() + " : Application rejected your request" ;
+            String notificationMessage = isInserted ? user.getReference() + " : Registered Successfully" : user.getReference() + " : Already Registered or any Null Field" ;
             sendNotification("Registration Notification", notificationMessage);
             removeItem(position);
         });
@@ -89,7 +89,7 @@ public class ReceiverRVAdapter extends RecyclerView.Adapter<ReceiverRVAdapter.Us
     }
 
     static class UserViewHolder extends RecyclerView.ViewHolder {
-        TextView referenceText, typeText, memberText, requirementText, frequencyText, timeText, phoneText, emailText, passText;
+        TextView referenceText, typeText, memberText, frequencyText, phoneText,cardText, emailText, passText,locationText;
         Button accept, reject;
 
         public UserViewHolder(@NonNull View itemView) {
@@ -97,12 +97,13 @@ public class ReceiverRVAdapter extends RecyclerView.Adapter<ReceiverRVAdapter.Us
             referenceText = itemView.findViewById(R.id.reference);
             typeText = itemView.findViewById(R.id.type);
             memberText = itemView.findViewById(R.id.member);
-            requirementText = itemView.findViewById(R.id.requirement);
             frequencyText = itemView.findViewById(R.id.frequency);
-            timeText = itemView.findViewById(R.id.time);
             phoneText = itemView.findViewById(R.id.phone);
+            cardText = itemView.findViewById(R.id.cardNo);
             emailText = itemView.findViewById(R.id.email);
             passText = itemView.findViewById(R.id.pass);
+            locationText = itemView.findViewById(R.id.location);
+
             accept = itemView.findViewById(R.id.accept);
             reject = itemView.findViewById(R.id.reject);
         }
