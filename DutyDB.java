@@ -1,5 +1,6 @@
 package com.example.feedhope.RiderInterface.Duty;
 
+import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -9,26 +10,28 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 import com.example.feedhope.RiderInterface.SalaryReport.SalaryModelClass;
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class DutyDB extends SQLiteOpenHelper {
     private static final String DBName="FeedHopeProject.db";
     public DutyDB(@Nullable Context context) {
-        super(context, DBName, null, 36);
+        super(context, DBName, null, 47);
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-         db.execSQL(" create table RiderAssignDuty(DutyID INTEGER PRIMARY KEY AUTOINCREMENT,Email TEXT NOT NULL,Pick_Location TEXT NOT NULL,Drop_Location TEXT NOT NULL, Date INTEGER NOT NULL, Status TEXT NOT NULL,Payment_Status TEXT DEFAULT 'Unpaid')");
+         db.execSQL(" create table RiderAssignDuty(DutyID INTEGER PRIMARY KEY AUTOINCREMENT,Email TEXT NOT NULL,Pick_Location TEXT NOT NULL,Drop_Location TEXT NOT NULL, Date TEXT NOT NULL, Status TEXT NOT NULL,Payment_Status TEXT DEFAULT 'Unpaid')");
         db.execSQL("create table PaymentReport(PaymentID INTEGER PRIMARY KEY AUTOINCREMENT, DutyID INTEGER, Email TEXT NOT NULL, Salary INTEGER, PaymentDate TEXT, FOREIGN KEY(DutyID) REFERENCES RiderAssignDuty(DutyID))");
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS RiderAssignDuty");
+        db.execSQL("DROP TABLE IF EXISTS PaymentReport");
         onCreate(db);
     }
 
-    public boolean assignDuty(String Email,String Pick,String Drop, int Date,String Status) {
+    public boolean assignDuty(String Email,String Pick,String Drop, String Date,String Status) {
         try (SQLiteDatabase myDB = this.getWritableDatabase()) {
             ContentValues cv = new ContentValues();
             cv.put("Email", Email);
@@ -68,22 +71,23 @@ public class DutyDB extends SQLiteOpenHelper {
         return result != -1;
     }
 
-    public ArrayList<SalaryModelClass> getPaymentHistory(String userEmail) {
+    public ArrayList<SalaryModelClass> getPaymentHistory(String email) {
+        ArrayList<SalaryModelClass> paymentHistory = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT * FROM PaymentReport WHERE Email = ?", new String[]{userEmail});
-        ArrayList<SalaryModelClass> paymentReports = new ArrayList<>();
+        String query = "SELECT * FROM PaymentReport WHERE Email = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{email});
+
         if (cursor.moveToFirst()) {
             do {
-                int paymentID = cursor.getInt(0);
-                int dutyID = cursor.getInt(1);
-                String email = cursor.getString(2);
-                int salary = cursor.getInt(3);
-                String paymentDate = cursor.getString(4);
-                paymentReports.add(new SalaryModelClass(paymentID, dutyID, email, salary, paymentDate));
+                @SuppressLint("Range") int dutyId = cursor.getInt(cursor.getColumnIndex("DutyID"));
+                @SuppressLint("Range") int salary = cursor.getInt(cursor.getColumnIndex("Salary"));
+                @SuppressLint("Range") String paymentDate = cursor.getString(cursor.getColumnIndex("PaymentDate"));
+                paymentHistory.add(new SalaryModelClass(dutyId, email, salary, paymentDate));
             } while (cursor.moveToNext());
         }
         cursor.close();
-        return paymentReports;
+        db.close();
+        return paymentHistory;
     }
 
     public ArrayList<DutyModalClass> readRiderDuty(String userEmail) {
@@ -102,6 +106,8 @@ public class DutyDB extends SQLiteOpenHelper {
             } while (cursor.moveToNext());
         }
         cursor.close();
+        db.close();
+        Collections.reverse(dutyModalClasses);
         return dutyModalClasses;
     }
 
@@ -121,6 +127,8 @@ public class DutyDB extends SQLiteOpenHelper {
             } while (cursor.moveToNext());
         }
         cursor.close();
+        db.close();
+        Collections.reverse(dutyModalClasses);
         return dutyModalClasses;
     }
     public boolean updateDutyStatus(int dutyId, String status) {

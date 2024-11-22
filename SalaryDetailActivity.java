@@ -16,7 +16,7 @@ import com.example.feedhope.R;
 public class SalaryDetailActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private ArrayList<SalaryModelClass> modalClasses;
-    private SalaryReportAdapter rvAdapter;
+    private SalaryReportRVAdapter rvAdapter;
     private DutyDB dbHandler;
 
     @SuppressLint("MissingInflatedId")
@@ -30,13 +30,13 @@ public class SalaryDetailActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setTitle("");}
 
-        SharedPreferences sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
-        String userEmail = sharedPreferences.getString("user_email", "");
+        SharedPreferences sharedPreferences = getSharedPreferences("DutyPrefs", Context.MODE_PRIVATE);
+        String userEmail = sharedPreferences.getString("Duty", "");
 
         modalClasses = new ArrayList<>();
         dbHandler = new DutyDB(SalaryDetailActivity.this);
         modalClasses = dbHandler.getPaymentHistory(userEmail);
-        rvAdapter = new SalaryReportAdapter(modalClasses, SalaryDetailActivity.this);
+        rvAdapter = new SalaryReportRVAdapter(modalClasses, SalaryDetailActivity.this);
         recyclerView = findViewById(R.id.recyclerView);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(SalaryDetailActivity.this, RecyclerView.VERTICAL, false);
         recyclerView.setLayoutManager(linearLayoutManager);

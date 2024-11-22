@@ -1,7 +1,7 @@
 package com.example.feedhope.RiderInterface.SalaryReport;
 public class SalaryModelClass {
     private String email,paymentDate;
-    private int paymentID,dutyID,salary;
+    private int dutyID,salary;
 
     public void setPaymentDate(String paymentDate) {
         this.paymentDate = paymentDate;
@@ -17,10 +17,6 @@ public class SalaryModelClass {
 
     public void setSalary(int salary) {
         this.salary = salary;
-    }
-
-    public void setPaymentID(int paymentID) {
-        this.paymentID = paymentID;
     }
 
     public String getEmail() {
@@ -39,15 +35,10 @@ public class SalaryModelClass {
         return salary;
     }
 
-    public int getPaymentID() {
-        return paymentID;
-    }
-    public SalaryModelClass(int paymentID,
-                            int dutyID,
+    public SalaryModelClass(int dutyID,
                             String email,
                             int salary,
                             String paymentDate){
-        this.paymentID = paymentID;
         this.dutyID = dutyID;
         this.email = email;
         this.salary = salary;
