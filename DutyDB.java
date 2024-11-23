@@ -15,13 +15,13 @@ import java.util.Collections;
 public class DutyDB extends SQLiteOpenHelper {
     private static final String DBName="FeedHopeProject.db";
     public DutyDB(@Nullable Context context) {
-        super(context, DBName, null, 47);
+        super(context, DBName, null, 48);
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
          db.execSQL(" create table RiderAssignDuty(DutyID INTEGER PRIMARY KEY AUTOINCREMENT,Email TEXT NOT NULL,Pick_Location TEXT NOT NULL,Drop_Location TEXT NOT NULL, Date TEXT NOT NULL, Status TEXT NOT NULL,Payment_Status TEXT DEFAULT 'Unpaid')");
-        db.execSQL("create table PaymentReport(PaymentID INTEGER PRIMARY KEY AUTOINCREMENT, DutyID INTEGER, Email TEXT NOT NULL, Salary INTEGER, PaymentDate TEXT, FOREIGN KEY(DutyID) REFERENCES RiderAssignDuty(DutyID))");
+        db.execSQL("create table PaymentReport(PaymentID INTEGER PRIMARY KEY AUTOINCREMENT, DutyID INTEGER, Email TEXT NOT NULL, Salary INTEGER,AccountNo INTEGER NOT NULL, PaymentDate TEXT, FOREIGN KEY(DutyID) REFERENCES RiderAssignDuty(DutyID))");
     }
 
     @Override
@@ -53,7 +53,7 @@ public class DutyDB extends SQLiteOpenHelper {
         }
     }
 
-    public boolean paySalary(int dutyId, String email, int salary, String paymentDate) {
+    public boolean paySalary(int dutyId, String email, int salary,long account, String paymentDate) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues cv = new ContentValues();
@@ -64,6 +64,7 @@ public class DutyDB extends SQLiteOpenHelper {
         paymentCV.put("DutyID", dutyId);
         paymentCV.put("Email", email);
         paymentCV.put("Salary", salary);
+        paymentCV.put("AccountNo",account);
         paymentCV.put("PaymentDate", paymentDate);
 
         long result = db.insert("PaymentReport", null, paymentCV);
