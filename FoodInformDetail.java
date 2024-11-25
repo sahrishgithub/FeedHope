@@ -36,7 +36,7 @@ public class FoodInformDetail extends AppCompatActivity {
 
         modalClasses = new ArrayList<>();
         dbHandler = new FoodInformDB(FoodInformDetail.this);
-        modalClasses = dbHandler.readFoodInformation(userEmail);
+        modalClasses = dbHandler.readIndividualData(userEmail);
         rvAdapter = new FoodInformRVAdapter(modalClasses, FoodInformDetail.this);
         recyclerView = findViewById(R.id.recyclerView);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(FoodInformDetail.this, RecyclerView.VERTICAL, false);

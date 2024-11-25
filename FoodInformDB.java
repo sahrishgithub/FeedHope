@@ -12,12 +12,13 @@ import com.example.feedhope.ReceiverInterface.ReceiverRegister.ReceiverModalClas
 import com.example.feedhope.RiderInterface.Duty.DutyModalClass;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class FoodInformDB extends SQLiteOpenHelper {
     private static final String DBName="FeedHopeProject.db";
     public FoodInformDB(@Nullable Context context) {
 
-        super(context, DBName, null, 43);
+        super(context, DBName, null, 48);
     }
 
     @Override
@@ -61,7 +62,7 @@ public class FoodInformDB extends SQLiteOpenHelper {
         }
     }
 
-    public ArrayList<FoodInformModalClass> readFoodData() {
+    public ArrayList<FoodInformModalClass> adminReadFoodData() {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT * FROM FoodInform", null);
         ArrayList<FoodInformModalClass> modalClasses = new ArrayList<>();
@@ -77,10 +78,12 @@ public class FoodInformDB extends SQLiteOpenHelper {
             } while (cursor.moveToNext());
         }
         cursor.close();
+        db.close();
+        Collections.reverse(modalClasses);
         return modalClasses;
     }
 
-    public ArrayList<FoodInformModalClass> readFoodInformation (String userEmail) {
+    public ArrayList<FoodInformModalClass> readIndividualData (String userEmail) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT * FROM FoodInform WHERE Organization_Name = ?", new String[]{userEmail});
         ArrayList<FoodInformModalClass> modalClasses = new ArrayList<>();
@@ -95,6 +98,8 @@ public class FoodInformDB extends SQLiteOpenHelper {
             } while (cursor.moveToNext());
         }
         cursor.close();
+        db.close();
+        Collections.reverse(modalClasses);
         return modalClasses;
     }
 }

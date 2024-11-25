@@ -10,18 +10,18 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.feedhope.R;
+import com.example.feedhope.RiderInterface.Duty.DutyUpdateStatus;
+
 import java.util.ArrayList;
 
 public class FoodInformRVAdapter extends RecyclerView.Adapter<FoodInformRVAdapter.ViewHolder> {
 
     private ArrayList<FoodInformModalClass> modalClasses;
     private Context context;
-    private String loggedInEmail;
 
     public FoodInformRVAdapter(ArrayList<FoodInformModalClass> modalClasses, Context context) {
         this.modalClasses = modalClasses;
         this.context = context;
-        this.loggedInEmail = loggedInEmail;
     }
 
     @NonNull
@@ -38,23 +38,13 @@ public class FoodInformRVAdapter extends RecyclerView.Adapter<FoodInformRVAdapte
         holder.quantity.setText(modal.getQuantity());
         holder.storage.setText(modal.getStorage());
         holder.expire.setText(modal.getExpire());
-
-        // Compare the logged-in email with the item's email
-        if (modal.getName().equals(loggedInEmail)) {
-            // If emails match, show the "Update" button
-            holder.update.setVisibility(View.VISIBLE);
-            holder.update.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(context, FoodInformUpdateStatus.class);
-                    intent.putExtra("email", modal.getName());
-                    context.startActivity(intent);
-                }
-            });
-        } else {
-            // Hide the "Update" button if emails don't match
-            holder.update.setVisibility(View.GONE);
-        }
+        holder.update.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, FoodInformUpdateStatus.class);
+                context.startActivity(intent);
+            }
+        });
     }
 
     @Override
@@ -63,7 +53,7 @@ public class FoodInformRVAdapter extends RecyclerView.Adapter<FoodInformRVAdapte
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        private TextView name, quantity, storage, expire, status;
+        private TextView name, quantity, storage, expire;
         Button update;
 
         public ViewHolder(@NonNull View itemView) {
@@ -72,7 +62,7 @@ public class FoodInformRVAdapter extends RecyclerView.Adapter<FoodInformRVAdapte
             quantity = itemView.findViewById(R.id.quantity);
             storage = itemView.findViewById(R.id.storage);
             expire = itemView.findViewById(R.id.expire);
-            status = itemView.findViewById(R.id.status);
+
             update = itemView.findViewById(R.id.update);
         }
     }

@@ -1,7 +1,7 @@
 package com.example.feedhope.ReceiverInterface.FoodInform;
 
 public class FoodInformModalClass {
-    private String name,quantity,storage,expire,status;
+    private String name,quantity,storage,status,expire;
     public String getName() { return name; }
     public void setName(String name) {this.name = name;}
     public String getQuantity()

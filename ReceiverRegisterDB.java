@@ -12,7 +12,7 @@ public class ReceiverRegisterDB extends SQLiteOpenHelper {
     private static final String DBName="FeedHopeProject.db";
     public ReceiverRegisterDB(@Nullable Context context) {
 
-        super(context, DBName, null, 47);
+        super(context, DBName, null, 48);
     }
     public ArrayList<String> getAllReceiverLocations() {
         ArrayList<String> locations = new ArrayList<>();
@@ -38,10 +38,9 @@ public class ReceiverRegisterDB extends SQLiteOpenHelper {
         } else {
             Log.e("Database", "Cursor is null.");
         }
-
-
         return locations;
     }
+
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(" create table RegisterReceiver(Organization_Reference TEXT NOT NULL, Organization_Type TEXT NOT NULL,Members INTEGER NOT NULL, Frequency TEXT NOT NULL,Phone TEXT NOT NULL,CardNo INTEGER NOT NULL,Email TEXT Primary key,Pass TEXT NOT NULL,Location TEXT NOT NULL)");
@@ -117,5 +116,30 @@ public class ReceiverRegisterDB extends SQLiteOpenHelper {
         values.put("Pass", receiver.getPass());
 
         return db.update("RegisterReceiver", values, "Email = ?", new String[]{receiver.getEmail()});
+    }
+    public ArrayList<String> getAllReceiverName() {
+        ArrayList<String> email1 = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();  // Properly gets the readable database instance
+        Cursor cursor = db.rawQuery("SELECT Email FROM RegisterReceiver", null);
+        if (cursor != null) {
+            try {
+                int columnIndex = cursor.getColumnIndex("Email");
+                if (columnIndex != -1) {
+                    while (cursor.moveToNext()) {
+                        String email = cursor.getString(columnIndex);
+                        email1.add(email);
+                    }
+                } else {
+                    Log.e("Database", "Column 'Email' not found.");
+                }
+            } catch (Exception e) {
+                Log.e("Database", "Error retrieving data: " + e.getMessage());
+            } finally {
+                cursor.close();
+            }
+        } else {
+            Log.e("Database", "Cursor is null.");
+        }
+        return email1;
     }
 }

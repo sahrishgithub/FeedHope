@@ -1,16 +1,17 @@
 package com.example.feedhope.AdminInterface;
 
-import android.app.DatePickerDialog;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -21,24 +22,27 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.NotificationCompat;
 import com.example.feedhope.R;
 import com.example.feedhope.ReceiverInterface.FoodInform.FoodInformDB;
-import java.util.Calendar;
+import com.example.feedhope.ReceiverInterface.ReceiverRegister.ReceiverRegisterDB;
+
+import java.util.ArrayList;
 
 public class FoodInform extends AppCompatActivity {
-    EditText name, quantity, expire;
-    TextView item,limit;
-    Spinner storage;
+    EditText quantity;
+    TextView storage,expire,item,limit;
+    Spinner email;
     Button submit_btn;
-    private FoodInformDB db;
-    private static final String CHANNEL_ID = "DonationChannel";
-    private static final String CHANNEL_NAME = "Donation Notifications";
-    private NotificationManager notificationManager;
+    ReceiverRegisterDB receiverRegisterDB;
+    FoodInformDB db;
+    static final String CHANNEL_ID = "DonationChannel";
+    static final String CHANNEL_NAME = "Donation Notifications";
+    NotificationManager notificationManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.admin_food_donation_inform);
 
-        name = findViewById(R.id.name);
+        email = findViewById(R.id.email);
         quantity = findViewById(R.id.quantity);
         storage = findViewById(R.id.storage);
         expire = findViewById(R.id.expire);
@@ -56,27 +60,28 @@ public class FoodInform extends AppCompatActivity {
         notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         createNotificationChannel();
 
+        String storage1 = getIntent().getStringExtra("storage");
+        String expire1 = getIntent().getStringExtra("expire");
+        storage.setText(storage1);
+        expire.setText(expire1 );
+
+        receiverRegisterDB = new ReceiverRegisterDB(FoodInform.this);
+        // Now you can safely call methods on db
+        ArrayList<String> emailList = receiverRegisterDB.getAllReceiverName();
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, emailList);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        email.setAdapter(adapter);
+
         String passedQuantity = getIntent().getStringExtra("quantity");
         String numericPassedQuantity = passedQuantity.replaceAll("[^0-9]", "");
 
+        SharedPreferences sharedPreferences = getSharedPreferences("FoodData", Context.MODE_PRIVATE);
+        int position = getIntent().getIntExtra("position", -1);
+        int remainingQuantity = sharedPreferences.getInt("remaining_quantity_" + position, Integer.parseInt(numericPassedQuantity));
+
         if (passedQuantity != null) {
-            limit.setText("≤\t " + numericPassedQuantity);
+            limit.setText("≤\t " + remainingQuantity);
         }
-
-        expire.setOnClickListener(v -> {
-            final Calendar calendar = Calendar.getInstance();
-            int year = calendar.get(Calendar.YEAR);
-            int month = calendar.get(Calendar.MONTH);
-            int day = calendar.get(Calendar.DAY_OF_MONTH);
-
-            DatePickerDialog datePickerDialog = new DatePickerDialog(FoodInform.this,
-                    (view, year1, monthOfYear, dayOfMonth) -> {
-                        String selectedDate = dayOfMonth + "/" + (monthOfYear + 1) + "/" + year1;
-                        expire.setText(selectedDate);
-                    }, year, month, day);
-            datePickerDialog.getDatePicker().setMinDate(calendar.getTimeInMillis());
-            datePickerDialog.show();
-        });
 
         submit_btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -86,58 +91,49 @@ public class FoodInform extends AppCompatActivity {
 
                 boolean isValid = true;
                 StringBuilder errorMessages = new StringBuilder();
-
-                String name1 = name.getText().toString().trim();
                 String quantity1 = quantity.getText().toString().trim();
-                String selectedStorage = storage.getSelectedItem().toString();
-                String expire1 = expire.getText().toString().trim();
 
-                name.setError(null);
                 quantity.setError(null);
-                expire.setError(null);
-
-                if (name1.isEmpty()) {
-                    name.setError("Organization Name field is required");
-                    isValid = false;
-                }
                 if (quantity1.isEmpty()) {
                     quantity.setError("Quantity field is required");
                     isValid = false;
                 } else {
                     try {
                         int enteredQuantity = Integer.parseInt(quantity1);
-                        if (enteredQuantity <= 5) {
-                            quantity.setError("Quantity must be greater than 5");
+                        int previousQuantity = Integer.parseInt(numericPassedQuantity);
+                        if (enteredQuantity > previousQuantity) {
+                            quantity.setError("Quantity cannot exceed the available quantity (" + previousQuantity + ")");
                             isValid = false;
-                        } else if (!numericPassedQuantity.isEmpty()) {
-                                int previousQuantity = Integer.parseInt(numericPassedQuantity);
-                                if (enteredQuantity > previousQuantity) {
-                                    quantity.setError("Quantity cannot exceed the available quantity (" + previousQuantity + ")");
-                                    isValid = false;
-                                }
-                            } else {
-                                quantity.setError("Invalid quantity format");
-                                isValid = false;
-                            }
+                        }
                     } catch (NumberFormatException e) {
                         quantity.setError("Invalid quantity entered");
                         isValid = false;
                     }
                 }
 
-                if (selectedStorage.equals("Select Storage Requirement")) {
-                    errorMessages.append("Please select a valid Storage Requirement.\n");
-                    isValid = false;
-                }
-                if (expire1.isEmpty()) {
-                    expire.setError("Expiry Date field is required");
-                    isValid = false;
-                }
                 if (isValid) {
-                    String Quantity = quantity1+ " "+ item.getText().toString().trim() ;
-                    if (db.insert(name1, Quantity, selectedStorage, expire1, "Pending")) {
+                    String numericPassedQuantity = getIntent().getStringExtra("quantity").replaceAll("[^0-9]", "");
+                    int remainingQuantity = Integer.parseInt(numericPassedQuantity) - Integer.parseInt(quantity1);
+                    // Save the remaining quantity in SharedPreferences
+                    SharedPreferences sharedPreferences = getSharedPreferences("FoodData", Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    int position = getIntent().getIntExtra("position", -1);
+                    editor.putInt("remaining_quantity_" + position, remainingQuantity);
+                    editor.apply();
+                    // Update the limit TextView
+                    limit.setText("≤\t " + remainingQuantity);
+
+                    Intent resultIntent = new Intent();
+                    resultIntent.putExtra("remaining_quantity", remainingQuantity);
+                    resultIntent.putExtra("position", position);
+                    setResult(RESULT_OK, resultIntent);
+
+                    String selectedEmail = email.getSelectedItem().toString();
+
+                    String Quantity = quantity1 + " " + item.getText().toString().trim();
+                    if (db.insert(selectedEmail, Quantity, storage1, expire1, "Pending")) {
                         Toast.makeText(FoodInform.this, "Data Inserted", Toast.LENGTH_LONG).show();
-                        sendNotification(name1, "Donation Information");
+                        sendNotification(selectedEmail, "Donation Information");
                         finish();
                     } else {
                         Toast.makeText(FoodInform.this, "Data not Inserted", Toast.LENGTH_LONG).show();
